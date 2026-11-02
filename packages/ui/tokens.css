@@ -1,0 +1,42 @@
+/* DesiConnect design tokens as CSS variables. Mirrors src/index.ts. */
+:root {
+  --dc-background: #f7f6f3;
+  --dc-surface: #ffffff;
+  --dc-surface-muted: #eceae4;
+  --dc-border: #d9d5cb;
+  --dc-text: #17150f;
+  --dc-text-muted: #5c574d;
+  --dc-primary: #e8890c;
+  --dc-primary-strong: #c76f04;
+  --dc-primary-soft: #fdeacb;
+  --dc-primary-text: #17150f;
+  --dc-accent: #0f7b76;
+  --dc-accent-soft: #eaf6f5;
+  --dc-accent-text: #ffffff;
+  --dc-danger: #c2342d;
+  --dc-danger-soft: #fbe9e7;
+  --dc-success: #0b625e;
+  --dc-radius-sm: 6px;
+  --dc-radius-md: 10px;
+  --dc-radius-lg: 14px;
+  --dc-radius-xl: 20px;
+}
+
+.dark {
+  --dc-background: #12110d;
+  --dc-surface: #1c1a15;
+  --dc-surface-muted: #26231c;
+  --dc-border: #3a362d;
+  --dc-text: #f3f0e8;
+  --dc-text-muted: #b1ab9c;
+  --dc-primary: #f7bf63;
+  --dc-primary-strong: #fdeacb;
+  --dc-primary-soft: #3a2a10;
+  --dc-primary-text: #17150f;
+  --dc-accent: #6fbdb8;
+  --dc-accent-soft: #10302e;
+  --dc-accent-text: #17150f;
+  --dc-danger: #e5625b;
+  --dc-danger-soft: #3a1714;
+  --dc-success: #6fbdb8;
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@desiconnect/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prisma schema, migrations, seed data and the shared Prisma client",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "prisma"],
+  "prisma": {
+    "schema": "prisma/schema.prisma",
+    "seed": "tsx prisma/seed/index.ts"
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src prisma/seed",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed/index.ts",
+    "reset": "prisma migrate reset --force",
+    "studio": "prisma studio"
+  },
+  "dependencies": {
+    "@desiconnect/contracts": "workspace:*",
+    "@prisma/client": "6.19.3"
+  },
+  "devDependencies": {
+    "@desiconnect/config": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.18.0",
+    "bcryptjs": "^3.0.2",
+    "eslint": "^9.39.0",
+    "prisma": "6.19.3",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "desiconnect-usa",
+  "private": true,
+  "version": "0.1.0",
+  "description": "DesiConnect USA — community marketplace for Indians and South Asians in the United States",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel --filter=@desiconnect/api --filter=@desiconnect/web",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "pnpm --filter @desiconnect/e2e e2e",
+    "db:generate": "pnpm --filter @desiconnect/database generate",
+    "db:migrate": "pnpm --filter @desiconnect/database migrate:deploy",
+    "db:migrate:dev": "pnpm --filter @desiconnect/database migrate:dev",
+    "db:seed": "pnpm --filter @desiconnect/database seed",
+    "db:reset": "pnpm --filter @desiconnect/database reset",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "turbo": "^2.11.10",
+    "typescript": "~5.9.3"
+  }
+}

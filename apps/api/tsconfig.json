@@ -1,0 +1,13 @@
+{
+  "extends": "@desiconnect/config/tsconfig/node.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "isolatedModules": false,
+    "noUncheckedIndexedAccess": false,
+    "types": ["node", "jest", "multer"]
+  },
+  "include": ["src", "test"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@desiconnect/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright end-to-end tests for the main user journeys (web + API + database)",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.18.0",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,773 @@
+// DesiConnect USA — PostgreSQL 16 + PostGIS schema.
+// Conventions: UUID primary keys, UTC timestamps, soft deletion (deletedAt) on user-owned content.
+// Location search uses a PostGIS geography column on `locations` (generated from latitude/longitude),
+// and listing keyword search uses a generated tsvector column. Both are created in migration SQL.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis, pg_trgm]
+}
+
+// ---------------------------------------------------------------- enums
+
+enum Role {
+  CONSUMER
+  PROVIDER
+  ORGANIZER
+  EMPLOYER
+  ADVERTISER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum ListingKind {
+  SERVICE
+  EVENT
+  JOB
+  PROPERTY
+  RESOURCE
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum InquiryStatus {
+  NEW
+  VIEWED
+  RESPONDED
+  CLOSED
+  SPAM
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  EITHER
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  REVIEWING
+  INTERVIEW
+  OFFERED
+  REJECTED
+  WITHDRAWN
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  WAITLISTED
+  CANCELLED
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
+
+enum WorkArrangement {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+enum SalaryPeriod {
+  HOUR
+  MONTH
+  YEAR
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  TOWNHOUSE
+  CONDO
+  ROOM
+  COMMERCIAL
+  LAND
+}
+
+enum TransactionType {
+  RENT
+  SALE
+  ROOMMATE
+}
+
+enum CredentialType {
+  BUSINESS_LICENSE
+  INSURANCE_LICENSE
+  BAR_ADMISSION
+  MEDICAL_LICENSE
+  CPA_LICENSE
+  REAL_ESTATE_LICENSE
+  CONTRACTOR_LICENSE
+  OTHER
+}
+
+enum ReportTargetType {
+  LISTING
+  PROVIDER
+  REVIEW
+}
+
+enum ReportReason {
+  SPAM
+  FRAUD
+  INAPPROPRIATE
+  MISLEADING
+  DUPLICATE
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  SMS
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+  READ
+}
+
+enum ConsentType {
+  TERMS
+  PRIVACY
+  CONTACT_SHARING
+  APPLICATION_SHARING
+  MARKETING
+  AI_HISTORY
+}
+
+enum AttachmentPurpose {
+  RESUME
+  CREDENTIAL_EVIDENCE
+  LISTING_IMAGE
+  EVENT_FLYER
+}
+
+enum AiMessageRole {
+  USER
+  ASSISTANT
+}
+
+// ---------------------------------------------------------------- users & access
+
+model User {
+  id                 String     @id @default(uuid()) @db.Uuid
+  /// Subject claim from the identity provider (`local:<uuid>` for built-in auth).
+  authSubject        String     @unique
+  email              String     @unique
+  name               String?
+  phone              String?
+  city               String?
+  state              String?    @db.Char(2)
+  zipCode            String?
+  preferredLanguages String[]   @default([])
+  status             UserStatus @default(ACTIVE)
+  suspendedReason    String?
+  isDemo             Boolean    @default(false)
+  createdAt          DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt          DateTime?  @db.Timestamptz(3)
+
+  roles               UserRole[]
+  localCredential     LocalCredential?
+  providers           Provider[]
+  listings            Listing[]
+  inquiries           Inquiry[]
+  applications        JobApplication[]
+  registrations       EventRegistration[]
+  appointments        Appointment[]
+  favorites           Favorite[]
+  reviews             Review[]
+  notifications       Notification[]
+  reports             Report[]             @relation("ReportReporter")
+  resolvedReports     Report[]             @relation("ReportResolver")
+  auditLogs           AuditLog[]
+  consents            ConsentRecord[]
+  attachments         Attachment[]
+  aiConversations     AiConversation[]
+  aiUsage             AiUsage[]
+  reviewedCredentials ProviderCredential[] @relation("CredentialReviewer")
+
+  @@map("users")
+}
+
+/// Password hash for AUTH_MODE=local. Not used when an external OIDC provider handles sign-in.
+model LocalCredential {
+  userId       String   @id @db.Uuid
+  passwordHash String
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("local_credentials")
+}
+
+model UserRole {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  role      Role
+  /// "global", or a narrower scope such as "market:dfw".
+  scope     String   @default("global")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role, scope])
+  @@map("user_roles")
+}
+
+model ConsentRecord {
+  id        String      @id @default(uuid()) @db.Uuid
+  userId    String      @db.Uuid
+  type      ConsentType
+  granted   Boolean
+  /// What the consent was given for, e.g. "inquiry:<id>".
+  context   String?
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@map("consent_records")
+}
+
+// ---------------------------------------------------------------- geography
+
+/// A physical address. `geog` is a generated PostGIS point (see migration SQL).
+model Location {
+  id          String                                 @id @default(uuid()) @db.Uuid
+  addressLine String?
+  city        String
+  state       String                                 @db.Char(2)
+  zipCode     String?
+  latitude    Float?
+  longitude   Float?
+  /// Generated column (see migration SQL); declared as dbgenerated so Prisma Migrate leaves it alone.
+  geog        Unsupported("geography(Point, 4326)")? @default(dbgenerated("\nCASE\n    WHEN ((latitude IS NOT NULL) AND (longitude IS NOT NULL)) THEN (st_setsrid(st_makepoint(longitude, latitude), 4326))::geography\n    ELSE NULL::geography\nEND"))
+  /// When false, only city-level coordinates are returned publicly.
+  showExact   Boolean                                @default(false)
+  createdAt   DateTime                               @default(now()) @db.Timestamptz(3)
+
+  listings          Listing[]
+  providerLocations ProviderLocation[]
+
+  @@index([state, city])
+  @@index([geog], type: Gist)
+  @@map("locations")
+}
+
+/// Offline gazetteer used to turn a city/state or ZIP into coordinates for radius search.
+model GeoPlace {
+  id         String  @id @default(uuid()) @db.Uuid
+  city       String
+  state      String  @db.Char(2)
+  zipCode    String?
+  latitude   Float
+  longitude  Float
+  population Int?
+
+  @@index([state, city])
+  @@index([zipCode])
+  @@map("geo_places")
+}
+
+/// Geographic markets the platform operates in (DFW pilot first).
+model Market {
+  id          String    @id @default(uuid()) @db.Uuid
+  slug        String    @unique
+  name        String
+  state       String    @db.Char(2)
+  latitude    Float
+  longitude   Float
+  radiusMiles Int       @default(60)
+  isActive    Boolean   @default(false)
+  launchedAt  DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@map("markets")
+}
+
+// ---------------------------------------------------------------- taxonomy
+
+model Category {
+  id        String      @id @default(uuid()) @db.Uuid
+  slug      String      @unique
+  name      String
+  tagline   String      @default("")
+  icon      String      @default("circle")
+  kind      ListingKind @default(SERVICE)
+  regulated Boolean     @default(false)
+  sortOrder Int         @default(0)
+  isActive  Boolean     @default(true)
+  parentId  String?     @db.Uuid
+
+  parent             Category?          @relation("CategoryTree", fields: [parentId], references: [id])
+  children           Category[]         @relation("CategoryTree")
+  listings           Listing[]
+  providerCategories ProviderCategory[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+// ---------------------------------------------------------------- providers
+
+model Provider {
+  id               String             @id @default(uuid()) @db.Uuid
+  ownerId          String             @db.Uuid
+  businessName     String
+  description      String
+  email            String
+  phone            String
+  website          String?
+  languages        String[]           @default([])
+  verification     VerificationStatus @default(UNVERIFIED)
+  verificationNote String?
+  verifiedAt       DateTime?          @db.Timestamptz(3)
+  isDemo           Boolean            @default(false)
+  createdAt        DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime           @updatedAt @db.Timestamptz(3)
+  deletedAt        DateTime?          @db.Timestamptz(3)
+
+  owner        User                 @relation(fields: [ownerId], references: [id])
+  categories   ProviderCategory[]
+  locations    ProviderLocation[]
+  credentials  ProviderCredential[]
+  listings     Listing[]
+  appointments Appointment[]
+
+  /// One business profile per owner for the MVP.
+  @@unique([ownerId])
+  @@index([verification])
+  @@map("provider_profiles")
+}
+
+model ProviderCategory {
+  providerId String @db.Uuid
+  categoryId String @db.Uuid
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([providerId, categoryId])
+  @@map("provider_categories")
+}
+
+model ProviderLocation {
+  id                 String  @id @default(uuid()) @db.Uuid
+  providerId         String  @db.Uuid
+  locationId         String  @db.Uuid
+  serviceRadiusMiles Int     @default(25)
+  isPrimary          Boolean @default(true)
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@index([providerId])
+  @@map("provider_locations")
+}
+
+model ProviderCredential {
+  id               String             @id @default(uuid()) @db.Uuid
+  providerId       String             @db.Uuid
+  type             CredentialType
+  /// Two-letter state that issued the credential.
+  jurisdiction     String             @db.Char(2)
+  licenseNumber    String
+  issuingAuthority String?
+  expiresAt        DateTime?          @db.Timestamptz(3)
+  reviewStatus     VerificationStatus @default(PENDING)
+  reviewNote       String?
+  reviewedAt       DateTime?          @db.Timestamptz(3)
+  reviewedById     String?            @db.Uuid
+  evidenceId       String?            @unique @db.Uuid
+  createdAt        DateTime           @default(now()) @db.Timestamptz(3)
+
+  provider   Provider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  reviewedBy User?       @relation("CredentialReviewer", fields: [reviewedById], references: [id])
+  evidence   Attachment? @relation(fields: [evidenceId], references: [id])
+
+  @@index([providerId])
+  @@index([reviewStatus])
+  @@map("provider_credentials")
+}
+
+// ---------------------------------------------------------------- listings
+
+/// Shared fields for every listing. Kind-specific data lives in events / jobs / properties.
+model Listing {
+  id              String                   @id @default(uuid()) @db.Uuid
+  slug            String                   @unique
+  ownerId         String                   @db.Uuid
+  providerId      String?                  @db.Uuid
+  categoryId      String                   @db.Uuid
+  kind            ListingKind
+  title           String
+  description     String
+  locationId      String                   @db.Uuid
+  languages       String[]                 @default([])
+  contactEmail    String?
+  contactPhone    String?
+  website         String?
+  priceText       String?
+  /// Numeric price used for sorting/filtering (property price, event ticket, etc.).
+  priceValue      Int?
+  tags            String[]                 @default([])
+  status          ListingStatus            @default(DRAFT)
+  rejectionReason String?
+  /// Demonstration content from the seed script. Always shown with a "Demo" label.
+  isDemo          Boolean                  @default(false)
+  /// Provenance of the record, e.g. "user", "seed:demo", "import:<source>".
+  source          String                   @default("user")
+  submittedAt     DateTime?                @db.Timestamptz(3)
+  publishedAt     DateTime?                @db.Timestamptz(3)
+  archivedAt      DateTime?                @db.Timestamptz(3)
+  createdAt       DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime                 @updatedAt @db.Timestamptz(3)
+  deletedAt       DateTime?                @db.Timestamptz(3)
+  /// Generated full-text vector over title (weight A) and description (weight B).
+  searchVector    Unsupported("tsvector")? @default(dbgenerated("(setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::\"char\"))"))
+
+  owner        User          @relation(fields: [ownerId], references: [id])
+  provider     Provider?     @relation(fields: [providerId], references: [id])
+  category     Category      @relation(fields: [categoryId], references: [id])
+  location     Location      @relation(fields: [locationId], references: [id])
+  event        Event?
+  job          Job?
+  property     Property?
+  inquiries    Inquiry[]
+  reviews      Review[]
+  favorites    Favorite[]
+  appointments Appointment[]
+
+  @@index([categoryId, status])
+  @@index([status, kind, publishedAt])
+  @@index([ownerId])
+  @@index([providerId])
+  @@index([searchVector], type: Gin)
+  @@index([title(ops: raw("gin_trgm_ops"))], map: "listings_title_trgm_idx", type: Gin)
+  @@map("listings")
+}
+
+model Event {
+  listingId String    @id @db.Uuid
+  startAt   DateTime  @db.Timestamptz(3)
+  endAt     DateTime? @db.Timestamptz(3)
+  venue     String
+  capacity  Int?
+  isFree    Boolean   @default(true)
+  ticketUrl String?
+
+  listing       Listing             @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  registrations EventRegistration[]
+
+  @@index([startAt])
+  @@map("events")
+}
+
+model EventRegistration {
+  id        String             @id @default(uuid()) @db.Uuid
+  eventId   String             @db.Uuid
+  userId    String             @db.Uuid
+  guests    Int                @default(1)
+  status    RegistrationStatus @default(REGISTERED)
+  createdAt DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime           @updatedAt @db.Timestamptz(3)
+
+  event Event @relation(fields: [eventId], references: [listingId], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+  @@map("event_registrations")
+}
+
+model Job {
+  listingId       String          @id @db.Uuid
+  company         String
+  employmentType  EmploymentType
+  workArrangement WorkArrangement
+  salaryMin       Int?
+  salaryMax       Int?
+  salaryPeriod    SalaryPeriod?
+  skills          String[]        @default([])
+
+  listing      Listing          @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  applications JobApplication[]
+
+  @@map("jobs")
+}
+
+model JobApplication {
+  id          String            @id @default(uuid()) @db.Uuid
+  jobId       String            @db.Uuid
+  applicantId String            @db.Uuid
+  resumeId    String?           @unique @db.Uuid
+  coverLetter String?
+  phone       String?
+  status      ApplicationStatus @default(SUBMITTED)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  job       Job         @relation(fields: [jobId], references: [listingId], onDelete: Cascade)
+  applicant User        @relation(fields: [applicantId], references: [id])
+  resume    Attachment? @relation(fields: [resumeId], references: [id])
+
+  @@unique([jobId, applicantId])
+  @@map("job_applications")
+}
+
+model Property {
+  listingId       String          @id @db.Uuid
+  transactionType TransactionType
+  propertyType    PropertyType
+  price           Int
+  beds            Float?
+  baths           Float?
+  sqft            Int?
+  availableFrom   DateTime?       @db.Timestamptz(3)
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([transactionType, price])
+  @@map("properties")
+}
+
+// ---------------------------------------------------------------- engagement
+
+model Inquiry {
+  id               String        @id @default(uuid()) @db.Uuid
+  listingId        String        @db.Uuid
+  requesterId      String        @db.Uuid
+  message          String
+  phone            String?
+  preferredContact ContactMethod @default(EMAIL)
+  status           InquiryStatus @default(NEW)
+  providerResponse String?
+  respondedAt      DateTime?     @db.Timestamptz(3)
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @db.Timestamptz(3)
+
+  listing   Listing @relation(fields: [listingId], references: [id])
+  requester User    @relation(fields: [requesterId], references: [id])
+
+  @@index([listingId, status])
+  @@index([requesterId])
+  @@map("inquiries")
+}
+
+model Appointment {
+  id          String            @id @default(uuid()) @db.Uuid
+  providerId  String            @db.Uuid
+  requesterId String            @db.Uuid
+  listingId   String?           @db.Uuid
+  startsAt    DateTime          @db.Timestamptz(3)
+  endsAt      DateTime?         @db.Timestamptz(3)
+  status      AppointmentStatus @default(REQUESTED)
+  notes       String?
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+
+  provider  Provider @relation(fields: [providerId], references: [id])
+  requester User     @relation(fields: [requesterId], references: [id])
+  listing   Listing? @relation(fields: [listingId], references: [id])
+
+  @@index([providerId, startsAt])
+  @@map("appointments")
+}
+
+model Review {
+  id               String           @id @default(uuid()) @db.Uuid
+  listingId        String           @db.Uuid
+  authorId         String           @db.Uuid
+  rating           Int
+  body             String
+  moderationStatus ModerationStatus @default(PENDING)
+  createdAt        DateTime         @default(now()) @db.Timestamptz(3)
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@unique([listingId, authorId])
+  @@map("reviews")
+}
+
+model Favorite {
+  userId    String   @db.Uuid
+  listingId String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@id([userId, listingId])
+  @@map("favorites")
+}
+
+model Notification {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String              @db.Uuid
+  channel   NotificationChannel @default(IN_APP)
+  eventType String
+  title     String
+  body      String
+  payload   Json?
+  status    NotificationStatus  @default(QUEUED)
+  sentAt    DateTime?           @db.Timestamptz(3)
+  readAt    DateTime?           @db.Timestamptz(3)
+  createdAt DateTime            @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("notifications")
+}
+
+// ---------------------------------------------------------------- trust & safety
+
+model Report {
+  id             String           @id @default(uuid()) @db.Uuid
+  reporterId     String           @db.Uuid
+  targetType     ReportTargetType
+  targetId       String           @db.Uuid
+  reason         ReportReason
+  details        String?
+  status         ReportStatus     @default(OPEN)
+  resolutionNote String?
+  resolvedById   String?          @db.Uuid
+  resolvedAt     DateTime?        @db.Timestamptz(3)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+
+  reporter   User  @relation("ReportReporter", fields: [reporterId], references: [id])
+  resolvedBy User? @relation("ReportResolver", fields: [resolvedById], references: [id])
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@map("reports")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  actorId      String?  @db.Uuid
+  action       String
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  ipAddress    String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Attachment {
+  id         String            @id @default(uuid()) @db.Uuid
+  ownerId    String            @db.Uuid
+  storageKey String            @unique
+  fileName   String
+  mimeType   String
+  sizeBytes  Int
+  purpose    AttachmentPurpose
+  createdAt  DateTime          @default(now()) @db.Timestamptz(3)
+
+  owner       User                @relation(fields: [ownerId], references: [id])
+  application JobApplication?
+  credential  ProviderCredential?
+
+  @@index([ownerId])
+  @@map("attachments")
+}
+
+// ---------------------------------------------------------------- AI
+
+model AiConversation {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AiMessage[]
+
+  @@index([userId, updatedAt])
+  @@map("ai_conversations")
+}
+
+model AiMessage {
+  id             String        @id @default(uuid()) @db.Uuid
+  conversationId String        @db.Uuid
+  role           AiMessageRole
+  content        String
+  intent         Json?
+  createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+
+model AiUsage {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  provider     String
+  inputTokens  Int      @default(0)
+  outputTokens Int      @default(0)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("ai_usage")
+}

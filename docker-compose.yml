@@ -1,0 +1,79 @@
+# Local full stack: PostgreSQL + PostGIS, Redis, API and website.
+#   docker compose up --build             # start everything
+#   docker compose run --rm seed          # load categories, gazetteer and demo data (once)
+# For day-to-day development you can run only the databases: docker compose up -d postgres redis
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: desiconnect
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d desiconnect"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: { context: ., dockerfile: infrastructure/docker/api.Dockerfile }
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/desiconnect?schema=public
+      REDIS_URL: redis://redis:6379
+      API_PORT: "4000"
+      CORS_ORIGINS: http://localhost:3000
+      AUTH_MODE: local
+      JWT_SECRET: ${JWT_SECRET:-local-docker-secret-change-me-0123456789abcdef}
+      BOOTSTRAP_ADMIN_EMAILS: ${BOOTSTRAP_ADMIN_EMAILS:-admin@desiconnect.example}
+      STORAGE_DRIVER: local
+      STORAGE_LOCAL_DIR: /app/storage
+      AI_PROVIDER: ${AI_PROVIDER:-none}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports: ["4000:4000"]
+    volumes: [uploads:/app/storage]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build: { context: ., dockerfile: infrastructure/docker/web.Dockerfile }
+    depends_on:
+      api: { condition: service_healthy }
+    environment:
+      API_URL: http://api:4000/api/v1
+      SESSION_COOKIE_SECURE: "false"
+    ports: ["3000:3000"]
+
+  # One-off: docker compose run --rm seed
+  seed:
+    profiles: [tools]
+    image: node:22-bookworm-slim
+    working_dir: /repo
+    volumes: [.:/repo]
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/desiconnect?schema=public
+      SEED_DEMO: "true"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm db:migrate && pnpm db:seed"
+
+volumes:
+  pgdata:
+  uploads:

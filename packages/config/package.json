@@ -1,0 +1,20 @@
+{
+  "name": "@desiconnect/config",
+  "version": "0.1.0",
+  "private": true,
+  "files": ["tsconfig", "eslint"],
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/node.json": "./tsconfig/node.json",
+    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
+    "./eslint": "./eslint/index.mjs"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.0",
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.46.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.39.0"
+  }
+}

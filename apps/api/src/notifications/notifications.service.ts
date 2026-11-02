@@ -1,0 +1,63 @@
+import { InjectQueue } from "@nestjs/bullmq";
+import { Inject, Injectable, Logger, Optional } from "@nestjs/common";
+import type { Queue } from "bullmq";
+import { APP_CONFIG, type AppConfig } from "../config/config.module";
+import { PrismaService } from "../common/prisma.service";
+
+export const NOTIFICATIONS_QUEUE = "notifications";
+
+export interface NotificationJob {
+  userId: string;
+  eventType:
+    | "inquiry.created"
+    | "inquiry.responded"
+    | "application.submitted"
+    | "application.status_changed"
+    | "event.registered"
+    | "listing.approved"
+    | "listing.rejected"
+    | "provider.verified"
+    | "provider.rejected";
+  title: string;
+  body: string;
+  payload?: Record<string, string>;
+}
+
+/**
+ * Queues notifications through BullMQ (Redis). The worker stores an in-app notification and
+ * hands email delivery to the configured transport. With NOTIFICATIONS_INLINE=true (tests,
+ * no Redis) the job is processed synchronously.
+ */
+@Injectable()
+export class NotificationsService {
+  private readonly logger = new Logger(NotificationsService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
+    @Optional() @InjectQueue(NOTIFICATIONS_QUEUE) private readonly queue?: Queue<NotificationJob>,
+  ) {}
+
+  async notify(job: NotificationJob): Promise<void> {
+    if (this.queue && !this.config.NOTIFICATIONS_INLINE) {
+      try {
+        await this.queue.add(job.eventType, job, { attempts: 5, backoff: { type: "exponential", delay: 2000 }, removeOnComplete: 1000 });
+        return;
+      } catch (err) {
+        this.logger.warn({ err }, "Queue unavailable, delivering notification inline");
+      }
+    }
+    await this.deliver(job);
+  }
+
+  /** Called by the worker (or inline). */
+  async deliver(job: NotificationJob): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { id: job.userId }, select: { email: true } });
+    if (!user) return;
+    await this.prisma.notification.create({
+      data: { userId: job.userId, channel: "IN_APP", eventType: job.eventType, title: job.title, body: job.body, payload: job.payload, status: "SENT", sentAt: new Date() },
+    });
+    // Email transport placeholder: logs instead of sending until an email provider is configured.
+    this.logger.log({ to: user.email, eventType: job.eventType }, `email: ${job.title}`);
+  }
+}

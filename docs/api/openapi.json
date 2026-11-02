@@ -1,0 +1,4793 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_live",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create an account (AUTH_MODE=local)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Sign in with email and password (AUTH_MODE=local)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/session": {
+      "post": {
+        "operationId": "AuthController_session",
+        "parameters": [
+          {
+            "name": "authorization",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Establish an authenticated session from a bearer token (creates the user on first OIDC sign-in)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "SearchController_searchAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE",
+                "EVENT",
+                "JOB",
+                "PROPERTY",
+                "RESOURCE"
+              ]
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{5}$"
+                }
+              ]
+            }
+          },
+          {
+            "name": "radiusMiles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Hindi",
+                "Telugu",
+                "Tamil",
+                "Kannada",
+                "Malayalam",
+                "Marathi",
+                "Gujarati",
+                "Punjabi",
+                "Bengali",
+                "Urdu",
+                "Odia",
+                "Nepali",
+                "Sinhala"
+              ]
+            }
+          },
+          {
+            "name": "verifiedOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "employmentType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP",
+                "TEMPORARY"
+              ]
+            }
+          },
+          {
+            "name": "workArrangement",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONSITE",
+                "HYBRID",
+                "REMOTE"
+              ]
+            }
+          },
+          {
+            "name": "transactionType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RENT",
+                "SALE",
+                "ROOMMATE"
+              ]
+            }
+          },
+          {
+            "name": "propertyType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APARTMENT",
+                "HOUSE",
+                "TOWNHOUSE",
+                "CONDO",
+                "ROOM",
+                "COMMERCIAL",
+                "LAND"
+              ]
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "minBeds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "distance",
+                "price_asc",
+                "price_desc",
+                "start_date"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Keyword and location search across all published listings",
+        "tags": [
+          "search"
+        ]
+      }
+    },
+    "/api/v1/listings": {
+      "get": {
+        "operationId": "SearchController_listings",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE",
+                "EVENT",
+                "JOB",
+                "PROPERTY",
+                "RESOURCE"
+              ]
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{5}$"
+                }
+              ]
+            }
+          },
+          {
+            "name": "radiusMiles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Hindi",
+                "Telugu",
+                "Tamil",
+                "Kannada",
+                "Malayalam",
+                "Marathi",
+                "Gujarati",
+                "Punjabi",
+                "Bengali",
+                "Urdu",
+                "Odia",
+                "Nepali",
+                "Sinhala"
+              ]
+            }
+          },
+          {
+            "name": "verifiedOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "employmentType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP",
+                "TEMPORARY"
+              ]
+            }
+          },
+          {
+            "name": "workArrangement",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONSITE",
+                "HYBRID",
+                "REMOTE"
+              ]
+            }
+          },
+          {
+            "name": "transactionType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RENT",
+                "SALE",
+                "ROOMMATE"
+              ]
+            }
+          },
+          {
+            "name": "propertyType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APARTMENT",
+                "HOUSE",
+                "TOWNHOUSE",
+                "CONDO",
+                "ROOM",
+                "COMMERCIAL",
+                "LAND"
+              ]
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "minBeds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "distance",
+                "price_asc",
+                "price_desc",
+                "start_date"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Filtered listing results (same filters as /search)",
+        "tags": [
+          "search"
+        ]
+      },
+      "post": {
+        "operationId": "ListingsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "categorySlug": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]{2,60}$"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 120
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 5000
+                  },
+                  "addressLine": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "zipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{5}$"
+                      }
+                    ]
+                  },
+                  "languages": {
+                    "default": [],
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "English",
+                        "Hindi",
+                        "Telugu",
+                        "Tamil",
+                        "Kannada",
+                        "Malayalam",
+                        "Marathi",
+                        "Gujarati",
+                        "Punjabi",
+                        "Bengali",
+                        "Urdu",
+                        "Odia",
+                        "Nepali",
+                        "Sinhala"
+                      ]
+                    }
+                  },
+                  "contactEmail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "email",
+                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                      }
+                    ]
+                  },
+                  "contactPhone": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                      }
+                    ]
+                  },
+                  "website": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    ]
+                  },
+                  "priceText": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "tags": {
+                    "default": [],
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 30
+                    }
+                  },
+                  "saveAsDraft": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "event": {
+                    "type": "object",
+                    "properties": {
+                      "startAt": {},
+                      "endAt": {},
+                      "venue": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 160
+                      },
+                      "capacity": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100000
+                      },
+                      "isFree": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "ticketUrl": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "startAt",
+                      "venue"
+                    ]
+                  },
+                  "job": {
+                    "type": "object",
+                    "properties": {
+                      "company": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 120
+                      },
+                      "employmentType": {
+                        "type": "string",
+                        "enum": [
+                          "FULL_TIME",
+                          "PART_TIME",
+                          "CONTRACT",
+                          "INTERNSHIP",
+                          "TEMPORARY"
+                        ]
+                      },
+                      "workArrangement": {
+                        "type": "string",
+                        "enum": [
+                          "ONSITE",
+                          "HYBRID",
+                          "REMOTE"
+                        ]
+                      },
+                      "salaryMin": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "salaryMax": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "salaryPeriod": {
+                        "type": "string",
+                        "enum": [
+                          "HOUR",
+                          "MONTH",
+                          "YEAR"
+                        ]
+                      },
+                      "skills": {
+                        "default": [],
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        }
+                      }
+                    },
+                    "required": [
+                      "company",
+                      "employmentType",
+                      "workArrangement"
+                    ]
+                  },
+                  "property": {
+                    "type": "object",
+                    "properties": {
+                      "transactionType": {
+                        "type": "string",
+                        "enum": [
+                          "RENT",
+                          "SALE",
+                          "ROOMMATE"
+                        ]
+                      },
+                      "propertyType": {
+                        "type": "string",
+                        "enum": [
+                          "APARTMENT",
+                          "HOUSE",
+                          "TOWNHOUSE",
+                          "CONDO",
+                          "ROOM",
+                          "COMMERCIAL",
+                          "LAND"
+                        ]
+                      },
+                      "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000
+                      },
+                      "beds": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 20
+                      },
+                      "baths": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 20
+                      },
+                      "sqft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000000
+                      },
+                      "availableFrom": {}
+                    },
+                    "required": [
+                      "transactionType",
+                      "propertyType",
+                      "price"
+                    ]
+                  }
+                },
+                "required": [
+                  "categorySlug",
+                  "title",
+                  "description",
+                  "city",
+                  "state"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a listing. It is saved as a draft or submitted for moderation.",
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "operationId": "SearchController_events",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE",
+                "EVENT",
+                "JOB",
+                "PROPERTY",
+                "RESOURCE"
+              ]
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{5}$"
+                }
+              ]
+            }
+          },
+          {
+            "name": "radiusMiles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Hindi",
+                "Telugu",
+                "Tamil",
+                "Kannada",
+                "Malayalam",
+                "Marathi",
+                "Gujarati",
+                "Punjabi",
+                "Bengali",
+                "Urdu",
+                "Odia",
+                "Nepali",
+                "Sinhala"
+              ]
+            }
+          },
+          {
+            "name": "verifiedOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "employmentType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP",
+                "TEMPORARY"
+              ]
+            }
+          },
+          {
+            "name": "workArrangement",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONSITE",
+                "HYBRID",
+                "REMOTE"
+              ]
+            }
+          },
+          {
+            "name": "transactionType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RENT",
+                "SALE",
+                "ROOMMATE"
+              ]
+            }
+          },
+          {
+            "name": "propertyType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APARTMENT",
+                "HOUSE",
+                "TOWNHOUSE",
+                "CONDO",
+                "ROOM",
+                "COMMERCIAL",
+                "LAND"
+              ]
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "minBeds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "distance",
+                "price_asc",
+                "price_desc",
+                "start_date"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Upcoming event discovery",
+        "tags": [
+          "search"
+        ]
+      }
+    },
+    "/api/v1/jobs": {
+      "get": {
+        "operationId": "SearchController_jobs",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE",
+                "EVENT",
+                "JOB",
+                "PROPERTY",
+                "RESOURCE"
+              ]
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{5}$"
+                }
+              ]
+            }
+          },
+          {
+            "name": "radiusMiles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Hindi",
+                "Telugu",
+                "Tamil",
+                "Kannada",
+                "Malayalam",
+                "Marathi",
+                "Gujarati",
+                "Punjabi",
+                "Bengali",
+                "Urdu",
+                "Odia",
+                "Nepali",
+                "Sinhala"
+              ]
+            }
+          },
+          {
+            "name": "verifiedOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "employmentType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP",
+                "TEMPORARY"
+              ]
+            }
+          },
+          {
+            "name": "workArrangement",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONSITE",
+                "HYBRID",
+                "REMOTE"
+              ]
+            }
+          },
+          {
+            "name": "transactionType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RENT",
+                "SALE",
+                "ROOMMATE"
+              ]
+            }
+          },
+          {
+            "name": "propertyType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APARTMENT",
+                "HOUSE",
+                "TOWNHOUSE",
+                "CONDO",
+                "ROOM",
+                "COMMERCIAL",
+                "LAND"
+              ]
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "minBeds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "distance",
+                "price_asc",
+                "price_desc",
+                "start_date"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Job search",
+        "tags": [
+          "search"
+        ]
+      }
+    },
+    "/api/v1/properties": {
+      "get": {
+        "operationId": "SearchController_properties",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE",
+                "EVENT",
+                "JOB",
+                "PROPERTY",
+                "RESOURCE"
+              ]
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{5}$"
+                }
+              ]
+            }
+          },
+          {
+            "name": "radiusMiles",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "English",
+                "Hindi",
+                "Telugu",
+                "Tamil",
+                "Kannada",
+                "Malayalam",
+                "Marathi",
+                "Gujarati",
+                "Punjabi",
+                "Bengali",
+                "Urdu",
+                "Odia",
+                "Nepali",
+                "Sinhala"
+              ]
+            }
+          },
+          {
+            "name": "verifiedOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1",
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "employmentType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP",
+                "TEMPORARY"
+              ]
+            }
+          },
+          {
+            "name": "workArrangement",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ONSITE",
+                "HYBRID",
+                "REMOTE"
+              ]
+            }
+          },
+          {
+            "name": "transactionType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RENT",
+                "SALE",
+                "ROOMMATE"
+              ]
+            }
+          },
+          {
+            "name": "propertyType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APARTMENT",
+                "HOUSE",
+                "TOWNHOUSE",
+                "CONDO",
+                "ROOM",
+                "COMMERCIAL",
+                "LAND"
+              ]
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "minBeds",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "newest",
+                "distance",
+                "price_asc",
+                "price_desc",
+                "start_date"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Property search (rentals, sales, roommates)",
+        "tags": [
+          "search"
+        ]
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "operationId": "CategoriesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "All active categories with subcategories and published listing counts",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/api/v1/categories/{slug}": {
+      "get": {
+        "operationId": "CategoriesController_get",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "A single category (top-level or subcategory)",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/api/v1/listings/{idOrSlug}": {
+      "get": {
+        "operationId": "ListingsController_get",
+        "parameters": [
+          {
+            "name": "idOrSlug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listing details (published listings; owners and admins also see drafts)",
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}": {
+      "patch": {
+        "operationId": "ListingsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 120
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 5000
+                  },
+                  "addressLine": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "zipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{5}$"
+                      }
+                    ]
+                  },
+                  "languages": {
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "English",
+                        "Hindi",
+                        "Telugu",
+                        "Tamil",
+                        "Kannada",
+                        "Malayalam",
+                        "Marathi",
+                        "Gujarati",
+                        "Punjabi",
+                        "Bengali",
+                        "Urdu",
+                        "Odia",
+                        "Nepali",
+                        "Sinhala"
+                      ]
+                    }
+                  },
+                  "contactEmail": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "email",
+                        "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                      }
+                    ]
+                  },
+                  "contactPhone": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                      }
+                    ]
+                  },
+                  "website": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    ]
+                  },
+                  "priceText": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "tags": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 30
+                    }
+                  },
+                  "event": {
+                    "type": "object",
+                    "properties": {
+                      "startAt": {},
+                      "endAt": {},
+                      "venue": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 160
+                      },
+                      "capacity": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100000
+                      },
+                      "isFree": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "ticketUrl": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "startAt",
+                      "venue"
+                    ]
+                  },
+                  "job": {
+                    "type": "object",
+                    "properties": {
+                      "company": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 120
+                      },
+                      "employmentType": {
+                        "type": "string",
+                        "enum": [
+                          "FULL_TIME",
+                          "PART_TIME",
+                          "CONTRACT",
+                          "INTERNSHIP",
+                          "TEMPORARY"
+                        ]
+                      },
+                      "workArrangement": {
+                        "type": "string",
+                        "enum": [
+                          "ONSITE",
+                          "HYBRID",
+                          "REMOTE"
+                        ]
+                      },
+                      "salaryMin": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "salaryMax": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "salaryPeriod": {
+                        "type": "string",
+                        "enum": [
+                          "HOUR",
+                          "MONTH",
+                          "YEAR"
+                        ]
+                      },
+                      "skills": {
+                        "default": [],
+                        "maxItems": 20,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 40
+                        }
+                      }
+                    },
+                    "required": [
+                      "company",
+                      "employmentType",
+                      "workArrangement"
+                    ]
+                  },
+                  "property": {
+                    "type": "object",
+                    "properties": {
+                      "transactionType": {
+                        "type": "string",
+                        "enum": [
+                          "RENT",
+                          "SALE",
+                          "ROOMMATE"
+                        ]
+                      },
+                      "propertyType": {
+                        "type": "string",
+                        "enum": [
+                          "APARTMENT",
+                          "HOUSE",
+                          "TOWNHOUSE",
+                          "CONDO",
+                          "ROOM",
+                          "COMMERCIAL",
+                          "LAND"
+                        ]
+                      },
+                      "price": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000
+                      },
+                      "beds": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 20
+                      },
+                      "baths": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 20
+                      },
+                      "sqft": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000000
+                      },
+                      "availableFrom": {}
+                    },
+                    "required": [
+                      "transactionType",
+                      "propertyType",
+                      "price"
+                    ]
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "submit",
+                      "archive"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an owned listing, submit it for review, or archive it",
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/reviews": {
+      "post": {
+        "operationId": "ListingsController_review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "rating",
+                  "body"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Leave a review (held for moderation)",
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/inquiries": {
+      "post": {
+        "operationId": "InquiriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "listingId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  },
+                  "phone": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                      }
+                    ]
+                  },
+                  "preferredContact": {
+                    "default": "EMAIL",
+                    "type": "string",
+                    "enum": [
+                      "EMAIL",
+                      "PHONE",
+                      "EITHER"
+                    ]
+                  },
+                  "consentToShare": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "listingId",
+                  "message",
+                  "consentToShare"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Request a service / contact a listing owner. Requires explicit consent to share contact details.",
+        "tags": [
+          "inquiries"
+        ]
+      }
+    },
+    "/api/v1/inquiries/{id}": {
+      "patch": {
+        "operationId": "InquiriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "VIEWED",
+                      "RESPONDED",
+                      "CLOSED",
+                      "SPAM"
+                    ]
+                  },
+                  "providerResponse": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listing owner responds / changes status; requester may close",
+        "tags": [
+          "inquiries"
+        ]
+      }
+    },
+    "/api/v1/provider/inquiries": {
+      "get": {
+        "operationId": "InquiriesController_received",
+        "parameters": [
+          {
+            "name": "listingId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inquiries received on listings I own (lead management)",
+        "tags": [
+          "inquiries"
+        ]
+      }
+    },
+    "/api/v1/events/{id}/registrations": {
+      "post": {
+        "operationId": "EventRegistrationsController_register",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "guests": {
+                    "default": 1,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register (RSVP) for an event; waitlisted when full",
+        "tags": [
+          "events"
+        ]
+      },
+      "delete": {
+        "operationId": "EventRegistrationsController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancel my registration",
+        "tags": [
+          "events"
+        ]
+      },
+      "get": {
+        "operationId": "EventRegistrationsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Attendee list (event organizer only)",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/v1/jobs/{id}/applications": {
+      "post": {
+        "operationId": "JobApplicationsController_apply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Apply to a job. Multipart form: resume (PDF/DOCX ≤ 5 MB), coverLetter, phone, consentToShare=true",
+        "tags": [
+          "jobs"
+        ]
+      },
+      "get": {
+        "operationId": "JobApplicationsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Applications for a job (employer only)",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/applications/{id}": {
+      "patch": {
+        "operationId": "JobApplicationsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "SUBMITTED",
+                      "REVIEWING",
+                      "INTERVIEW",
+                      "OFFERED",
+                      "REJECTED",
+                      "WITHDRAWN"
+                    ]
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Employer updates status; applicant may withdraw",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/applications/{id}/resume": {
+      "get": {
+        "operationId": "JobApplicationsController_resume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Download the resume (applicant, employer or admin; audited)",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/me/favorites/{listingId}": {
+      "post": {
+        "operationId": "FavoritesController_add",
+        "parameters": [
+          {
+            "name": "listingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save a listing",
+        "tags": [
+          "me"
+        ]
+      },
+      "delete": {
+        "operationId": "FavoritesController_remove",
+        "parameters": [
+          {
+            "name": "listingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a saved listing",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "MeController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Current user",
+        "tags": [
+          "me"
+        ]
+      },
+      "patch": {
+        "operationId": "MeController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "phone": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                      }
+                    ]
+                  },
+                  "city": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "zipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{5}$"
+                      }
+                    ]
+                  },
+                  "preferredLanguages": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "English",
+                        "Hindi",
+                        "Telugu",
+                        "Tamil",
+                        "Kannada",
+                        "Malayalam",
+                        "Marathi",
+                        "Gujarati",
+                        "Punjabi",
+                        "Bengali",
+                        "Urdu",
+                        "Odia",
+                        "Nepali",
+                        "Sinhala"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update my profile",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/inquiries": {
+      "get": {
+        "operationId": "MeController_inquiries",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Requests I have sent",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/applications": {
+      "get": {
+        "operationId": "MeController_applications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Jobs I have applied to",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/registrations": {
+      "get": {
+        "operationId": "MeController_registrations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Events I have registered for",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/listings": {
+      "get": {
+        "operationId": "MeController_myListings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listings I own, in every status",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/favorites": {
+      "get": {
+        "operationId": "MeController_favorites",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Saved listings",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/notifications": {
+      "get": {
+        "operationId": "MeController_notifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "In-app notifications (latest 50)",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/notifications/read-all": {
+      "post": {
+        "operationId": "MeController_readAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/ai-history": {
+      "delete": {
+        "operationId": "MeController_deleteAiHistory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete all of my Desi AI conversation history",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/providers": {
+      "post": {
+        "operationId": "ProvidersController_onboard",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "businessName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 3000
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                  },
+                  "website": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    ]
+                  },
+                  "categorySlugs": {
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9-]{2,60}$"
+                    }
+                  },
+                  "languages": {
+                    "minItems": 1,
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "English",
+                        "Hindi",
+                        "Telugu",
+                        "Tamil",
+                        "Kannada",
+                        "Malayalam",
+                        "Marathi",
+                        "Gujarati",
+                        "Punjabi",
+                        "Bengali",
+                        "Urdu",
+                        "Odia",
+                        "Nepali",
+                        "Sinhala"
+                      ]
+                    }
+                  },
+                  "addressLine": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "zipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{5}$"
+                      }
+                    ]
+                  },
+                  "serviceRadiusMiles": {
+                    "default": 25,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 500
+                  }
+                },
+                "required": [
+                  "businessName",
+                  "description",
+                  "email",
+                  "phone",
+                  "categorySlugs",
+                  "languages",
+                  "city",
+                  "state"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Provider onboarding: create my business profile (enters verification review)",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/v1/providers/me": {
+      "patch": {
+        "operationId": "ProvidersController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "businessName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 3000
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\+?[0-9 ()\\-.]{7,20}$"
+                  },
+                  "website": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    ]
+                  },
+                  "categorySlugs": {
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9-]{2,60}$"
+                    }
+                  },
+                  "languages": {
+                    "minItems": 1,
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "English",
+                        "Hindi",
+                        "Telugu",
+                        "Tamil",
+                        "Kannada",
+                        "Malayalam",
+                        "Marathi",
+                        "Gujarati",
+                        "Punjabi",
+                        "Bengali",
+                        "Urdu",
+                        "Odia",
+                        "Nepali",
+                        "Sinhala"
+                      ]
+                    }
+                  },
+                  "addressLine": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "zipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": ""
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{5}$"
+                      }
+                    ]
+                  },
+                  "serviceRadiusMiles": {
+                    "default": 25,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update my business profile",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/v1/providers/me/credentials": {
+      "post": {
+        "operationId": "ProvidersController_credential",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "BUSINESS_LICENSE",
+                      "INSURANCE_LICENSE",
+                      "BAR_ADMISSION",
+                      "MEDICAL_LICENSE",
+                      "CPA_LICENSE",
+                      "REAL_ESTATE_LICENSE",
+                      "CONTRACTOR_LICENSE",
+                      "OTHER"
+                    ]
+                  },
+                  "jurisdiction": {
+                    "type": "string",
+                    "enum": [
+                      "AL",
+                      "AK",
+                      "AZ",
+                      "AR",
+                      "CA",
+                      "CO",
+                      "CT",
+                      "DE",
+                      "DC",
+                      "FL",
+                      "GA",
+                      "HI",
+                      "ID",
+                      "IL",
+                      "IN",
+                      "IA",
+                      "KS",
+                      "KY",
+                      "LA",
+                      "ME",
+                      "MD",
+                      "MA",
+                      "MI",
+                      "MN",
+                      "MS",
+                      "MO",
+                      "MT",
+                      "NE",
+                      "NV",
+                      "NH",
+                      "NJ",
+                      "NM",
+                      "NY",
+                      "NC",
+                      "ND",
+                      "OH",
+                      "OK",
+                      "OR",
+                      "PA",
+                      "RI",
+                      "SC",
+                      "SD",
+                      "TN",
+                      "TX",
+                      "UT",
+                      "VT",
+                      "VA",
+                      "WA",
+                      "WV",
+                      "WI",
+                      "WY"
+                    ]
+                  },
+                  "licenseNumber": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 60
+                  },
+                  "issuingAuthority": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "expiresAt": {}
+                },
+                "required": [
+                  "type",
+                  "jurisdiction",
+                  "licenseNumber"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit a license or credential for verification",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/v1/provider/dashboard": {
+      "get": {
+        "operationId": "ProvidersController_dashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My listings, lead stats and business profile",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/v1/providers/{id}": {
+      "get": {
+        "operationId": "ProvidersController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Public provider profile with published listings",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/api/v1/admin/stats": {
+      "get": {
+        "operationId": "AdminController_stats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Platform and pilot readiness counters",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/review-queue": {
+      "get": {
+        "operationId": "AdminController_queue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pending listings, providers, credentials and reviews",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/listings/{id}/approve": {
+      "post": {
+        "operationId": "AdminController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Publish an approved listing",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/listings/{id}/reject": {
+      "post": {
+        "operationId": "AdminController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reject a listing with a reason shown to the owner",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/providers/{id}/decision": {
+      "post": {
+        "operationId": "AdminController_provider",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify or reject a provider profile",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/credentials/{id}/decision": {
+      "post": {
+        "operationId": "AdminController_credential",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a submitted credential as verified or rejected (after checking the issuing authority)",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/reviews/{id}/decision": {
+      "post": {
+        "operationId": "AdminController_review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or reject a review",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/reports": {
+      "get": {
+        "operationId": "AdminController_reports",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User reports (default: open)",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/reports/{id}/resolve": {
+      "post": {
+        "operationId": "AdminController_resolve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "RESOLVED",
+                      "DISMISSED"
+                    ]
+                  },
+                  "resolutionNote": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "archiveTarget": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "AdminController_users",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/suspend": {
+      "post": {
+        "operationId": "AdminController_suspend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "suspended": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "suspended"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Suspend or reinstate an account",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminController_auditLogs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/markets": {
+      "get": {
+        "operationId": "AdminController_markets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/markets/{slug}": {
+      "patch": {
+        "operationId": "AdminController_market",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "isActive": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "isActive"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/reports": {
+      "post": {
+        "operationId": "ReportsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "targetType": {
+                    "type": "string",
+                    "enum": [
+                      "LISTING",
+                      "PROVIDER",
+                      "REVIEW"
+                    ]
+                  },
+                  "targetId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "SPAM",
+                      "FRAUD",
+                      "INAPPROPRIATE",
+                      "MISLEADING",
+                      "DUPLICATE",
+                      "OTHER"
+                    ]
+                  },
+                  "details": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "targetType",
+                  "targetId",
+                  "reason"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report a listing, provider or review",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/ai/chat": {
+      "post": {
+        "operationId": "AiController_chat",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "conversationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "location": {
+                    "type": "object",
+                    "properties": {
+                      "city": {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "AL",
+                          "AK",
+                          "AZ",
+                          "AR",
+                          "CA",
+                          "CO",
+                          "CT",
+                          "DE",
+                          "DC",
+                          "FL",
+                          "GA",
+                          "HI",
+                          "ID",
+                          "IL",
+                          "IN",
+                          "IA",
+                          "KS",
+                          "KY",
+                          "LA",
+                          "ME",
+                          "MD",
+                          "MA",
+                          "MI",
+                          "MN",
+                          "MS",
+                          "MO",
+                          "MT",
+                          "NE",
+                          "NV",
+                          "NH",
+                          "NJ",
+                          "NM",
+                          "NY",
+                          "NC",
+                          "ND",
+                          "OH",
+                          "OK",
+                          "OR",
+                          "PA",
+                          "RI",
+                          "SC",
+                          "SD",
+                          "TN",
+                          "TX",
+                          "UT",
+                          "VT",
+                          "VA",
+                          "WA",
+                          "WV",
+                          "WI",
+                          "WY"
+                        ]
+                      },
+                      "zip": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^\\d{5}$"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "message"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Desi AI: natural-language search. Returns structured results from the database only; never sends inquiries on the user's behalf.",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/ai/interpret": {
+      "get": {
+        "operationId": "AiController_interpret",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "DC",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY"
+              ]
+            }
+          },
+          {
+            "name": "zip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{5}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Convert free-text search into structured search filters (rule-based, no history kept)",
+        "tags": [
+          "ai"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "DesiConnect USA API",
+    "description": "REST API for the DesiConnect USA marketplace. All responses use the envelope `{ data, meta?, traceId }`; errors use `{ error: { code, message, details? }, traceId }`.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {}
+  }
+}
