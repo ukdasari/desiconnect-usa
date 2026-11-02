@@ -237,6 +237,7 @@ model User {
   aiConversations     AiConversation[]
   aiUsage             AiUsage[]
   reviewedCredentials ProviderCredential[] @relation("CredentialReviewer")
+  devices             DeviceToken[]
 
   @@map("users")
 }
@@ -669,6 +670,21 @@ model Notification {
 
   @@index([userId, status])
   @@map("notifications")
+}
+
+/// Expo push token for a signed-in mobile device.
+model DeviceToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  token      String   @unique
+  platform   String
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  lastSeenAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("device_tokens")
 }
 
 // ---------------------------------------------------------------- trust & safety

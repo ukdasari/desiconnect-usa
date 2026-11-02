@@ -344,3 +344,21 @@ describe("Desi AI", () => {
     expect(del.body.data.deletedConversations).toBeGreaterThan(0);
   });
 });
+
+describe("push devices", () => {
+  it("registers Expo push tokens, moves them between accounts and removes them", async () => {
+    const a = await registerUser(ctx, "Phone Owner");
+    const b = await registerUser(ctx, "Second Owner");
+    const token = `ExponentPushToken[${Date.now()}abcdefghij]`;
+    await ctx.http.post(`${V}/me/devices`).set(auth(a.token)).send({ token: "not-a-token", platform: "ios" }).expect(400);
+    await ctx.http.post(`${V}/me/devices`).set(auth(a.token)).send({ token, platform: "ios" }).expect(200);
+    await ctx.http.post(`${V}/me/devices`).set(auth(b.token)).send({ token, platform: "android" }).expect(200);
+    const row = await ctx.prisma.deviceToken.findUniqueOrThrow({ where: { token } });
+    expect(row).toMatchObject({ userId: b.id, platform: "android" });
+    // The previous owner can't remove a token that is no longer theirs.
+    const none = await ctx.http.delete(`${V}/me/devices/${encodeURIComponent(token)}`).set(auth(a.token)).expect(200);
+    expect(none.body.data.removed).toBe(0);
+    const removed = await ctx.http.delete(`${V}/me/devices/${encodeURIComponent(token)}`).set(auth(b.token)).expect(200);
+    expect(removed.body.data.removed).toBe(1);
+  });
+});

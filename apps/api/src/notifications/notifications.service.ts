@@ -59,5 +59,36 @@ export class NotificationsService {
     });
     // Email transport placeholder: logs instead of sending until an email provider is configured.
     this.logger.log({ to: user.email, eventType: job.eventType }, `email: ${job.title}`);
+    await this.sendPush(job);
+  }
+
+  /** Mobile push through Expo's push service. Invalid tokens are removed. */
+  private async sendPush(job: NotificationJob): Promise<void> {
+    if (this.config.PUSH_PROVIDER !== "expo") return;
+    const devices = await this.prisma.deviceToken.findMany({ where: { userId: job.userId } });
+    if (!devices.length) return;
+    const messages = devices.map((d) => ({
+      to: d.token,
+      title: job.title,
+      body: job.body,
+      sound: "default",
+      data: { eventType: job.eventType, ...(job.payload ?? {}) },
+    }));
+    const res = await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        ...(this.config.EXPO_ACCESS_TOKEN ? { authorization: `Bearer ${this.config.EXPO_ACCESS_TOKEN}` } : {}),
+      },
+      body: JSON.stringify(messages),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) throw new Error(`Expo push failed (${res.status})`); // BullMQ retries
+    const body = (await res.json()) as { data?: { status: string; details?: { error?: string } }[] };
+    const dead = (body.data ?? [])
+      .map((ticket, i) => (ticket.status === "error" && ticket.details?.error === "DeviceNotRegistered" ? devices[i]?.token : null))
+      .filter((t): t is string => !!t);
+    if (dead.length) await this.prisma.deviceToken.deleteMany({ where: { token: { in: dead } } });
   }
 }

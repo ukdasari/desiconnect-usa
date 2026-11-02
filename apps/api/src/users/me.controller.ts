@@ -1,6 +1,6 @@
-import { Controller, Delete, Get, HttpCode, Patch, Post } from "@nestjs/common";
+import { Controller, Delete, Get, HttpCode, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { updateProfileSchema, type UpdateProfileInput } from "@desiconnect/contracts";
+import { registerDeviceSchema, updateProfileSchema, type UpdateProfileInput } from "@desiconnect/contracts";
 import type { z } from "zod";
 import { AuditService } from "../audit/audit.service";
 import { AuthService } from "../auth/auth.service";
@@ -88,6 +88,27 @@ export class MeController {
   async readAll(@CurrentUser() user: AuthUser) {
     const { count } = await this.prisma.notification.updateMany({ where: { userId: user.id, readAt: null }, data: { readAt: new Date(), status: "READ" } });
     return { updated: count };
+  }
+
+  @Post("devices")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Register this device's Expo push token" })
+  @ApiZodBody(registerDeviceSchema)
+  async registerDevice(@CurrentUser() user: AuthUser, @ZodBody(registerDeviceSchema) body: z.infer<typeof registerDeviceSchema>) {
+    // A token belongs to one device; if another account used it before, move it to this user.
+    await this.prisma.deviceToken.upsert({
+      where: { token: body.token },
+      update: { userId: user.id, platform: body.platform, lastSeenAt: new Date() },
+      create: { userId: user.id, token: body.token, platform: body.platform },
+    });
+    return { registered: true };
+  }
+
+  @Delete("devices/:token")
+  @ApiOperation({ summary: "Unregister a push token (on sign-out)" })
+  async removeDevice(@CurrentUser() user: AuthUser, @Param("token") token: string) {
+    const { count } = await this.prisma.deviceToken.deleteMany({ where: { token, userId: user.id } });
+    return { removed: count };
   }
 
   @Delete("ai-history")

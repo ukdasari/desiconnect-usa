@@ -318,6 +318,15 @@ export const paginationSchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
 
+// ---------- devices (push notifications) ----------
+
+export const registerDeviceSchema = z.object({
+  /** Expo push token, e.g. ExponentPushToken[xxxx]. */
+  token: z.string().trim().regex(/^Expo(nent)?PushToken\[[^\]]{10,200}\]$/, "Not an Expo push token"),
+  platform: z.enum(["ios", "android", "web"]),
+});
+export type RegisterDeviceInput = z.input<typeof registerDeviceSchema>;
+
 // ---------- AI ----------
 
 export const aiChatSchema = z.object({

@@ -42,11 +42,27 @@ shadcn registry wasn't reachable from the build environment.
 Responsive (tested at 390 px and 1360 px), light/dark mode, keyboard focus styles, reduced-motion support, loading, empty
 and error states, real API integration (no hardcoded screens), Playwright tests for the main journeys.
 
+## Mobile app (Prompt 3) ✅
+
+| Blueprint item | Status |
+|---|---|
+| Onboarding, location permission (coarse only, with ZIP/city fallback) | Done |
+| Home, Explore + filters, Desi AI, Saved, Profile tabs | Done |
+| Listing detail: apply with résumé, RSVP with party size, requests with explicit consent, report, share | Done |
+| Sign-in: local password or OIDC (PKCE, Keychain/Keystore storage, silent refresh, provider logout) | Done |
+| My requests / applications / RSVPs, notifications inbox, profile edit, emergency resources | Done |
+| Provider tools: dashboard, onboarding, new listing, lead inbox with reply, applications and RSVPs | Done |
+| Push notifications (Expo push service, `POST/DELETE /me/devices`, dead tokens pruned) | Done — needs a device + EAS project |
+| Light/dark mode, accessibility labels and roles, large touch targets | Done |
+| Tests (jest-expo: API client, auth provider, helpers, components) | Done |
+| Store release checklist | Done — [mobile-release.md](../deployment/mobile-release.md). Not submitted. |
+
+Verified: iOS, Android and web bundles export cleanly; the web preview was driven end to end with Playwright
+(onboarding → explore → listing → sign-in → request with consent → my requests; provider listing creation in dark mode).
+Not verified here: running on a physical phone or simulator, push delivery, store builds.
+
 ## Partly done (from later prompts)
 
-- **Prompt 3 (mobile):** Expo shell with the five tabs, live categories, search, AI chat and listing detail. Missing:
-  sign-in with secure token storage, RSVP/apply/inquiry flows, saved listings, provider tools, push notifications,
-  onboarding/location permission, store release checklist.
 - **Prompt 4 (Desi AI):** intent + location + language + price extraction, database retrieval, structured result cards,
   safety routing, regulated disclaimers, history with deletion, daily quotas, token tracking, prompt-injection boundary,
   30+ automated query tests. Missing: Telugu and Hindi replies, multi-turn context (follow-ups don't reuse prior filters).

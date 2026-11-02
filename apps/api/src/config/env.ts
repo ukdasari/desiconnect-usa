@@ -42,6 +42,9 @@ export const envSchema = z
     ANTHROPIC_MODEL: z.string().default("claude-haiku-4-5"),
     AI_DAILY_REQUEST_LIMIT: z.coerce.number().int().min(1).default(50),
 
+    /** "expo" sends mobile push notifications through Expo's push service; "none" stores in-app notifications only. */
+    PUSH_PROVIDER: z.enum(["none", "expo"]).default("none"),
+    EXPO_ACCESS_TOKEN: z.string().optional().default(""),
     /** Process notifications synchronously instead of via BullMQ (tests, or when Redis is absent). */
     NOTIFICATIONS_INLINE: bool,
     /** Disable rate limiting (automated tests only). */

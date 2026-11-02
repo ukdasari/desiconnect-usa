@@ -7,7 +7,7 @@ Dallas–Fort Worth.
 | | |
 |---|---|
 | **Website** | Next.js 16 (App Router), TypeScript, Tailwind CSS 4, shadcn-style components |
-| **Mobile** | Expo SDK 58, React Native 0.88, Expo Router (shell: Home, Explore, Desi AI, Saved, Profile) |
+| **Mobile** | Expo SDK 58, React Native 0.88, Expo Router — iOS and Android app (with a web preview) using the same API and contracts |
 | **API** | NestJS 11 modular monolith, REST `/api/v1`, OpenAPI at `/api/docs` |
 | **Data** | PostgreSQL 16 + PostGIS, Prisma 6, full-text search (generated `tsvector`) |
 | **Jobs** | Redis + BullMQ (notifications) |
@@ -19,7 +19,7 @@ Dallas–Fort Worth.
 apps/
   api/        NestJS API: auth, RBAC, listings, search, inquiries, events, jobs, providers, admin, AI
   web/        Next.js website (all MVP pages, provider portal, admin moderation)
-  mobile/     Expo app shell using the same API and contracts
+  mobile/     Expo iOS/Android app using the same API and contracts
 packages/
   contracts/  Shared enums, the 15-category taxonomy, Zod validation schemas, API response types
   database/   Prisma schema, SQL migrations, seed script (categories, gazetteer, demo data)
@@ -76,20 +76,25 @@ docker compose run --rm seed         # one-off: categories, gazetteer and demo d
 ### Mobile app
 
 ```bash
-cd apps/mobile
-echo "EXPO_PUBLIC_API_URL=http://<your-LAN-IP>:4000/api/v1" > .env   # phones/emulators can't reach "localhost"
-pnpm start          # then press i (iOS Simulator), a (Android Emulator), or scan the QR code with Expo Go
+cp apps/mobile/.env.example apps/mobile/.env   # set EXPO_PUBLIC_API_URL to http://<your-LAN-IP>:4000/api/v1
+pnpm --filter @desiconnect/mobile start         # i = iOS Simulator, a = Android Emulator, or scan the QR code
+pnpm --filter @desiconnect/mobile web           # browser preview (add http://localhost:8081 to CORS_ORIGINS)
 ```
 
-Native apps don't need a `CORS_ORIGINS` entry (CORS only applies to browsers). EAS build profiles are in `apps/mobile/eas.json` (`eas build --profile preview`). The app has **not** been published to
-any store.
+What's in it: onboarding and location (coarse device location, ZIP or city — never precise or background), Home,
+Explore with filters, Desi AI, Saved, Profile, listing detail with apply (résumé upload), RSVP and requests (explicit
+consent before contact details are shared), reports, notifications, emergency resources, and provider tools (dashboard,
+onboarding, new listing, lead inbox, applications and RSVPs). Sign-in follows the API: email + password in `local`
+mode, or the OIDC provider (PKCE, tokens in the Keychain/Keystore) in `oidc` mode. Push needs a physical device and an
+EAS project — see [docs/deployment/mobile-release.md](docs/deployment/mobile-release.md). The app has **not** been
+published to any store.
 
 ## Quality commands
 
 ```bash
 pnpm lint          # ESLint across all workspaces
 pnpm typecheck     # TypeScript across all workspaces (including mobile)
-pnpm test          # contracts (Vitest) + API unit and integration tests (Jest + Supertest)
+pnpm test          # contracts (Vitest), API unit + integration (Jest + Supertest), mobile (jest-expo)
 pnpm test:e2e      # Playwright; needs API on :4000 and web on :3000 with seeded data
 E2E_AUTH_MODE=oidc pnpm test:e2e   # OIDC journeys (stack in OIDC mode + pnpm oidc:dev)
 ```
