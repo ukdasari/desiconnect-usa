@@ -21,7 +21,8 @@ export async function setSession(token: string, expiresAt: string) {
 }
 
 export async function clearSession() {
-  (await cookies()).delete(SESSION_COOKIE);
+  const jar = await cookies();
+  for (const name of [SESSION_COOKIE, "dc_refresh", "dc_exp", "dc_idt", "dc_oidc"]) jar.delete(name);
 }
 
 /** Current user for this request (deduplicated across components), or null when signed out. */

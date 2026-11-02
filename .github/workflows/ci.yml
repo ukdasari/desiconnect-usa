@@ -57,6 +57,21 @@ jobs:
           E2E_START_SERVERS: "1"
           DISABLE_RATE_LIMIT: "true"
         run: pnpm test:e2e
+      - name: End-to-end tests in OIDC mode (local dev provider)
+        env:
+          E2E_START_SERVERS: "1"
+          E2E_AUTH_MODE: oidc
+          DISABLE_RATE_LIMIT: "true"
+          AUTH_MODE: oidc
+          OIDC_ISSUER: http://localhost:4400
+          OIDC_AUDIENCE: https://api.desiconnect.local
+          OIDC_CLIENT_IDS: desiconnect-web,desiconnect-mobile
+          OIDC_CLIENT_ID: desiconnect-web
+          OIDC_SCOPES: openid profile email offline_access api
+          OIDC_ALLOW_INSECURE: "true"
+          OIDC_DEV_ACCESS_TTL: "65"
+          APP_URL: http://localhost:3000
+        run: pnpm test:e2e --project=desktop specs/oidc.spec.ts
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

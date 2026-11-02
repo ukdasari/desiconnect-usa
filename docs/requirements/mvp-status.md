@@ -55,10 +55,16 @@ and error states, real API integration (no hardcoded screens), Playwright tests 
   Missing: verification document upload, provider analytics beyond counts, category/market management UI, the DFW launch
   readiness dashboard, demo/live data separation tooling beyond the `isDemo` flag, Sentry, an accessibility audit.
 
+## Authentication ✅
+
+OIDC sign-in (required in production) with provider-neutral configuration, PKCE, silent refresh, provider logout,
+verified-email enforcement and safe account linking; a local dev provider (`pnpm oidc:dev`); 9 API and 5 browser tests.
+Local email/password remains for development and the demo accounts.
+
 ## Known limitations
 
 - Geography uses an offline gazetteer (DFW + ~60 metros). Other US cities work as text filters without radius search.
-- Email delivery is logged, not sent; no email verification or password reset in local auth.
+- Email delivery is logged, not sent. (Sign-in emails such as verification and password reset come from the OIDC provider.)
 - Event times are entered in Central time (DFW pilot); multi-timezone entry is needed before expanding.
 - Next.js streams pages, so a non-admin opening `/admin` sees the not-found page but receives HTTP 200; the API returns 403
   for all admin data.

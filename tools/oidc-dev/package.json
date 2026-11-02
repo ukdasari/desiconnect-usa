@@ -1,0 +1,13 @@
+{
+  "name": "@desiconnect/oidc-dev",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local OpenID Connect provider for development and end-to-end tests. Never deploy.",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "oidc-provider": "^9.13.3"
+  }
+}

@@ -19,7 +19,8 @@
     "db:migrate:dev": "pnpm --filter @desiconnect/database migrate:dev",
     "db:seed": "pnpm --filter @desiconnect/database seed",
     "db:reset": "pnpm --filter @desiconnect/database reset",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\" --ignore-path .gitignore"
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css}\" --ignore-path .gitignore",
+    "oidc:dev": "pnpm --filter @desiconnect/oidc-dev start"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

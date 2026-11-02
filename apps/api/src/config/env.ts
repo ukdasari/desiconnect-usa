@@ -19,7 +19,14 @@ export const envSchema = z
     JWT_SECRET: z.string().optional().default(""),
     JWT_TTL_SECONDS: z.coerce.number().int().min(300).default(604800),
     OIDC_ISSUER: z.string().optional().default(""),
+    /** Expected `aud` of access tokens sent to the API. Leave empty only if your provider omits it. */
     OIDC_AUDIENCE: z.string().optional().default(""),
+    /** Comma-separated client IDs (web, mobile) whose ID tokens may be exchanged at POST /auth/session. */
+    OIDC_CLIENT_IDS: z.string().optional().default(""),
+    /** Reject identities whose provider says the email is unverified (default true). */
+    OIDC_REQUIRE_VERIFIED_EMAIL: z.enum(["true", "false"]).optional().default("true").transform((v) => v === "true"),
+    /** Explicit opt-in to keep email/password auth in production (not recommended). */
+    ALLOW_LOCAL_AUTH_IN_PRODUCTION: bool,
     BOOTSTRAP_ADMIN_EMAILS: z.string().optional().default(""),
 
     STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
@@ -46,6 +53,19 @@ export const envSchema = z
     }
     if (env.AUTH_MODE === "oidc" && !env.OIDC_ISSUER) {
       ctx.addIssue({ code: "custom", path: ["OIDC_ISSUER"], message: "OIDC_ISSUER is required when AUTH_MODE=oidc" });
+    }
+    if (env.AUTH_MODE === "oidc" && !env.OIDC_CLIENT_IDS) {
+      ctx.addIssue({ code: "custom", path: ["OIDC_CLIENT_IDS"], message: "OIDC_CLIENT_IDS is required when AUTH_MODE=oidc" });
+    }
+    if (env.AUTH_MODE === "oidc" && env.NODE_ENV === "production" && !env.OIDC_ISSUER.startsWith("https://")) {
+      ctx.addIssue({ code: "custom", path: ["OIDC_ISSUER"], message: "OIDC_ISSUER must use https in production" });
+    }
+    if (env.AUTH_MODE === "local" && env.NODE_ENV === "production" && !env.ALLOW_LOCAL_AUTH_IN_PRODUCTION) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["AUTH_MODE"],
+        message: "Production must use AUTH_MODE=oidc (local email/password has no verification or reset). Set ALLOW_LOCAL_AUTH_IN_PRODUCTION=true to override.",
+      });
     }
     if (env.STORAGE_DRIVER === "s3" && !env.S3_BUCKET) {
       ctx.addIssue({ code: "custom", path: ["S3_BUCKET"], message: "S3_BUCKET is required when STORAGE_DRIVER=s3" });

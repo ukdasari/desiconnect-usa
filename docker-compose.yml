@@ -37,7 +37,13 @@ services:
       REDIS_URL: redis://redis:6379
       API_PORT: "4000"
       CORS_ORIGINS: http://localhost:3000
-      AUTH_MODE: local
+      # Local demo stack: email/password with demo accounts. Real deployments use AUTH_MODE=oidc
+      # (see docs/security/authentication.md); the API refuses local auth in production without this opt-in.
+      AUTH_MODE: ${AUTH_MODE:-local}
+      ALLOW_LOCAL_AUTH_IN_PRODUCTION: "true"
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
+      OIDC_CLIENT_IDS: ${OIDC_CLIENT_IDS:-}
       JWT_SECRET: ${JWT_SECRET:-local-docker-secret-change-me-0123456789abcdef}
       BOOTSTRAP_ADMIN_EMAILS: ${BOOTSTRAP_ADMIN_EMAILS:-admin@desiconnect.example}
       STORAGE_DRIVER: local
@@ -59,7 +65,25 @@ services:
     environment:
       API_URL: http://api:4000/api/v1
       SESSION_COOKIE_SECURE: "false"
+      AUTH_MODE: ${AUTH_MODE:-local}
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      APP_URL: ${APP_URL:-http://localhost:3000}
     ports: ["3000:3000"]
+
+  # Local OpenID Connect provider for trying AUTH_MODE=oidc without a cloud account:
+  #   docker compose --profile oidc up oidc-dev
+  oidc-dev:
+    profiles: [oidc]
+    image: node:22-bookworm-slim
+    working_dir: /repo/tools/oidc-dev
+    volumes: [.:/repo]
+    environment:
+      APP_URL: http://localhost:3000
+    ports: ["4400:4400"]
+    command: sh -c "corepack enable && cd /repo && pnpm install --filter @desiconnect/oidc-dev && node tools/oidc-dev/server.mjs"
 
   # One-off: docker compose run --rm seed
   seed:

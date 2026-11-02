@@ -26,6 +26,9 @@ export default defineConfig({
   ],
   webServer: process.env.E2E_START_SERVERS
     ? [
+        ...(process.env.E2E_AUTH_MODE === "oidc"
+          ? [{ command: "node ../../tools/oidc-dev/server.mjs", url: "http://localhost:4400/.well-known/openid-configuration", reuseExistingServer: true, timeout: 30_000 }]
+          : []),
         { command: "node ../../apps/api/dist/main.js", url: "http://localhost:4000/api/v1/health", reuseExistingServer: true, timeout: 60_000 },
         { command: "node ../../node_modules/next/dist/bin/next start ../../apps/web --port 3000", url: baseURL, reuseExistingServer: true, timeout: 90_000 },
       ]

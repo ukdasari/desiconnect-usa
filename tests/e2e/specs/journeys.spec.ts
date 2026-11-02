@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { openFirstResult, registerNewUser, signIn } from "./helpers";
 
+// These journeys use the local email/password demo accounts.
+test.skip(process.env.E2E_AUTH_MODE === "oidc", "Local-auth journeys; OIDC journeys live in oidc.spec.ts");
+
 test.describe("discovery", () => {
   test("homepage sentence search turns plain language into filtered results", async ({ page }) => {
     await page.goto("/");

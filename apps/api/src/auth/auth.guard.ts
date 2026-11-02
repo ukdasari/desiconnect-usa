@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     if (token) {
       const user = await this.auth.authenticate(token);
       if (user) req.user = user;
-      else if (!isPublic) throw unauthenticated("Your session has expired. Please sign in again.");
+      else if (!isPublic) throw unauthenticated("Your session has expired or the account isn't set up. Please sign in again.");
     }
 
     if (isPublic) return true;

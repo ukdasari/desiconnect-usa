@@ -91,6 +91,7 @@ pnpm lint          # ESLint across all workspaces
 pnpm typecheck     # TypeScript across all workspaces (including mobile)
 pnpm test          # contracts (Vitest) + API unit and integration tests (Jest + Supertest)
 pnpm test:e2e      # Playwright; needs API on :4000 and web on :3000 with seeded data
+E2E_AUTH_MODE=oidc pnpm test:e2e   # OIDC journeys (stack in OIDC mode + pnpm oidc:dev)
 ```
 
 API integration tests create and reset a separate database (`desiconnect_test` by default; override with
@@ -101,8 +102,10 @@ API integration tests create and reset a separate database (`desiconnect_test` b
 All variables are documented in [`.env.example`](.env.example) and validated at API startup (the API refuses to boot
 with invalid configuration). Key choices:
 
-- `AUTH_MODE=local` — the API issues HS256 JWTs (email + password, bcrypt). `AUTH_MODE=oidc` verifies tokens from any
-  OIDC provider (Auth0, Cognito, Entra ID, Clerk…) via JWKS; users are created on first sign-in via `POST /auth/session`.
+- `AUTH_MODE=oidc` (**required in production**) — sign-in through any OpenID Connect provider (Auth0, Cognito, Entra ID,
+  Okta…): code flow with PKCE, httpOnly cookies, silent token refresh, provider logout. `AUTH_MODE=local` (email +
+  password, demo accounts) is for development and tests. Setup guide: [docs/security/authentication.md](docs/security/authentication.md).
+  Try OIDC locally with `pnpm oidc:dev`.
 - `STORAGE_DRIVER=local|s3` — resumes and verification documents; S3-compatible buckets with server-side encryption.
 - `AI_PROVIDER=none|anthropic` — `none` uses the built-in rule-based intent parser. `anthropic` uses Claude only to
   extract search filters; results always come from the database.
@@ -110,6 +113,7 @@ with invalid configuration). Key choices:
 ## Documentation
 
 - [Architecture](docs/architecture/overview.md)
+- [Authentication (OIDC setup)](docs/security/authentication.md)
 - [Security and privacy](docs/security/security.md)
 - [Deployment and rollback](docs/deployment/deployment.md)
 - [MVP scope and status against the blueprint](docs/requirements/mvp-status.md)

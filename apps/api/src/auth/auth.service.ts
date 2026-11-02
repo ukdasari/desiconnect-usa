@@ -62,20 +62,78 @@ export class AuthService {
     return this.session(user);
   }
 
-  /** Exchanges an OIDC token for a platform user (creating it on first sign-in). */
-  async establishSession(token: string): Promise<MeDto> {
+  /**
+   * POST /auth/session. Exchanges a verified access token (plus, in OIDC mode, the ID token from the same
+   * sign-in) for a platform user, creating or linking it on first sign-in.
+   */
+  async establishSession(token: string, idToken?: string): Promise<MeDto> {
     let claims: VerifiedClaims;
     try {
       claims = await this.tokens.verify(token);
     } catch {
       throw unauthenticated("Invalid or expired token");
     }
-    const user = await this.resolveClaims(claims, true);
-    if (!user) throw unauthenticated("Account not found");
+    if (this.tokens.mode === "local") {
+      const user = await this.resolveClaims(claims);
+      if (!user) throw unauthenticated("Account not found");
+      return this.me(user.id);
+    }
+
+    // OIDC: identity details come from the ID token when the access token doesn't carry them.
+    if (idToken) {
+      let id: VerifiedClaims;
+      try {
+        id = await this.tokens.verifyIdToken(idToken);
+      } catch {
+        throw unauthenticated("Invalid ID token");
+      }
+      if (id.sub !== claims.sub) throw unauthenticated("ID token and access token belong to different users");
+      claims = { sub: claims.sub, email: claims.email ?? id.email, emailVerified: claims.emailVerified ?? id.emailVerified, name: claims.name ?? id.name };
+    }
+
+    const existing = await this.prisma.user.findUnique({ where: { authSubject: claims.sub }, include: userInclude });
+    if (existing) {
+      if (existing.deletedAt) throw unauthenticated("Account not found");
+      return this.me(existing.id);
+    }
+    if (!claims.email) throw unauthenticated("Your identity provider didn't share an email address. Include the 'email' scope.");
+    if (this.tokens.requireVerifiedEmail && claims.emailVerified !== true) {
+      throw forbidden("Verify your email address with your sign-in provider, then sign in again.");
+    }
+    const email = claims.email.toLowerCase();
+    // Link to an existing account with the same (verified) email, e.g. one created before switching to OIDC.
+    const byEmail = await this.prisma.user.findUnique({ where: { email } });
+    if (byEmail && claims.emailVerified !== true) {
+      // Never attach an identity to an existing account on the strength of an unverified email.
+      throw forbidden("An account with this email already exists. Verify your email with your sign-in provider to link it.");
+    }
+    if (byEmail?.deletedAt) throw unauthenticated("Account not found");
+    const user = byEmail
+      ? await this.prisma.user.update({ where: { id: byEmail.id }, data: { authSubject: claims.sub }, include: userInclude })
+      : await this.prisma.user.create({
+          data: {
+            authSubject: claims.sub,
+            email,
+            name: claims.name ?? null,
+            roles: { create: this.initialRoles(email).map((role) => ({ role })) },
+            consents: { create: [{ type: "TERMS", granted: true }, { type: "PRIVACY", granted: true }] },
+          },
+          include: userInclude,
+        });
+    await this.audit.log({
+      actorId: user.id,
+      action: byEmail ? "user.link_identity" : "user.register",
+      resourceType: "user",
+      resourceId: user.id,
+      metadata: { provider: "oidc" },
+    });
     return this.me(user.id);
   }
 
-  /** Used by AuthGuard on every request. Returns null for unknown subjects. */
+  /**
+   * Used by AuthGuard on every request. Returns null for invalid tokens or subjects without an account
+   * (in OIDC mode the account is created only by POST /auth/session).
+   */
   async authenticate(token: string): Promise<AuthUser | null> {
     let claims: VerifiedClaims;
     try {
@@ -83,26 +141,11 @@ export class AuthService {
     } catch {
       return null;
     }
-    return this.resolveClaims(claims, this.tokens.mode === "oidc");
+    return this.resolveClaims(claims);
   }
 
-  private async resolveClaims(claims: VerifiedClaims, createIfMissing: boolean): Promise<AuthUser | null> {
-    let user = await this.prisma.user.findUnique({ where: { authSubject: claims.sub }, include: userInclude });
-    if (!user && createIfMissing) {
-      if (!claims.email) throw unauthenticated("Identity provider token must include an email claim");
-      const email = claims.email.toLowerCase();
-      user = await this.prisma.user.upsert({
-        where: { email },
-        update: { authSubject: claims.sub },
-        create: {
-          authSubject: claims.sub,
-          email,
-          name: claims.name ?? null,
-          roles: { create: this.initialRoles(email).map((role) => ({ role })) },
-        },
-        include: userInclude,
-      });
-    }
+  private async resolveClaims(claims: VerifiedClaims): Promise<AuthUser | null> {
+    const user = await this.prisma.user.findUnique({ where: { authSubject: claims.sub }, include: userInclude });
     if (!user || user.deletedAt) return null;
     return {
       id: user.id,

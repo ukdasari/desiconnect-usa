@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import type { SessionDto } from "@desiconnect/contracts";
 import { api } from "@/lib/api";
 import { fromError, formValues, str, type ActionState } from "@/lib/action-state";
+import { AUTH_MODE, client, COOKIES, oidcConfig, settings } from "@/lib/oidc";
 import { clearSession, LOCATION_COOKIE, setSession } from "@/lib/session";
 
 /** Only allow same-site relative redirects after sign-in. */
@@ -44,7 +45,22 @@ export async function register(_prev: ActionState, fd: FormData): Promise<Action
 }
 
 export async function logout() {
+  const jar = await cookies();
+  const idToken = jar.get(COOKIES.idToken)?.value;
   await clearSession();
+  if (AUTH_MODE === "oidc") {
+    // RP-initiated logout so the provider session ends too; falls back to a local sign-out.
+    let target: string | null = null;
+    try {
+      const config = await oidcConfig();
+      const params: Record<string, string> = { post_logout_redirect_uri: settings().appUrl, client_id: settings().clientId };
+      if (idToken) params.id_token_hint = idToken;
+      target = client.buildEndSessionUrl(config, params).toString();
+    } catch {
+      target = null;
+    }
+    if (target) redirect(target);
+  }
   redirect("/");
 }
 
