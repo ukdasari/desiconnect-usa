@@ -136,6 +136,8 @@ export interface ListingSummaryDto {
   property: PropertyDetailsDto | null;
   isFavorite?: boolean;
   publishedAt: string | null;
+  /** Free-form labels (cuisine, "Halal", "Vegetarian"…). */
+  tags: string[];
 }
 
 export interface CredentialDto {
@@ -162,7 +164,6 @@ export interface ListingDetailDto extends ListingSummaryDto {
   contactEmail: string | null;
   contactPhone: string | null;
   website: string | null;
-  tags: string[];
   status: ListingStatus;
   regulated: boolean;
   credentials: CredentialDto[];

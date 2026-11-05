@@ -122,7 +122,21 @@ export default async function ListingPage({ params }: Props) {
             ) : null}
             {l.kind === "SERVICE" ? (
               <>
-                <Fact icon={MapPin} label="Based in">{l.location.city}, {l.location.state}</Fact>
+                {l.location.addressLine ? (
+                  <Fact icon={MapPin} label="Address">
+                    {l.location.addressLine}, {l.location.city}, {l.location.state}{" "}
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([l.title, l.location.addressLine, l.location.city, l.location.state].join(", "))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1 whitespace-nowrap text-sm font-semibold text-peacock-2 underline dark:text-marigold"
+                    >
+                      Get directions
+                    </a>
+                  </Fact>
+                ) : (
+                  <Fact icon={MapPin} label="Based in">{l.location.city}, {l.location.state}</Fact>
+                )}
                 {l.priceText ? <Fact label="Pricing">{l.priceText}</Fact> : null}
               </>
             ) : null}

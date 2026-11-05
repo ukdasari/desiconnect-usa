@@ -25,6 +25,7 @@ const listing: ListingSummaryDto = {
   property: null,
   isFavorite: false,
   publishedAt: null,
+  tags: ["Immigration"],
 };
 
 describe("UI components", () => {

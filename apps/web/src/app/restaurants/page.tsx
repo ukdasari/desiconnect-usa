@@ -212,7 +212,7 @@ export default async function RestaurantsPage({ searchParams }: { searchParams: 
         </p>
 
         <div className="mt-8">
-          <SearchView path="/restaurants" searchParams={params} fixed={{ category: "restaurants" }} />
+          <SearchView path="/restaurants" searchParams={params} fixed={{ category: "restaurants" }} layout="cards" />
         </div>
       </div>
     </>

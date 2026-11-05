@@ -16,6 +16,7 @@ import { api, ApiError } from "@/lib/api";
 import { enumText } from "@/lib/format";
 import { getLocation, getMe } from "@/lib/session";
 import { ListingRow } from "./listing";
+import { RestaurantCard } from "./restaurant-card";
 import { Alert, Button, EmptyState, Input, Select } from "./ui";
 
 type Params = Record<string, string | string[] | undefined>;
@@ -25,11 +26,13 @@ interface Props {
   searchParams: Params;
   /** Fixed filters for section pages (e.g. kind=JOB on /jobs). */
   fixed?: { kind?: ListingKind; category?: string };
+  /** "cards" shows restaurant cards in a grid instead of rows. */
+  layout?: "rows" | "cards";
 }
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
-export async function SearchView({ path, searchParams, fixed = {} }: Props) {
+export async function SearchView({ path, searchParams, fixed = {}, layout = "rows" }: Props) {
   const [me, savedLoc] = await Promise.all([getMe(), getLocation()]);
   const p = (k: string) => one(searchParams[k]);
   const hasLocationParam = ["city", "state", "zip"].some((k) => p(k));
@@ -192,9 +195,15 @@ export async function SearchView({ path, searchParams, fixed = {} }: Props) {
               {meta.locationNote ? ` ${meta.locationNote.charAt(0).toLowerCase()}${meta.locationNote.slice(1)}` : " across the USA"}
             </p>
             {results.length ? (
-              <div className="mt-2">
-                {results.map((l) => <ListingRow key={l.id} listing={l} back={back} signedIn={!!me} />)}
-              </div>
+              layout === "cards" ? (
+                <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                  {results.map((l) => <RestaurantCard key={l.id} listing={l} back={back} signedIn={!!me} />)}
+                </div>
+              ) : (
+                <div className="mt-2">
+                  {results.map((l) => <ListingRow key={l.id} listing={l} back={back} signedIn={!!me} />)}
+                </div>
+              )
             ) : (
               <div className="mt-4">
                 <EmptyState

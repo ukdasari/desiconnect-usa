@@ -38,7 +38,7 @@ export function PartnerRail({ variant }: { variant: "rail" | "strip" }) {
 
   if (variant === "rail") {
     return (
-      <aside aria-label={PARTNERS_HEADING} className="hidden w-52 shrink-0 py-10 xl:block">
+      <aside aria-label={PARTNERS_HEADING} className="hidden w-52 shrink-0 self-stretch py-10 xl:block">
         <div className="sticky top-24">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-2">{PARTNERS_HEADING}</h2>
           <ul className="mt-3 space-y-3">

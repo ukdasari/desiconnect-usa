@@ -76,6 +76,7 @@ export function toListingSummary(row: SummaryRow, extra: { distanceMiles?: numbe
       ? { id: row.provider.id, businessName: row.provider.businessName, verification: row.provider.verification, languages: row.provider.languages }
       : null,
     isDemo: row.isDemo,
+    tags: row.tags,
     distanceMiles: extra.distanceMiles === undefined || extra.distanceMiles === null ? null : Math.round(extra.distanceMiles * 10) / 10,
     event: row.event
       ? {

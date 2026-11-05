@@ -121,13 +121,13 @@ async function createDemoUser(email: string, name: string, roles: Prisma.UserRol
   });
 }
 
-async function createLocation(city: string, seed: string, addressLine?: string) {
+async function createLocation(city: string, seed: string, addressLine?: string, showExact = false) {
   const c = cityCoords(city);
   return prisma.location.create({
     data: {
       city, state: c.state, addressLine: addressLine ?? null,
       latitude: c.lat + jitter(seed), longitude: c.lng + jitter(`${seed}-lng`),
-      showExact: false,
+      showExact,
     },
   });
 }
@@ -347,7 +347,8 @@ async function seedRestaurants() {
   }
   const now = Date.now();
   for (const [i, r] of RESTAURANTS.entries()) {
-    const location = await createLocation(r.city, r.name, r.address);
+    // A restaurant's street address is public business information, so it's shown when a source gave one.
+    const location = await createLocation(r.city, r.name, r.address, !!r.address);
     const id = randomUUID();
     await prisma.listing.create({
       data: {
