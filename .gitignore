@@ -13,7 +13,7 @@ coverage/
 ios/
 android/
 web-build/
-storage/
+apps/api/storage/
 playwright-report/
 test-results/
 *.log
