@@ -59,9 +59,9 @@ eas submit --profile production --platform android  # → Play internal testing 
 
 **Both stores**
 - [ ] Privacy policy and terms URLs live on the website and linked from the store listings
-- [ ] **Blocker — not built yet:** in-app account deletion (both stores require it for apps with sign-up). Needs a
-      `DELETE /me` endpoint (anonymise leads/applications, remove résumés and push tokens, delete at the OIDC provider
-      or document the manual step) plus a Profile button and a web page
+- [x] In-app account deletion: Profile → Delete account (app) and Account → Delete your account (website), both calling
+      `DELETE /me`. Personal data and files are removed; with OIDC, the identity-provider account is separate (say so in the
+      store listing's account-deletion URL field: `https://<website>/account#delete-account`)
 - [ ] Demo listings clearly labelled (the app shows a "Demo" badge) or removed from the production database
 - [ ] Reviewer account in the review notes (production must use OIDC; create a normal user with your provider)
 - [ ] Screenshots: 6.9" and 6.5" iPhone, 13" iPad if `supportsTablet` stays on, Android phone

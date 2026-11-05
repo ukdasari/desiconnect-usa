@@ -320,6 +320,11 @@ export const paginationSchema = z.object({
 
 // ---------- devices (push notifications) ----------
 
+/** Account deletion must be confirmed by typing DELETE. */
+export const deleteAccountSchema = z.object({
+  confirm: z.literal("DELETE", { message: 'Type DELETE to confirm' }),
+});
+
 export const registerDeviceSchema = z.object({
   /** Expo push token, e.g. ExponentPushToken[xxxx]. */
   token: z.string().trim().regex(/^Expo(nent)?PushToken\[[^\]]{10,200}\]$/, "Not an Expo push token"),

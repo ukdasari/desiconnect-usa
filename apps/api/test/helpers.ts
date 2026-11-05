@@ -1,3 +1,4 @@
+import { StorageService } from "../src/storage/storage.service";
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
@@ -10,6 +11,7 @@ export interface TestContext {
   app: INestApplication;
   http: ReturnType<typeof request>;
   prisma: PrismaService;
+  storage: StorageService;
 }
 
 export async function createTestApp(): Promise<TestContext> {
@@ -17,7 +19,7 @@ export async function createTestApp(): Promise<TestContext> {
   const app = moduleRef.createNestApplication({ logger: false });
   configureApp(app, loadEnv());
   await app.init();
-  return { app, http: request(app.getHttpServer()), prisma: app.get(PrismaService) };
+  return { app, http: request(app.getHttpServer()), prisma: app.get(PrismaService), storage: app.get(StorageService) };
 }
 
 let counter = 0;

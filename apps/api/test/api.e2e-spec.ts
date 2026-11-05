@@ -385,3 +385,64 @@ describe("restaurant directory", () => {
     expect(res.body.error.message).toMatch(/hasn't claimed/);
   });
 });
+
+describe("account deletion", () => {
+  it("deletes personal data, signs the person out, frees the email and keeps others' records consistent", async () => {
+    const employer = await loginDemo(ctx, "provider");
+    const u = await registerUser(ctx, "Leaving Soon");
+    const hvac = (await ctx.http.get(`${V}/search`).query({ category: "hvac" }).expect(200)).body.data[0];
+    await ctx.http.post(`${V}/inquiries`).set(auth(u.token)).send({ listingId: hvac.id, message: "Please call me about AC service.", consentToShare: true, phone: "214-555-0177" }).expect(201);
+    await ctx.http.post(`${V}/me/favorites/${hvac.id}`).set(auth(u.token)).expect((r) => expect([200, 201]).toContain(r.status));
+    const job = (await ctx.http.get(`${V}/jobs`).query({ q: "SDET Playwright" }).expect(200)).body.data[0];
+    const pdf = Buffer.from("%PDF-1.4\n%demo resume\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF");
+    await ctx.http.post(`${V}/jobs/${job.id}/applications`).set(auth(u.token)).field("consentToShare", "true").attach("resume", pdf, { filename: "cv.pdf", contentType: "application/pdf" }).expect(201);
+    const resumeKey = (await ctx.prisma.attachment.findFirstOrThrow({ where: { ownerId: u.id } })).storageKey;
+
+    // Confirmation is required.
+    await ctx.http.delete(`${V}/me`).set(auth(u.token)).send({}).expect(400);
+    await ctx.http.delete(`${V}/me`).set(auth(u.token)).send({ confirm: "DELETE" }).expect(200);
+
+    // Signed out everywhere, and the email can be used again.
+    await ctx.http.get(`${V}/me`).set(auth(u.token)).expect(401);
+    await ctx.http.post(`${V}/auth/login`).send({ email: u.email, password: "correct-horse-battery" }).expect(401);
+    await ctx.http.post(`${V}/auth/register`).send({ name: "Back Again", email: u.email, password: "correct-horse-battery" }).expect(201);
+
+    // Personal data is gone; the scrubbed row keeps foreign keys valid.
+    const row = await ctx.prisma.user.findUniqueOrThrow({ where: { id: u.id } });
+    expect(row).toMatchObject({ name: null, phone: null, city: null });
+    expect(row.deletedAt).not.toBeNull();
+    expect(row.email).not.toBe(u.email);
+    for (const count of [
+      ctx.prisma.inquiry.count({ where: { requesterId: u.id } }),
+      ctx.prisma.jobApplication.count({ where: { applicantId: u.id } }),
+      ctx.prisma.favorite.count({ where: { userId: u.id } }),
+      ctx.prisma.attachment.count({ where: { ownerId: u.id } }),
+      ctx.prisma.localCredential.count({ where: { userId: u.id } }),
+    ]) expect(await count).toBe(0);
+    await expect(ctx.storage.get(resumeKey)).rejects.toThrow();
+    const leads = await ctx.http.get(`${V}/provider/inquiries`).set(auth(employer.token)).expect(200);
+    expect(leads.body.data.some((i: { message: string }) => i.message === "Please call me about AC service.")).toBe(false);
+    expect(await ctx.prisma.auditLog.count({ where: { action: "user.delete", resourceId: u.id } })).toBe(1);
+  });
+
+  it("takes a business's listings down and won't remove the last admin", async () => {
+    const owner = await registerUser(ctx, "Closing Shop");
+    await ctx.http
+      .post(`${V}/providers`)
+      .set(auth(owner.token))
+      .send({
+        businessName: "Closing Shop Plumbing", description: "Licensed plumbing repairs for homes in Collin County.", email: "closing@test.example",
+        phone: "(214) 555-0188", categorySlugs: ["home-services"], languages: ["English"], city: "Allen", state: "TX",
+      })
+      .expect(201);
+    const listing = await ctx.http.post(`${V}/listings`).set(auth(owner.token)).send({ ...eventPayload(), title: "Closing Shop tasting day" }).expect(201);
+    await ctx.http.delete(`${V}/me`).set(auth(owner.token)).send({ confirm: "DELETE" }).expect(200);
+    const l = await ctx.prisma.listing.findUniqueOrThrow({ where: { id: listing.body.data.id } });
+    expect(l.deletedAt).not.toBeNull();
+    expect((await ctx.prisma.provider.findFirstOrThrow({ where: { ownerId: owner.id } })).deletedAt).not.toBeNull();
+
+    const admin = await loginDemo(ctx, "admin");
+    const res = await ctx.http.delete(`${V}/me`).set(auth(admin.token)).send({ confirm: "DELETE" }).expect(400);
+    expect(res.body.error.message).toMatch(/only admin/);
+  });
+});

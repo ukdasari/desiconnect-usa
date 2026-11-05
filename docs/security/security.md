@@ -35,3 +35,18 @@ cross-user edits, inquiry privacy, resume download restrictions, suspension and 
 - **Legal review** (see blueprint §11): attorney and insurance referrals, real estate advertising (fair housing),
   employment listings (EEO), privacy policy / terms, and Texas-specific rules. The disclaimer text in
   `packages/contracts/src/categories.ts` is placeholder wording.
+
+## Account deletion
+
+`DELETE /me` with `{ "confirm": "DELETE" }` (website: Account → Delete your account; app: Profile → Delete account).
+Deleted: requests sent, job applications and resume files, RSVPs, appointments, saved listings, notifications, Desi AI
+history and usage, push tokens, password and roles. A business profile and its listings are taken down. The user row is kept
+but scrubbed (no name, email, phone or location; sign-in identity released) so moderation reports, reviews ("Member") and the
+audit log stay consistent. The only remaining admin can't delete their account. With OIDC, the identity-provider account is
+separate.
+
+## Rate limiting
+
+Per visitor, `RATE_LIMIT_PER_MINUTE` (default 120). The website forwards the visitor's IP in `x-client-ip`, authenticated
+with the shared `INTERNAL_API_KEY`; without a valid key the API uses the connection's IP. Set the key in production, or every
+website visitor shares one limit.

@@ -188,3 +188,24 @@ test.describe("organizer → moderation → publish", () => {
     await expect(page.getByRole("heading", { name: "Moderation" })).toHaveCount(0);
   });
 });
+
+test.describe("account deletion", () => {
+  test("a member deletes their account from the account page", async ({ page }) => {
+    const email = await registerNewUser(page, "Short Stay");
+    await page.goto("/account#delete-account");
+    const button = page.getByRole("button", { name: "Delete my account" });
+    await page.getByLabel("Type DELETE to confirm").fill("delete");
+    await button.click();
+    await expect(page.getByRole("heading", { name: "Your account has been deleted" })).toHaveCount(0);
+    await page.getByLabel("Type DELETE to confirm").fill("DELETE");
+    await button.click();
+    await expect(page.getByRole("heading", { name: "Your account has been deleted" })).toBeVisible();
+    // Signed out: private pages send you to sign-in, and the old password no longer works.
+    await page.goto("/account");
+    await expect(page).toHaveURL(/\/login/);
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill("correct-horse-battery");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await expect(page.getByText(/incorrect|didn.t match|invalid/i)).toBeVisible();
+  });
+});

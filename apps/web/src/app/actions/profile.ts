@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { clearSession } from "@/lib/session";
 import { api } from "@/lib/api";
 import { fromError, formValues, list, str, type ActionState } from "@/lib/action-state";
 
@@ -36,4 +38,15 @@ export async function deleteAiHistory(_prev: ActionState): Promise<ActionState> 
 export async function markNotificationsRead() {
   await api("/me/notifications/read-all", { method: "POST" });
   revalidatePath("/account");
+}
+
+/** Deletes the account (the API removes personal data), then signs out on this device. */
+export async function deleteAccount(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  try {
+    await api("/me", { method: "DELETE", body: { confirm: str(fd, "confirm") ?? "" } });
+  } catch (err) {
+    return fromError(err, formValues(fd));
+  }
+  await clearSession();
+  redirect("/goodbye");
 }

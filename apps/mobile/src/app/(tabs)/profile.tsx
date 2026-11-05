@@ -108,6 +108,7 @@ export default function Profile() {
         }
       />
       <Button title="Sign out" variant="ghost" icon="log-out-outline" onPress={() => auth.signOut()} />
+      <Button title="Delete account" variant="ghost" icon="person-remove-outline" onPress={() => router.push("/delete-account")} />
       <Body muted size={12}>Connected to {API_URL}</Body>
     </Screen>
   );

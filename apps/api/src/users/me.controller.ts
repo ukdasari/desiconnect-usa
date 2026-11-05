@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, HttpCode, Param, Patch, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { registerDeviceSchema, updateProfileSchema, type UpdateProfileInput } from "@desiconnect/contracts";
+import { deleteAccountSchema, registerDeviceSchema, updateProfileSchema, type UpdateProfileInput } from "@desiconnect/contracts";
 import type { z } from "zod";
 import { AuditService } from "../audit/audit.service";
 import { AuthService } from "../auth/auth.service";
@@ -11,6 +11,7 @@ import { ApiZodBody, ZodBody } from "../common/zod";
 import { EngagementService } from "../engagement/engagement.service";
 import { listingSummaryInclude, toListingSummary } from "../listings/listing.mapper";
 import { ListingsService } from "../listings/listings.service";
+import { AccountService } from "./account.service";
 
 @ApiTags("me")
 @ApiBearerAuth()
@@ -22,7 +23,16 @@ export class MeController {
     private readonly engagement: EngagementService,
     private readonly listings: ListingsService,
     private readonly audit: AuditService,
+    private readonly account: AccountService,
   ) {}
+
+  @Delete()
+  @HttpCode(200)
+  @ApiOperation({ summary: "Delete my account and personal data (body: { confirm: \"DELETE\" })" })
+  @ApiZodBody(deleteAccountSchema)
+  deleteAccount(@CurrentUser() user: AuthUser, @ZodBody(deleteAccountSchema) _body: z.infer<typeof deleteAccountSchema>) {
+    return this.account.deleteAccount(user);
+  }
 
   @Get()
   @ApiOperation({ summary: "Current user" })

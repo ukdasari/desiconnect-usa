@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { LANGUAGES, US_STATES, type MeDto } from "@desiconnect/contracts";
-import { deleteAiHistory, updateProfile } from "@/app/actions/profile";
+import { deleteAccount, deleteAiHistory, updateProfile } from "@/app/actions/profile";
 import { initialState } from "@/lib/action-state-client";
 import { FormMessage, SubmitButton } from "./forms";
 import { Field, Input, Select } from "./ui";
@@ -56,6 +56,19 @@ export function DeleteAiHistory() {
     <form action={action} className="space-y-3">
       <FormMessage state={state} />
       <SubmitButton variant="secondary" pendingText="Deleting…">Delete Desi AI history</SubmitButton>
+    </form>
+  );
+}
+
+export function DeleteAccount() {
+  const [state, action] = useActionState(deleteAccount, initialState);
+  return (
+    <form action={action} className="space-y-4">
+      <FormMessage state={state} />
+      <Field label="Type DELETE to confirm" htmlFor="del-confirm" error={state.fieldErrors?.confirm}>
+        <Input id="del-confirm" name="confirm" autoComplete="off" autoCapitalize="characters" spellCheck={false} className="max-w-xs" required pattern="DELETE" />
+      </Field>
+      <SubmitButton variant="danger" pendingText="Deleting your account…">Delete my account</SubmitButton>
     </form>
   );
 }

@@ -13,6 +13,7 @@ import { ListingsController } from "./listings/listings.controller";
 import { ListingsService } from "./listings/listings.service";
 import { ProvidersController } from "./providers/providers.controller";
 import { ProvidersService } from "./providers/providers.service";
+import { AccountService } from "./users/account.service";
 import { MeController } from "./users/me.controller";
 
 @Module({ controllers: [ListingsController], providers: [ListingsService], exports: [ListingsService] })
@@ -25,7 +26,7 @@ export class ListingsModule {}
 })
 export class EngagementModule {}
 
-@Module({ imports: [ListingsModule, EngagementModule], controllers: [MeController] })
+@Module({ imports: [ListingsModule, EngagementModule], controllers: [MeController], providers: [AccountService] })
 export class UsersModule {}
 
 @Module({ imports: [ListingsModule], controllers: [ProvidersController], providers: [ProvidersService] })

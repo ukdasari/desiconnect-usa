@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { markNotificationsRead } from "@/app/actions/profile";
 import { AccountNav } from "@/components/account-nav";
-import { DeleteAiHistory, ProfileForm } from "@/components/profile-forms";
+import { DeleteAccount, DeleteAiHistory, ProfileForm } from "@/components/profile-forms";
 import { Badge, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { enumText, relativeTime } from "@/lib/format";
@@ -57,6 +57,14 @@ export default async function AccountPage() {
             <h2 id="privacy-h" className="text-xl font-bold">Privacy</h2>
             <p className="mt-2 text-sm text-ink-2">Your contact details are shared only with providers you send a request or application to. Desi AI conversations are saved to your account until you delete them.</p>
             <div className="mt-4"><DeleteAiHistory /></div>
+          </section>
+          <section id="delete-account" aria-labelledby="delete-h" className="rounded-3xl border border-kumkum/40 bg-surface p-6">
+            <h2 id="delete-h" className="text-xl font-bold">Delete your account</h2>
+            <p className="mt-2 text-sm text-ink-2">
+              This permanently deletes your profile, requests, job applications and resumes, RSVPs, saved listings, notifications and
+              Desi AI history, and signs you out. If you run a business here, its profile and listings are taken down. This can&apos;t be undone.
+            </p>
+            <div className="mt-4"><DeleteAccount /></div>
           </section>
         </div>
       </div>

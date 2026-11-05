@@ -104,3 +104,28 @@ describe("AuthProvider (local mode)", () => {
     setAuthHooks({ getToken: async () => null, onUnauthorized: () => {} });
   });
 });
+
+describe("Delete account screen", () => {
+  it("only enables deletion after typing DELETE, then calls DELETE /me with the confirmation", async () => {
+    const DeleteAccount = require("@/app/delete-account").default as () => React.JSX.Element;
+    const calls: { url: string; method?: string; body?: string }[] = [];
+    global.fetch = jest.fn(async (url: string, init: RequestInit) => {
+      calls.push({ url, method: init.method, body: init.body as string });
+      const data = url.endsWith("/auth/config") ? { mode: "local", issuer: null, audience: null } : { deleted: true };
+      return { ok: true, status: 200, json: async () => ({ data }) } as Response;
+    }) as unknown as typeof fetch;
+
+    await render(
+      <AuthProvider>
+        <DeleteAccount />
+      </AuthProvider>,
+    );
+    const button = screen.getByRole("button", { name: "Delete my account" });
+    expect(button).toHaveProp("accessibilityState", expect.objectContaining({ disabled: true }));
+    await fireEvent.changeText(screen.getByLabelText("Type DELETE to confirm"), "DELETE");
+    await fireEvent.press(screen.getByRole("button", { name: "Delete my account" }));
+    await waitFor(() => expect(screen.getByText(/Your account has been deleted/)).toBeTruthy());
+    const del = calls.find((c) => c.method === "DELETE" && c.url.endsWith("/me"));
+    expect(del && JSON.parse(del.body!)).toEqual({ confirm: "DELETE" });
+  });
+});

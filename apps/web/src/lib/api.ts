@@ -1,5 +1,6 @@
 import "server-only";
 import type { ApiErrorBody, PaginationMeta } from "@desiconnect/contracts";
+import { headers as requestHeaders } from "next/headers";
 import { getToken } from "./session";
 
 const API_URL = process.env.API_URL ?? "http://localhost:4000/api/v1";
@@ -52,6 +53,15 @@ export async function api<T>(path: string, opts: Options = {}): Promise<ApiResul
   }
   const method = opts.method ?? "GET";
   const cacheable = method === "GET" && !token && opts.revalidate !== undefined;
+  // Let the API rate-limit each visitor separately (shared, cached public data doesn't need it).
+  const internalKey = process.env.INTERNAL_API_KEY;
+  if (internalKey && !cacheable) {
+    const ip = await visitorIp();
+    if (ip) {
+      headers["x-internal-key"] = internalKey;
+      headers["x-client-ip"] = ip;
+    }
+  }
 
   let res: Response;
   try {
@@ -85,4 +95,14 @@ export function toQuery(searchParams: Record<string, string | string[] | undefin
   const q: Query = {};
   for (const [k, v] of Object.entries(searchParams)) if (v !== undefined) q[k] = Array.isArray(v) ? v[0] : v;
   return q;
+}
+
+async function visitorIp(): Promise<string | null> {
+  try {
+    const h = await requestHeaders();
+    const ip = (h.get("x-forwarded-for")?.split(",")[0] ?? h.get("x-real-ip") ?? "").trim();
+    return /^[0-9a-fA-F:.]{3,45}$/.test(ip) ? ip : null;
+  } catch {
+    return null; // not inside a request (build time)
+  }
 }

@@ -47,6 +47,10 @@ export const envSchema = z
     EXPO_ACCESS_TOKEN: z.string().optional().default(""),
     /** Process notifications synchronously instead of via BullMQ (tests, or when Redis is absent). */
     NOTIFICATIONS_INLINE: bool,
+    /** Requests per minute per visitor. */
+    RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(10).default(120),
+    /** Shared secret the website sends so the API can rate-limit by the visitor's IP. Use 32+ random characters. */
+    INTERNAL_API_KEY: z.string().optional().default("").refine((v) => v === "" || v.length >= 24, "INTERNAL_API_KEY must be at least 24 characters"),
     /** Disable rate limiting (automated tests only). */
     DISABLE_RATE_LIMIT: bool,
   })

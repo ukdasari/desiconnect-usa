@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerModule } from "@nestjs/throttler";
+import { ClientThrottlerGuard } from "./common/client-throttler.guard";
 import { LoggerModule } from "nestjs-pino";
 import { randomUUID } from "node:crypto";
 import { AiModule } from "./ai/ai.controller";
@@ -37,7 +38,7 @@ const env = loadEnv();
       },
     }),
     ThrottlerModule.forRoot({
-      throttlers: [{ name: "default", ttl: 60_000, limit: 120 }],
+      throttlers: [{ name: "default", ttl: 60_000, limit: env.RATE_LIMIT_PER_MINUTE }],
       skipIf: () => env.DISABLE_RATE_LIMIT,
     }),
     PrismaModule,
@@ -56,7 +57,7 @@ const env = loadEnv();
   ],
   controllers: [HealthController],
   providers: [
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: ClientThrottlerGuard },
     { provide: APP_INTERCEPTOR, useClass: EnvelopeInterceptor },
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
   ],
