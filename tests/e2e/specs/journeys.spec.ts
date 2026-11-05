@@ -209,3 +209,35 @@ test.describe("account deletion", () => {
     await expect(page.getByText(/incorrect|didn.t match|invalid/i)).toBeVisible();
   });
 });
+
+test.describe("listing claims", () => {
+  test("a business claims a restaurant listing and an admin confirms it", async ({ browser, request }) => {
+    const api = process.env.E2E_API_URL ?? "http://localhost:4000/api/v1";
+    const res = await request.get(`${api}/search`, { params: { category: "restaurants", pageSize: 50 } });
+    const open = ((await res.json()).data as { slug: string; title: string; provider: unknown; isDemo: boolean }[]).filter((l) => !l.provider && !l.isDemo);
+    const listing = open[Math.floor(Math.random() * open.length)];
+
+    const owner = await browser.newPage();
+    await signIn(owner, "provider@desiconnect.example");
+    await owner.goto(`/listings/${listing.slug}`);
+    await owner.getByRole("link", { name: "Claim this listing" }).click();
+    await expect(owner.getByRole("heading", { name: `Claim ${listing.title}` })).toBeVisible();
+    await owner.getByLabel("Your role at the business").fill("Owner");
+    await owner.getByLabel("Phone we can reach you on").fill("214-555-0142");
+    await owner.getByRole("button", { name: "Send claim" }).click();
+    await expect(owner.getByText(/Claim sent|Claim waiting for review/).first()).toBeVisible();
+    await owner.goto("/provider");
+    await expect(owner.getByRole("region", { name: "Listing claims" }).getByText(listing.title)).toBeVisible();
+
+    const admin = await browser.newPage();
+    await signIn(admin, "admin@desiconnect.example");
+    await admin.goto("/admin");
+    const item = admin.getByRole("listitem").filter({ hasText: listing.title }).filter({ hasText: "Owner at" });
+    await item.getByRole("button", { name: "Approve" }).click();
+    await expect(item).toHaveCount(0);
+
+    // The listing now takes requests through the claimant's business.
+    await owner.goto(`/listings/${listing.slug}`);
+    await expect(owner.getByRole("heading", { name: "Not claimed yet" })).toHaveCount(0);
+  });
+});

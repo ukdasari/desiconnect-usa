@@ -320,6 +320,14 @@ export const paginationSchema = z.object({
 
 // ---------- devices (push notifications) ----------
 
+/** A business owner asks to take over an unclaimed directory listing. */
+export const createClaimSchema = z.object({
+  role: z.string().trim().min(2, "Tell us your role at the business").max(80),
+  phone: z.string().trim().min(7, "Enter a phone number we can call").max(30),
+  verification: optionalText(500),
+});
+export type CreateClaimInput = z.input<typeof createClaimSchema>;
+
 /** Account deletion must be confirmed by typing DELETE. */
 export const deleteAccountSchema = z.object({
   confirm: z.literal("DELETE", { message: 'Type DELETE to confirm' }),

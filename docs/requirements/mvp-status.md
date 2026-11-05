@@ -73,7 +73,12 @@ Not verified here: running on a physical phone or simulator, push delivery, stor
   because nobody at the restaurant would receive them. Pages tell people to check details before going and invite owners to claim.
 - Desi AI understands restaurant questions ("Pakistani restaurants near Plano", "biryani in Irving") and keeps the cuisine as a filter.
 - Re-running `pnpm db:seed` replaces the imported set with the current file (`SEED_RESTAURANTS=false` skips it).
-- Not done: a self-serve claim flow, geocoded addresses, hours, and a periodic re-check for closures.
+- **Claiming:** an owner with a business profile opens the listing, chooses "Claim this listing" (`/listings/:slug/claim`), and gives
+  their role, a phone number and how to confirm. Admins see claims at the top of `/admin`, confirm by calling the business on its
+  public number, then approve or reject with a reason. Approval moves the listing to the claimant's business (it can then receive
+  requests), closes competing claims, and notifies everyone. Claimants follow and withdraw claims on the business dashboard.
+  Re-running the seed keeps claimed listings untouched (stable ids per name and city).
+- Not done: geocoded addresses, hours, and a periodic re-check for closures.
 
 ## Partly done (from later prompts)
 

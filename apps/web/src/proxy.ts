@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_MODE, client, COOKIES, oidcConfig, sessionCookies, toTokenSet } from "@/lib/oidc";
 
-const PRIVATE = [/^\/account(\/|$)/, /^\/provider(\/|$)/, /^\/admin(\/|$)/, /^\/listings\/[^/]+\/apply$/];
+const PRIVATE = [/^\/account(\/|$)/, /^\/provider(\/|$)/, /^\/admin(\/|$)/, /^\/listings\/[^/]+\/(apply|claim)$/];
 const REFRESH_SKEW_SECONDS = 60;
 
 /**

@@ -17,7 +17,10 @@ export interface NotificationJob {
     | "listing.approved"
     | "listing.rejected"
     | "provider.verified"
-    | "provider.rejected";
+    | "provider.rejected"
+    | "claim.submitted"
+    | "claim.approved"
+    | "claim.rejected";
   title: string;
   body: string;
   payload?: Record<string, string>;

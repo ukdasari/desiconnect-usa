@@ -149,3 +149,23 @@ export async function askDesiAi(message: string, conversationId?: string): Promi
     return { ok: false, message: "Desi AI is unavailable right now. You can still search directly." };
   }
 }
+
+export async function claimListing(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  const back = str(fd, "back") ?? "/";
+  await requireSignIn(back);
+  try {
+    await api(`/listings/${str(fd, "listingId")}/claims`, {
+      method: "POST",
+      body: { role: str(fd, "role") ?? "", phone: str(fd, "phone") ?? "", verification: str(fd, "verification") ?? "" },
+    });
+  } catch (err) {
+    return fromError(err, formValues(fd));
+  }
+  revalidatePath("/provider");
+  return { ok: true, message: "Claim sent. We'll call to confirm, usually within two business days, and let you know here and by email." };
+}
+
+export async function withdrawClaim(fd: FormData) {
+  await api(`/me/claims/${str(fd, "claimId")}/withdraw`, { method: "POST" });
+  revalidatePath("/provider");
+}

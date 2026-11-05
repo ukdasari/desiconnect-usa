@@ -14,7 +14,7 @@ export async function moderate(_prev: ActionState, fd: FormData): Promise<Action
       if (decision === "APPROVE") await api(`/admin/listings/${id}/approve`, { method: "POST" });
       else await api(`/admin/listings/${id}/reject`, { method: "POST", body: { reason } });
     } else {
-      const path = { provider: "providers", credential: "credentials", review: "reviews" }[target ?? ""];
+      const path = { provider: "providers", credential: "credentials", review: "reviews", claim: "claims" }[target ?? ""];
       if (!path) return { ok: false, message: "Unknown item" };
       await api(`/admin/${path}/${id}/decision`, { method: "POST", body: { decision, reason } });
     }

@@ -13,6 +13,8 @@ import { ListingsController } from "./listings/listings.controller";
 import { ListingsService } from "./listings/listings.service";
 import { ProvidersController } from "./providers/providers.controller";
 import { ProvidersService } from "./providers/providers.service";
+import { ClaimsController } from "./claims/claims.controller";
+import { ClaimsService } from "./claims/claims.service";
 import { AccountService } from "./users/account.service";
 import { MeController } from "./users/me.controller";
 
@@ -32,5 +34,8 @@ export class UsersModule {}
 @Module({ imports: [ListingsModule], controllers: [ProvidersController], providers: [ProvidersService] })
 export class ProvidersModule {}
 
-@Module({ controllers: [AdminController, ReportsController], providers: [AdminService] })
+@Module({ controllers: [ClaimsController], providers: [ClaimsService], exports: [ClaimsService] })
+export class ClaimsModule {}
+
+@Module({ imports: [ClaimsModule], controllers: [AdminController, ReportsController], providers: [AdminService] })
 export class AdminModule {}

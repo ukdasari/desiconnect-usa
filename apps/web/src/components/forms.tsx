@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { REPORT_REASONS } from "@desiconnect/contracts";
-import { applyToJob, registerForEvent, reportListing, sendInquiry, submitReview } from "@/app/actions/engagement";
+import { applyToJob, claimListing, registerForEvent, reportListing, sendInquiry, submitReview } from "@/app/actions/engagement";
 import { initialState, type ActionState } from "@/lib/action-state-client";
 import { enumText } from "@/lib/format";
 import { Alert, Button, Checkbox, Field, Input, Select, Textarea } from "./ui";
@@ -166,6 +166,35 @@ export function ReviewForm({ listingId, back }: { listingId: string; back: strin
         <Textarea id="review-body" name="body" rows={3} minLength={10} maxLength={2000} defaultValue={state.values?.body} />
       </Field>
       <SubmitButton variant="secondary" pendingText="Sending…">Submit review</SubmitButton>
+    </form>
+  );
+}
+
+export function ClaimForm({ listingId, back, defaultPhone }: { listingId: string; back: string; defaultPhone?: string | null }) {
+  const [state, action] = useActionState(claimListing, initialState);
+  if (state.ok) {
+    return (
+      <div className="space-y-4">
+        <FormMessage state={state} />
+        <Link href="/provider" className="font-semibold underline">Go to your business dashboard</Link>
+      </div>
+    );
+  }
+  return (
+    <form action={action} className="space-y-5">
+      <input type="hidden" name="listingId" value={listingId} />
+      <input type="hidden" name="back" value={back} />
+      <FormMessage state={state} />
+      <Field label="Your role at the business" htmlFor="claim-role" error={err(state, "role")}>
+        <Input id="claim-role" name="role" required maxLength={80} placeholder="Owner, partner or general manager" defaultValue={state.values?.role} className="sm:max-w-sm" />
+      </Field>
+      <Field label="Phone we can reach you on" htmlFor="claim-phone" error={err(state, "phone")}>
+        <Input id="claim-phone" name="phone" type="tel" required autoComplete="tel" defaultValue={state.values?.phone ?? defaultPhone ?? undefined} className="sm:max-w-xs" />
+      </Field>
+      <Field label="How can we confirm it? (optional)" htmlFor="claim-verification" hint="For example: call the restaurant and ask for you by name, or check the name on your food permit." error={err(state, "verification")}>
+        <Textarea id="claim-verification" name="verification" rows={3} maxLength={500} defaultValue={state.values?.verification} />
+      </Field>
+      <SubmitButton pendingText="Sending…">Send claim</SubmitButton>
     </form>
   );
 }

@@ -5,7 +5,7 @@
  *
  * Demo data is refused when NODE_ENV=production unless SEED_DEMO=true is set explicitly.
  */
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { PrismaClient, type Prisma } from "@prisma/client";
 import { CATEGORIES } from "@desiconnect/contracts";
@@ -330,26 +330,65 @@ export function restaurantDescription(r: RestaurantSeed): string {
   ].join("\n\n");
 }
 
+/** Stable id per restaurant (name + city), so re-seeding updates listings in place instead of replacing them. */
+function restaurantId(r: RestaurantSeed): string {
+  const h = createHash("sha1").update(`dfw-restaurant:${r.name.toLowerCase()}|${r.city.toLowerCase()}`).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
 async function seedRestaurants() {
-  const categories = await prisma.category.findMany({ where: { slug: { in: ["restaurants"] } } });
-  const restaurants = categories[0];
+  const restaurants = await prisma.category.findUnique({ where: { slug: "restaurants" } });
   if (!restaurants) throw new Error("Category 'restaurants' is missing; run seedCategories first");
   const owner =
     (await prisma.user.findUnique({ where: { email: DIRECTORY_EMAIL } })) ??
     (await prisma.user.create({
       data: { id: randomUUID(), authSubject: `system:directory`, email: DIRECTORY_EMAIL, name: "DesiConnect directory", isDemo: false, roles: { create: [{ role: "CONSUMER" }] } },
     }));
-  // Replace the previous import so the list stays in sync with restaurants.ts.
-  const old = await prisma.listing.findMany({ where: { source: { startsWith: RESTAURANT_SOURCE } }, select: { id: true, locationId: true } });
-  if (old.length) {
-    await prisma.listing.deleteMany({ where: { id: { in: old.map((o) => o.id) } } });
-    await prisma.location.deleteMany({ where: { id: { in: old.map((o) => o.locationId) } } });
+
+  const wanted = new Set(RESTAURANTS.map(restaurantId));
+  // Earlier imports used random ids: remove those (and any claims on them) once, if still unclaimed.
+  const stale = await prisma.listing.findMany({
+    where: { source: { startsWith: RESTAURANT_SOURCE }, ownerId: owner.id, id: { notIn: [...wanted] } },
+    select: { id: true, locationId: true, _count: { select: { claims: { where: { status: "PENDING" } } } } },
+  });
+  const removable = stale.filter((l) => l._count.claims === 0);
+  if (removable.length) {
+    const ids = removable.map((l) => l.id);
+    await prisma.$transaction([
+      prisma.listingClaim.deleteMany({ where: { listingId: { in: ids } } }),
+      prisma.favorite.deleteMany({ where: { listingId: { in: ids } } }),
+      prisma.report.deleteMany({ where: { targetId: { in: ids } } }),
+      prisma.review.deleteMany({ where: { listingId: { in: ids } } }),
+      prisma.listing.deleteMany({ where: { id: { in: ids } } }),
+      prisma.location.deleteMany({ where: { id: { in: removable.map((l) => l.locationId) } } }),
+    ]);
   }
+
+  let created = 0, updated = 0, claimed = 0;
   const now = Date.now();
   for (const [i, r] of RESTAURANTS.entries()) {
+    const id = restaurantId(r);
+    const existing = await prisma.listing.findUnique({ where: { id }, select: { ownerId: true, locationId: true } });
+    const data = {
+      title: r.name,
+      description: restaurantDescription(r),
+      contactPhone: r.phone ?? null,
+      tags: [...new Set([...(r.cuisine === "Indian & Pakistani" ? ["Indian", "Pakistani"] : [r.cuisine]), ...(r.styles ?? [])])],
+      source: `${RESTAURANT_SOURCE}:${r.source}`.slice(0, 500),
+    };
+    if (existing && existing.ownerId !== owner.id) {
+      claimed++; // the restaurant claimed its listing; it's theirs to edit now
+      continue;
+    }
+    if (existing) {
+      const c = cityCoords(r.city);
+      await prisma.location.update({ where: { id: existing.locationId }, data: { city: r.city, state: c.state, addressLine: r.address ?? null, showExact: !!r.address } });
+      await prisma.listing.update({ where: { id }, data });
+      updated++;
+      continue;
+    }
     // A restaurant's street address is public business information, so it's shown when a source gave one.
     const location = await createLocation(r.city, r.name, r.address, !!r.address);
-    const id = randomUUID();
     await prisma.listing.create({
       data: {
         id,
@@ -357,22 +396,19 @@ async function seedRestaurants() {
         ownerId: owner.id,
         categoryId: restaurants.id,
         kind: "SERVICE",
-        title: r.name,
-        description: restaurantDescription(r),
         locationId: location.id,
         languages: [],
-        contactPhone: r.phone ?? null,
         priceText: null,
-        tags: [...new Set([...(r.cuisine === "Indian & Pakistani" ? ["Indian", "Pakistani"] : [r.cuisine]), ...(r.styles ?? [])])],
         status: "PUBLISHED",
         isDemo: false,
-        source: `${RESTAURANT_SOURCE}:${r.source}`.slice(0, 500),
         submittedAt: new Date(now - i * 60_000),
         publishedAt: new Date(now - i * 60_000),
+        ...data,
       },
     });
+    created++;
   }
-  console.log(`✓ ${RESTAURANTS.length} DFW Indian and Pakistani restaurants (from public listings, unclaimed)`);
+  console.log(`✓ ${RESTAURANTS.length} DFW Indian and Pakistani restaurants (${created} new, ${updated} updated, ${claimed} claimed by their owners)`);
 }
 
 async function main() {

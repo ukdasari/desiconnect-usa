@@ -9,7 +9,7 @@ import { FormMessage, SubmitButton } from "./forms";
 import { Checkbox, Input, Select } from "./ui";
 
 /** Approve / reject control. Rejection requires a reason that the owner will see. */
-export function DecisionForm({ target, id }: { target: "listing" | "provider" | "credential" | "review"; id: string }) {
+export function DecisionForm({ target, id }: { target: "listing" | "provider" | "credential" | "review" | "claim"; id: string }) {
   const [state, action] = useActionState(moderate, initialState);
   const [rejecting, setRejecting] = useState(false);
   if (state.ok) return <p className="text-sm font-semibold text-leaf" role="status">{state.message}</p>;

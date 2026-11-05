@@ -235,7 +235,7 @@ export default async function ListingPage({ params }: Props) {
                 {l.contactPhone ? " Call them directly using the number below." : " Contact them directly."}
               </p>
               <p className="mt-3 text-sm">
-                Own this business? <Link href="/provider/onboarding" className="font-semibold underline">Create a business profile</Link> and contact us to claim it.
+                Own this business? <Link href={`/listings/${l.slug}/claim`} className="font-semibold underline">Claim this listing</Link> to manage it and receive requests.
               </p>
             </div>
           ) : null}

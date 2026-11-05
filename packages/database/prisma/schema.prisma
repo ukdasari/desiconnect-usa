@@ -46,6 +46,13 @@ enum ListingStatus {
   ARCHIVED
 }
 
+enum ClaimStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
 enum VerificationStatus {
   UNVERIFIED
   PENDING
@@ -238,6 +245,8 @@ model User {
   aiUsage             AiUsage[]
   reviewedCredentials ProviderCredential[] @relation("CredentialReviewer")
   devices             DeviceToken[]
+  claims              ListingClaim[]       @relation("ClaimClaimant")
+  reviewedClaims      ListingClaim[]       @relation("ClaimReviewer")
 
   @@map("users")
 }
@@ -386,6 +395,7 @@ model Provider {
   credentials  ProviderCredential[]
   listings     Listing[]
   appointments Appointment[]
+  claims       ListingClaim[]
 
   /// One business profile per owner for the MVP.
   @@unique([ownerId])
@@ -479,10 +489,10 @@ model Listing {
   /// Generated full-text vector over title (weight A) and description (weight B).
   searchVector    Unsupported("tsvector")? @default(dbgenerated("(setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(description, ''::text)), 'B'::\"char\"))"))
 
-  owner        User          @relation(fields: [ownerId], references: [id])
-  provider     Provider?     @relation(fields: [providerId], references: [id])
-  category     Category      @relation(fields: [categoryId], references: [id])
-  location     Location      @relation(fields: [locationId], references: [id])
+  owner        User           @relation(fields: [ownerId], references: [id])
+  provider     Provider?      @relation(fields: [providerId], references: [id])
+  category     Category       @relation(fields: [categoryId], references: [id])
+  location     Location       @relation(fields: [locationId], references: [id])
   event        Event?
   job          Job?
   property     Property?
@@ -490,6 +500,7 @@ model Listing {
   reviews      Review[]
   favorites    Favorite[]
   appointments Appointment[]
+  claims       ListingClaim[]
 
   @@index([categoryId, status])
   @@index([status, kind, publishedAt])
@@ -786,4 +797,33 @@ model AiUsage {
 
   @@index([userId, createdAt])
   @@map("ai_usage")
+}
+
+/// A business asking to take over a listing that was added from public information (e.g. the restaurant directory).
+/// An admin checks the claim (usually by calling the number on file) before the listing moves to the business.
+model ListingClaim {
+  id           String      @id @default(uuid()) @db.Uuid
+  listingId    String      @db.Uuid
+  claimantId   String      @db.Uuid
+  providerId   String      @db.Uuid
+  status       ClaimStatus @default(PENDING)
+  /// Claimant's role at the business, e.g. "Owner" or "General manager".
+  role         String
+  phone        String
+  /// How the claimant suggests we confirm it (e.g. "call the restaurant and ask for Ravi").
+  verification String?
+  reviewNote   String?
+  reviewedById String?     @db.Uuid
+  reviewedAt   DateTime?   @db.Timestamptz(3)
+  createdAt    DateTime    @default(now()) @db.Timestamptz(3)
+
+  listing    Listing  @relation(fields: [listingId], references: [id])
+  claimant   User     @relation("ClaimClaimant", fields: [claimantId], references: [id])
+  provider   Provider @relation(fields: [providerId], references: [id])
+  reviewedBy User?    @relation("ClaimReviewer", fields: [reviewedById], references: [id])
+
+  @@index([status, createdAt])
+  @@index([listingId])
+  @@index([claimantId])
+  @@map("listing_claims")
 }

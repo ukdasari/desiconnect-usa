@@ -202,6 +202,7 @@ function PrimaryAction({ l, onSignInNeeded }: { l: ListingDetailDto; onSignInNee
           {l.contactPhone ? " Call them directly instead." : " Contact them directly."}
         </Body>
         {l.contactPhone ? <Button title={`Call ${l.contactPhone}`} icon="call-outline" onPress={() => Linking.openURL(`tel:${l.contactPhone!.replace(/[^\d+]/g, "")}`)} /> : null}
+        <Button title="Own this business? Claim it" variant="secondary" icon="storefront-outline" onPress={() => Linking.openURL(`${WEBSITE_URL}/listings/${l.slug}/claim`)} />
       </Card>
     );
   }

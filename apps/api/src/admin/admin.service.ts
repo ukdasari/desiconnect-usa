@@ -13,6 +13,7 @@ import type { AuthUser } from "../auth/auth.types";
 import { badRequest, conflict, notFound } from "../common/errors";
 import { PrismaService } from "../common/prisma.service";
 import { listingSummaryInclude, providerInclude, toCredentialDto, toListingSummary, toProviderDto } from "../listings/listing.mapper";
+import { ClaimsService } from "../claims/claims.service";
 import { NotificationsService } from "../notifications/notifications.service";
 
 type Decision = z.infer<typeof moderationDecisionSchema>;
@@ -23,6 +24,7 @@ export class AdminService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly notifications: NotificationsService,
+    private readonly claims: ClaimsService,
   ) {}
 
   async stats(): Promise<AdminStatsDto> {
@@ -50,7 +52,7 @@ export class AdminService {
   }
 
   async reviewQueue(): Promise<AdminReviewQueueDto> {
-    const [listings, providers, credentials, reviews] = await Promise.all([
+    const [listings, providers, credentials, reviews, claims] = await Promise.all([
       this.prisma.listing.findMany({
         where: { status: "PENDING_REVIEW", deletedAt: null },
         include: { ...listingSummaryInclude, owner: { select: { email: true } } },
@@ -75,8 +77,10 @@ export class AdminService {
         orderBy: { createdAt: "asc" },
         take: 100,
       }),
+      this.claims.pending(),
     ]);
     return {
+      claims,
       listings: listings.map((l) => ({
         ...toListingSummary(l),
         ownerEmail: l.owner.email,

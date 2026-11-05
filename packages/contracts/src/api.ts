@@ -282,6 +282,21 @@ export interface AdminReviewQueueDto {
   providers: (ProviderDto & { ownerEmail: string })[];
   credentials: (CredentialDto & { providerId: string; businessName: string })[];
   reviews: (ReviewDto & { listingId: string; listingTitle: string })[];
+  claims: (ClaimDto & { claimantEmail: string; claimantName: string | null; businessName: string; businessVerification: string })[];
+}
+
+export type ClaimStatus = "PENDING" | "APPROVED" | "REJECTED" | "WITHDRAWN";
+
+export interface ClaimDto {
+  id: string;
+  status: ClaimStatus;
+  role: string;
+  phone: string;
+  verification: string | null;
+  reviewNote: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+  listing: { id: string; slug: string; title: string; city: string | null };
 }
 
 export interface ProviderDashboardDto {

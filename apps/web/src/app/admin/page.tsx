@@ -15,7 +15,7 @@ export default async function AdminPage() {
     api<AdminStatsDto>("/admin/stats").then((r) => r.data),
     api<AdminReviewQueueDto>("/admin/review-queue").then((r) => r.data),
   ]);
-  const total = queue.listings.length + queue.providers.length + queue.credentials.length + queue.reviews.length;
+  const total = queue.listings.length + queue.providers.length + queue.credentials.length + queue.reviews.length + queue.claims.length;
 
   return (
     <div className="container-page py-10">
@@ -32,6 +32,27 @@ export default async function AdminPage() {
       </div>
 
       {total === 0 ? <div className="mt-10"><EmptyState title="The queue is clear">New submissions will appear here.</EmptyState></div> : null}
+
+      {queue.claims.length ? (
+        <QueueSection title={`Listing claims (${queue.claims.length})`} note="Call the business on its public number to confirm the claimant works there before approving. Approval moves the listing to their business profile.">
+          {queue.claims.map((c) => (
+            <li key={c.id} className="grid gap-4 p-5 lg:grid-cols-[1fr_auto]">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge tone="peacock">Claim</Badge>
+                  <Badge tone={c.businessVerification === "VERIFIED" ? "leaf" : "neutral"}>Business {enumText(c.businessVerification).toLowerCase()}</Badge>
+                </div>
+                <p className="mt-2 font-semibold"><Link href={`/listings/${c.listing.slug}`} className="hover:underline">{c.listing.title}</Link>{c.listing.city ? `, ${c.listing.city}` : ""}</p>
+                <p className="text-sm text-ink-2">
+                  {c.claimantName ?? "Member"} ({c.claimantEmail}), {c.role} at {c.businessName}. Phone {c.phone}. Submitted {relativeTime(c.createdAt)}.
+                </p>
+                {c.verification ? <p className="mt-2 text-sm">How to confirm: {c.verification}</p> : null}
+              </div>
+              <DecisionForm target="claim" id={c.id} />
+            </li>
+          ))}
+        </QueueSection>
+      ) : null}
 
       {queue.listings.length ? (
         <QueueSection title={`Listings (${queue.listings.length})`}>

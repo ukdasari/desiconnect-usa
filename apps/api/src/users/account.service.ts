@@ -49,6 +49,7 @@ export class AccountService {
       this.prisma.aiUsage.deleteMany({ where: { userId: user.id } }),
       this.prisma.deviceToken.deleteMany({ where: { userId: user.id } }),
       this.prisma.localCredential.deleteMany({ where: { userId: user.id } }),
+      this.prisma.listingClaim.deleteMany({ where: { claimantId: user.id } }),
       this.prisma.userRole.deleteMany({ where: { userId: user.id } }),
       // files: detach from license records first, then delete the records
       this.prisma.providerCredential.updateMany({ where: { evidenceId: { in: attachments.map((a) => a.id) } }, data: { evidenceId: null } }),

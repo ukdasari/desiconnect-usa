@@ -446,3 +446,71 @@ describe("account deletion", () => {
     expect(res.body.error.message).toMatch(/only admin/);
   });
 });
+
+describe("listing claims", () => {
+  async function business(name: string) {
+    const u = await registerUser(ctx, name);
+    await ctx.http
+      .post(`${V}/providers`)
+      .set(auth(u.token))
+      .send({
+        businessName: `${name} LLC`, description: "We run an Indian restaurant in the Dallas area.", email: `${u.email}`,
+        phone: "(214) 555-0101", categorySlugs: ["home-services"], languages: ["English"], city: "Irving", state: "TX",
+      })
+      .expect(201);
+    return u;
+  }
+
+  it("lets a business claim an unclaimed listing and transfers it when an admin confirms", async () => {
+    const found = await ctx.http.get(`${V}/search`).query({ category: "restaurants", q: "Indian", pageSize: 50 }).expect(200);
+    const listing = found.body.data.filter((l: { isDemo: boolean }) => !l.isDemo).at(-1);
+    const body = { role: "Owner", phone: "214-555-0110", verification: "Call the restaurant and ask for the owner." };
+
+    // Needs a business profile first.
+    const nobody = await registerUser(ctx, "No Business");
+    const noProfile = await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(nobody.token)).send(body).expect(400);
+    expect(noProfile.body.error.message).toMatch(/business profile/);
+
+    const a = await business("Real Owner");
+    const b = await business("Other Claimant");
+    await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(a.token)).send({ role: "x", phone: "1" }).expect(400);
+    const claim = await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(a.token)).send(body).expect(201);
+    expect(claim.body.data).toMatchObject({ status: "PENDING", listing: { id: listing.id } });
+    await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(a.token)).send(body).expect(409);
+    const other = await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(b.token)).send({ role: "Manager", phone: "214-555-0111" }).expect(201);
+
+    const mine = await ctx.http.get(`${V}/me/claims`).set(auth(a.token)).expect(200);
+    expect(mine.body.data.map((c: { id: string }) => c.id)).toEqual([claim.body.data.id]);
+
+    const admin = await loginDemo(ctx, "admin");
+    const queue = await ctx.http.get(`${V}/admin/review-queue`).set(auth(admin.token)).expect(200);
+    expect(queue.body.data.claims.find((c: { id: string }) => c.id === claim.body.data.id)).toMatchObject({ claimantEmail: a.email, businessName: "Real Owner LLC" });
+    await ctx.http.post(`${V}/admin/claims/${claim.body.data.id}/decision`).set(auth(a.token)).send({ decision: "APPROVE" }).expect(403);
+    await ctx.http.post(`${V}/admin/claims/${claim.body.data.id}/decision`).set(auth(admin.token)).send({ decision: "REJECT" }).expect(400);
+    await ctx.http.post(`${V}/admin/claims/${claim.body.data.id}/decision`).set(auth(admin.token)).send({ decision: "APPROVE" }).expect(200);
+
+    // The listing now belongs to the claimant's business and accepts requests.
+    const detail = await ctx.http.get(`${V}/listings/${listing.slug}`).expect(200);
+    expect(detail.body.data.provider).toMatchObject({ businessName: "Real Owner LLC" });
+    const requester = await registerUser(ctx, "Hungry Again");
+    await ctx.http.post(`${V}/inquiries`).set(auth(requester.token)).send({ listingId: listing.id, message: "Do you cater for 50 people?", consentToShare: true }).expect(201);
+    const dash = await ctx.http.get(`${V}/provider/dashboard`).set(auth(a.token)).expect(200);
+    expect(dash.body.data.listings.some((l: { id: string }) => l.id === listing.id)).toBe(true);
+
+    // The competing claim is closed, and the listing can't be claimed again.
+    expect((await ctx.prisma.listingClaim.findUniqueOrThrow({ where: { id: other.body.data.id } })).status).toBe("REJECTED");
+    await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(b.token)).send(body).expect(409);
+    expect(await ctx.prisma.notification.count({ where: { userId: a.id, eventType: "claim.approved" } })).toBe(1);
+    expect(await ctx.prisma.auditLog.count({ where: { action: "claim.approve", resourceId: claim.body.data.id } })).toBe(1);
+  });
+
+  it("lets a claimant withdraw a pending claim", async () => {
+    const found = await ctx.http.get(`${V}/search`).query({ category: "restaurants", q: "Pakistani", pageSize: 50 }).expect(200);
+    const listing = found.body.data.filter((l: { isDemo: boolean }) => !l.isDemo).at(-1);
+    const a = await business("Changed Mind");
+    const claim = await ctx.http.post(`${V}/listings/${listing.id}/claims`).set(auth(a.token)).send({ role: "Owner", phone: "214-555-0112" }).expect(201);
+    const w = await ctx.http.post(`${V}/me/claims/${claim.body.data.id}/withdraw`).set(auth(a.token)).expect(200);
+    expect(w.body.data.status).toBe("WITHDRAWN");
+    await ctx.http.post(`${V}/me/claims/${claim.body.data.id}/withdraw`).set(auth(a.token)).expect(409);
+  });
+});

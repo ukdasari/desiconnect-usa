@@ -143,6 +143,21 @@
         ]
       }
     },
+    "/api/v1/auth/config": {
+      "get": {
+        "operationId": "AuthController_config",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Which sign-in method this deployment uses (for clients)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/search": {
       "get": {
         "operationId": "SearchController_searchAll",
@@ -3085,6 +3100,44 @@
       }
     },
     "/api/v1/me": {
+      "delete": {
+        "operationId": "MeController_deleteAccount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "confirm": {
+                    "type": "string",
+                    "const": "DELETE"
+                  }
+                },
+                "required": [
+                  "confirm"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete my account and personal data (body: { confirm: \"DELETE\" })",
+        "tags": [
+          "me"
+        ]
+      },
       "get": {
         "operationId": "MeController_me",
         "parameters": [],
@@ -3381,6 +3434,84 @@
             "bearer": []
           }
         ],
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/devices": {
+      "post": {
+        "operationId": "MeController_registerDevice",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "pattern": "^Expo(nent)?PushToken\\[[^\\]]{10,200}\\]$"
+                  },
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "ios",
+                      "android",
+                      "web"
+                    ]
+                  }
+                },
+                "required": [
+                  "token",
+                  "platform"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register this device's Expo push token",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/devices/{token}": {
+      "delete": {
+        "operationId": "MeController_removeDevice",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unregister a push token (on sign-out)",
         "tags": [
           "me"
         ]
@@ -4545,6 +4676,171 @@
         "summary": "Report a listing, provider or review",
         "tags": [
           "reports"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/claims": {
+      "post": {
+        "operationId": "ClaimsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 80
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 7,
+                    "maxLength": 30
+                  },
+                  "verification": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "role",
+                  "phone"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Claim an unclaimed directory listing for your business (reviewed by an admin)",
+        "tags": [
+          "claims"
+        ]
+      }
+    },
+    "/api/v1/me/claims": {
+      "get": {
+        "operationId": "ClaimsController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My listing claims",
+        "tags": [
+          "claims"
+        ]
+      }
+    },
+    "/api/v1/me/claims/{id}/withdraw": {
+      "post": {
+        "operationId": "ClaimsController_withdraw",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Withdraw a claim that is still waiting for review",
+        "tags": [
+          "claims"
+        ]
+      }
+    },
+    "/api/v1/admin/claims/{id}/decision": {
+      "post": {
+        "operationId": "ClaimsController_decide",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Confirm or reject a listing claim. Approval moves the listing to the claimant's business.",
+        "tags": [
+          "claims"
         ]
       }
     },

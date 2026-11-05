@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
-import { CATEGORIES, type ProviderDashboardDto } from "@desiconnect/contracts";
+import { CATEGORIES, type ClaimDto, type ProviderDashboardDto } from "@desiconnect/contracts";
+import { withdrawClaim } from "@/app/actions/engagement";
 import { CredentialForm } from "@/components/provider-forms";
 import { Alert, Badge, ButtonLink, EmptyState, PageHeader, Stat, VerificationBadge } from "@/components/ui";
 import { api } from "@/lib/api";
-import { enumText, formatDate } from "@/lib/format";
+import { enumText, formatDate, relativeTime } from "@/lib/format";
 import { getMe } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Provider dashboard" };
 
+const claimTone = { PENDING: "marigold", APPROVED: "leaf", REJECTED: "kumkum", WITHDRAWN: "neutral" } as const;
 const statusTone = { PUBLISHED: "leaf", PENDING_REVIEW: "marigold", REJECTED: "kumkum", DRAFT: "neutral", ARCHIVED: "neutral" } as const;
 
 export default async function ProviderDashboard({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
@@ -19,6 +21,7 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
   const { welcome } = await searchParams;
   const { data } = await api<ProviderDashboardDto | (Omit<ProviderDashboardDto, "provider"> & { provider: null })>("/provider/dashboard");
   const { provider, listings, stats } = data;
+  const claims = provider ? (await api<ClaimDto[]>("/me/claims")).data.filter((c) => c.status !== "WITHDRAWN") : [];
   const regulated = provider?.categories.some((c) => CATEGORIES.find((x) => x.slug === c.slug)?.regulated);
 
   if (!provider && !listings.length) {
@@ -89,6 +92,28 @@ export default async function ProviderDashboard({ searchParams }: { searchParams
 
         {provider ? (
           <aside className="space-y-6">
+            {claims.length ? (
+              <section className="rounded-3xl border border-line bg-surface p-5" aria-labelledby="claims-h">
+                <h2 id="claims-h" className="font-bold">Listing claims</h2>
+                <ul className="mt-3 space-y-3 text-sm">
+                  {claims.map((c) => (
+                    <li key={c.id}>
+                      <div className="flex items-start justify-between gap-2">
+                        <Link href={`/listings/${c.listing.slug}`} className="font-semibold hover:underline">{c.listing.title}</Link>
+                        <Badge tone={claimTone[c.status]}>{c.status === "PENDING" ? "In review" : enumText(c.status)}</Badge>
+                      </div>
+                      <p className="text-ink-2">Sent {relativeTime(c.createdAt)}{c.reviewNote ? `. ${c.reviewNote}` : ""}</p>
+                      {c.status === "PENDING" ? (
+                        <form action={withdrawClaim} className="mt-1">
+                          <input type="hidden" name="claimId" value={c.id} />
+                          <button type="submit" className="text-ink-2 underline hover:text-ink">Withdraw</button>
+                        </form>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
             <section className="rounded-3xl border border-line bg-surface p-5">
               <h2 className="font-bold">Licenses and credentials</h2>
               {regulated ? <p className="mt-1 text-sm text-ink-2">Your categories require a state license to be verified.</p> : null}
