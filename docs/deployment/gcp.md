@@ -150,6 +150,8 @@ against a real project. What was checked:
   - API: install, build, `pnpm deploy`, prisma generate, then `migrate deploy` and the production seed against a fresh
     PostGIS database. The server started with `NODE_ENV=production` and served the health check and restaurant search.
   - Website: the standalone server started and served `/`, `/restaurants` and a listing page using the API above.
+- GitHub Actions CI builds the real `api`, `migrate` and `web` images from the same Dockerfiles on every push to `main`;
+  they build successfully.
 - `deploy.sh` was dry-run, and the generated Cloud Run service YAML parsed with the expected variables and secrets.
 
 On the first real run, watch for these:
