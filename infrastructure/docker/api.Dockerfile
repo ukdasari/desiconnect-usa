@@ -16,6 +16,14 @@ RUN pnpm deploy --filter @desiconnect/api --prod --legacy /out \
  && cp -r packages/database/prisma /out/prisma \
  && cd /out && npx prisma generate --schema prisma/schema.prisma
 
+# Release job: apply migrations, then seed reference data (categories, places, restaurant directory).
+# Demo data is skipped when NODE_ENV=production unless SEED_DEMO=true.
+#   docker build -f infrastructure/docker/api.Dockerfile --target migrate -t desiconnect-migrate .
+FROM build AS migrate
+ENV NODE_ENV=production
+WORKDIR /repo/packages/database
+CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed/index.ts"]
+
 FROM base AS runtime
 ENV NODE_ENV=production
 WORKDIR /app

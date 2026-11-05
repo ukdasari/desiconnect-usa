@@ -85,5 +85,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -f infrastructure/docker/api.Dockerfile -t desiconnect-api:${{ github.sha }} .
+      - run: docker build -f infrastructure/docker/api.Dockerfile --target runtime -t desiconnect-api:${{ github.sha }} .
+      - run: docker build -f infrastructure/docker/api.Dockerfile --target migrate -t desiconnect-migrate:${{ github.sha }} .
       - run: docker build -f infrastructure/docker/web.Dockerfile -t desiconnect-web:${{ github.sha }} .

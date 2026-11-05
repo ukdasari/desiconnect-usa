@@ -1,5 +1,8 @@
 # Deployment
 
+**Google Cloud:** follow [gcp.md](gcp.md). It is a step-by-step runbook with scripts for Cloud Run, Cloud SQL, Secret
+Manager and Cloud Storage. The rest of this page is provider-neutral.
+
 ## Components
 
 | Component | Image / runtime | Notes |
@@ -37,5 +40,6 @@ staging, then production.
 
 ## Not verified in this build
 
-The Dockerfiles and docker-compose were written but could not be built here (no Docker daemon in the build environment).
-Run `docker compose up --build` once locally or in CI and fix any path issues before relying on them.
+The images could not be built in the development environment, which has no access to a container registry. Each
+Dockerfile's steps were instead run in a clean copy of the repository, and the API and website were started from the
+result (see "What was verified" in [gcp.md](gcp.md)). CI builds the real images on every push to `main`.
