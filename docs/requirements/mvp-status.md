@@ -61,6 +61,20 @@ Verified: iOS, Android and web bundles export cleanly; the web preview was drive
 (onboarding → explore → listing → sign-in → request with consent → my requests; provider listing creation in dark mode).
 Not verified here: running on a physical phone or simulator, push delivery, store builds.
 
+## Restaurant directory (DFW) ✅
+
+- **Restaurants** tab on the website (`/restaurants`) with cuisine filters (Indian, Pakistani, South Indian, vegetarian, halal,
+  biryani, street food) on top of the usual search, location and distance filters. Also reachable in the app through Explore and Desi AI.
+- 145 Indian and Pakistani restaurants across 25 DFW cities, compiled on 2026-11-05 from public listings (Yelp, TripAdvisor and
+  OpenTable search pages, Visit Plano, Zabihah, local press). Source per restaurant in `packages/database/prisma/seed/restaurants.ts`.
+- Street addresses and phone numbers appear only where a source stated them; otherwise the listing shows the city. Map pins are
+  city-level (no geocoding yet).
+- These listings are **unclaimed**: no business profile, no Verified badge, and no request form (the API refuses requests to them),
+  because nobody at the restaurant would receive them. Pages tell people to check details before going and invite owners to claim.
+- Desi AI understands restaurant questions ("Pakistani restaurants near Plano", "biryani in Irving") and keeps the cuisine as a filter.
+- Re-running `pnpm db:seed` replaces the imported set with the current file (`SEED_RESTAURANTS=false` skips it).
+- Not done: a self-serve claim flow, geocoded addresses, hours, and a periodic re-check for closures.
+
 ## Partly done (from later prompts)
 
 - **Prompt 4 (Desi AI):** intent + location + language + price extraction, database retrieval, structured result cards,

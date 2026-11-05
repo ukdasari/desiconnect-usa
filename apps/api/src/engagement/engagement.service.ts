@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@desiconnect/database";
 import {
+  isUnclaimedListing,
   RESUME_MAX_BYTES,
+  UNCLAIMED_REQUEST_MESSAGE,
   type ApplicationDto,
   type InquiryDto,
   type RegistrationDto,
@@ -46,6 +48,7 @@ export class EngagementService {
     const listing = await this.prisma.listing.findFirst({ where: { id: input.listingId, status: "PUBLISHED", deletedAt: null } });
     if (!listing) throw notFound("Listing");
     if (listing.ownerId === user.id) throw badRequest("You cannot send an inquiry to your own listing");
+    if (isUnclaimedListing({ kind: listing.kind, provider: listing.providerId })) throw badRequest(UNCLAIMED_REQUEST_MESSAGE);
     const recent = await this.prisma.inquiry.findFirst({
       where: { listingId: listing.id, requesterId: user.id, status: "NEW", createdAt: { gte: new Date(Date.now() - 86_400_000) } },
     });

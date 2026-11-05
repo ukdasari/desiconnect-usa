@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useLayoutEffect, useState } from "react";
 import { Linking, Pressable, Share, StyleSheet, Text, View } from "react-native";
-import { REGULATED_DISCLAIMER, type ListingDetailDto, type RegistrationDto } from "@desiconnect/contracts";
+import { isUnclaimedListing, REGULATED_DISCLAIMER, type ListingDetailDto, type RegistrationDto } from "@desiconnect/contracts";
 import { CategoryIcon, SaveButton } from "@/components/listing-card";
 import { Badge, Body, Button, Card, ErrorState, H1, H2, Loading, Notice, Screen } from "@/components/ui";
 import { api, errorMessage } from "@/lib/api";
@@ -190,6 +190,18 @@ function PrimaryAction({ l, onSignInNeeded }: { l: ListingDetailDto; onSignInNee
         />
         {l.event.ticketUrl ? <Button title="Buy tickets" variant="ghost" icon="open-outline" onPress={() => Linking.openURL(l.event!.ticketUrl!)} /> : null}
         <Button title="Ask the organizer" variant="secondary" onPress={() => onSignInNeeded(inquire, "Sign in to contact the organizer.")} />
+      </Card>
+    );
+  }
+  if (isUnclaimedListing(l)) {
+    return (
+      <Card>
+        <Text style={{ color: c.text, fontWeight: "800", fontSize: 17 }}>Not claimed yet</Text>
+        <Body muted>
+          We listed this business from public information. It hasn't claimed its listing, so requests can't be sent through DesiConnect yet.
+          {l.contactPhone ? " Call them directly instead." : " Contact them directly."}
+        </Body>
+        {l.contactPhone ? <Button title={`Call ${l.contactPhone}`} icon="call-outline" onPress={() => Linking.openURL(`tel:${l.contactPhone!.replace(/[^\d+]/g, "")}`)} /> : null}
       </Card>
     );
   }

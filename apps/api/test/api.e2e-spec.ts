@@ -362,3 +362,26 @@ describe("push devices", () => {
     expect(removed.body.data.removed).toBe(1);
   });
 });
+
+describe("restaurant directory", () => {
+  it("lists DFW Indian and Pakistani restaurants as unclaimed listings that can't receive requests", async () => {
+    const all = await ctx.http.get(`${V}/search`).query({ category: "restaurants", city: "Dallas", state: "TX", radiusMiles: 100, pageSize: 50 }).expect(200);
+    expect(all.body.meta.total).toBeGreaterThan(100);
+    const pak = await ctx.http.get(`${V}/search`).query({ category: "restaurants", q: "Pakistani", pageSize: 50 }).expect(200);
+    expect(pak.body.meta.total).toBeGreaterThan(15);
+    const listing = pak.body.data.find((l: { isDemo: boolean }) => !l.isDemo);
+    expect(listing).toMatchObject({ kind: "SERVICE", provider: null, isDemo: false, subcategory: { slug: "restaurants" } });
+
+    const detail = await ctx.http.get(`${V}/listings/${listing.slug}`).expect(200);
+    expect(detail.body.data.tags).toContain("Pakistani");
+    expect(detail.body.data.description).toMatch(/hasn't claimed or confirmed this listing/);
+
+    const requester = await registerUser(ctx, "Hungry");
+    const res = await ctx.http
+      .post(`${V}/inquiries`)
+      .set(auth(requester.token))
+      .send({ listingId: listing.id, message: "Do you cater for 50 people?", consentToShare: true })
+      .expect(400);
+    expect(res.body.error.message).toMatch(/hasn't claimed/);
+  });
+});

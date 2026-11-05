@@ -70,7 +70,7 @@ it is never seeded when `NODE_ENV=production` unless you set `SEED_DEMO=true` ex
 
 ```bash
 docker compose up --build            # postgres, redis, api (runs migrations on start), web
-docker compose run --rm seed         # one-off: categories, gazetteer and demo data
+docker compose run --rm seed         # one-off: categories, gazetteer, DFW restaurant directory and demo data
 ```
 
 ### Mobile app

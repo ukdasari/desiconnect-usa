@@ -11,6 +11,7 @@ import { PrismaClient, type Prisma } from "@prisma/client";
 import { CATEGORIES } from "@desiconnect/contracts";
 import { DFW_CITIES, DFW_ZIPS, MARKETS, US_METROS, type GeoSeed } from "./geo";
 import { DEMO_EVENTS, DEMO_JOBS, DEMO_PROPERTIES, DEMO_SERVICES } from "./demo";
+import { RESTAURANTS, type RestaurantSeed } from "./restaurants";
 
 const prisma = new PrismaClient();
 
@@ -87,7 +88,8 @@ async function seedGeo() {
 }
 
 async function clearDemoData() {
-  const demoListings = await prisma.listing.findMany({ where: { isDemo: true }, select: { id: true } });
+  // Includes listings the demo accounts created while someone tried the app (they aren't flagged isDemo).
+  const demoListings = await prisma.listing.findMany({ where: { OR: [{ isDemo: true }, { owner: { isDemo: true } }] }, select: { id: true } });
   const ids = demoListings.map((l) => l.id);
   await prisma.$transaction([
     prisma.inquiry.deleteMany({ where: { listingId: { in: ids } } }),
@@ -314,9 +316,68 @@ async function seedDemo() {
   for (const a of Object.values(DEMO_ACCOUNTS)) console.log(`   - ${a.email}`);
 }
 
+/** Real DFW Indian and Pakistani restaurants from public listings (see restaurants.ts). Not demo data. */
+export const RESTAURANT_SOURCE = "import:dfw-restaurants";
+const DIRECTORY_EMAIL = "directory@desiconnect.example";
+
+export function restaurantDescription(r: RestaurantSeed): string {
+  const kind = r.cuisine === "Indian & Pakistani" ? "Indian and Pakistani" : r.cuisine;
+  const styles = (r.styles ?? []).filter((s) => !["Indian", "Pakistani"].includes(s));
+  return [
+    `${r.name} serves ${kind} food in ${r.city}, Texas.${styles.length ? ` Known for: ${styles.join(", ").toLowerCase()}.` : ""}`,
+    "DesiConnect listed this restaurant from public information. The restaurant hasn't claimed or confirmed this listing yet, so check the address and hours before you go.",
+    "Own this restaurant? Contact DesiConnect to claim the listing and keep it up to date.",
+  ].join("\n\n");
+}
+
+async function seedRestaurants() {
+  const categories = await prisma.category.findMany({ where: { slug: { in: ["restaurants"] } } });
+  const restaurants = categories[0];
+  if (!restaurants) throw new Error("Category 'restaurants' is missing; run seedCategories first");
+  const owner =
+    (await prisma.user.findUnique({ where: { email: DIRECTORY_EMAIL } })) ??
+    (await prisma.user.create({
+      data: { id: randomUUID(), authSubject: `system:directory`, email: DIRECTORY_EMAIL, name: "DesiConnect directory", isDemo: false, roles: { create: [{ role: "CONSUMER" }] } },
+    }));
+  // Replace the previous import so the list stays in sync with restaurants.ts.
+  const old = await prisma.listing.findMany({ where: { source: { startsWith: RESTAURANT_SOURCE } }, select: { id: true, locationId: true } });
+  if (old.length) {
+    await prisma.listing.deleteMany({ where: { id: { in: old.map((o) => o.id) } } });
+    await prisma.location.deleteMany({ where: { id: { in: old.map((o) => o.locationId) } } });
+  }
+  const now = Date.now();
+  for (const [i, r] of RESTAURANTS.entries()) {
+    const location = await createLocation(r.city, r.name, r.address);
+    const id = randomUUID();
+    await prisma.listing.create({
+      data: {
+        id,
+        slug: listingSlug(r.name, id),
+        ownerId: owner.id,
+        categoryId: restaurants.id,
+        kind: "SERVICE",
+        title: r.name,
+        description: restaurantDescription(r),
+        locationId: location.id,
+        languages: [],
+        contactPhone: r.phone ?? null,
+        priceText: null,
+        tags: [...new Set([...(r.cuisine === "Indian & Pakistani" ? ["Indian", "Pakistani"] : [r.cuisine]), ...(r.styles ?? [])])],
+        status: "PUBLISHED",
+        isDemo: false,
+        source: `${RESTAURANT_SOURCE}:${r.source}`.slice(0, 500),
+        submittedAt: new Date(now - i * 60_000),
+        publishedAt: new Date(now - i * 60_000),
+      },
+    });
+  }
+  console.log(`✓ ${RESTAURANTS.length} DFW Indian and Pakistani restaurants (from public listings, unclaimed)`);
+}
+
 async function main() {
   await seedCategories();
   await seedGeo();
+  if (process.env.SEED_RESTAURANTS !== "false") await seedRestaurants();
   const demoFlag = process.env.SEED_DEMO;
   const isProd = process.env.NODE_ENV === "production";
   if (demoFlag === "false" || (isProd && demoFlag !== "true")) {

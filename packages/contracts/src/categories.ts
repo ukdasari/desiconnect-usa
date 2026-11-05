@@ -269,3 +269,15 @@ export function getCategory(slug: string): CategoryDefinition | undefined {
 export const REGULATED_DISCLAIMER =
   "DesiConnect USA is a directory and does not provide legal, insurance, medical or tax advice. " +
   "Verify a professional's license with the issuing state authority before engaging their services.";
+
+/**
+ * A service listing with no business profile behind it was added from public information (for example the
+ * restaurant directory) and hasn't been claimed by the business. Nobody at the business would receive requests
+ * sent through DesiConnect, so apps show direct contact details instead of a request form.
+ */
+export function isUnclaimedListing(l: { kind: string; provider: unknown }): boolean {
+  return l.kind === "SERVICE" && !l.provider;
+}
+
+export const UNCLAIMED_REQUEST_MESSAGE =
+  "This business hasn't claimed its DesiConnect listing yet, so it can't receive requests here. Contact them directly.";

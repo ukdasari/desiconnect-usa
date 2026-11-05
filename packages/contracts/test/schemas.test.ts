@@ -3,6 +3,7 @@ import {
   CATEGORIES,
   createInquirySchema,
   createListingSchema,
+  isUnclaimedListing,
   moderationDecisionSchema,
   registerSchema,
   searchQuerySchema,
@@ -64,5 +65,13 @@ describe("listing and moderation schemas", () => {
     expect(moderationDecisionSchema.safeParse({ decision: "REJECT" }).success).toBe(false);
     expect(moderationDecisionSchema.safeParse({ decision: "REJECT", reason: "Missing license" }).success).toBe(true);
     expect(moderationDecisionSchema.safeParse({ decision: "APPROVE" }).success).toBe(true);
+  });
+});
+
+describe("unclaimed listings", () => {
+  it("treats service listings without a business profile as unclaimed", () => {
+    expect(isUnclaimedListing({ kind: "SERVICE", provider: null })).toBe(true);
+    expect(isUnclaimedListing({ kind: "SERVICE", provider: { id: "p1" } })).toBe(false);
+    expect(isUnclaimedListing({ kind: "EVENT", provider: null })).toBe(false);
   });
 });

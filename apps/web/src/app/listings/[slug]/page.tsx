@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, Building2, CalendarDays, Globe, Languages, Mail, MapPin, Phone, Users } from "lucide-react";
-import { REGULATED_DISCLAIMER, type ListingDetailDto } from "@desiconnect/contracts";
+import { isUnclaimedListing, REGULATED_DISCLAIMER, type ListingDetailDto } from "@desiconnect/contracts";
 import { CategoryIcon } from "@/components/category-icon";
 import { InquiryForm, ReportForm, ReviewForm, RsvpForm } from "@/components/forms";
 import { FavoriteButton } from "@/components/listing";
@@ -38,6 +38,7 @@ export default async function ListingPage({ params }: Props) {
   const back = `/listings/${l.slug}`;
   const isOwner = me?.id === l.ownerId;
   const cta = CTA[l.kind] ?? CTA.SERVICE!;
+  const unclaimed = isUnclaimedListing(l);
   const full = !!(l.event?.capacity && l.event.registeredCount >= l.event.capacity);
 
   return (
@@ -212,7 +213,20 @@ export default async function ListingPage({ params }: Props) {
             </div>
           ) : null}
 
-          {!isOwner && l.status === "PUBLISHED" ? (
+          {unclaimed ? (
+            <div className="rounded-3xl border border-line bg-surface p-6">
+              <h2 className="text-lg font-bold">Not claimed yet</h2>
+              <p className="mt-1 text-sm text-ink-2">
+                We listed this business from public information. It hasn&apos;t claimed its listing, so requests can&apos;t be sent through DesiConnect yet.
+                {l.contactPhone ? " Call them directly using the number below." : " Contact them directly."}
+              </p>
+              <p className="mt-3 text-sm">
+                Own this business? <Link href="/provider/onboarding" className="font-semibold underline">Create a business profile</Link> and contact us to claim it.
+              </p>
+            </div>
+          ) : null}
+
+          {!isOwner && !unclaimed && l.status === "PUBLISHED" ? (
             <div className="rounded-3xl border border-line bg-surface p-6">
               <h2 className="text-lg font-bold">{cta.heading}</h2>
               <p className="mt-1 text-sm text-ink-2">We only share your details with this {l.kind === "PROPERTY" ? "owner" : l.kind === "JOB" ? "employer" : "provider"} after you agree.</p>

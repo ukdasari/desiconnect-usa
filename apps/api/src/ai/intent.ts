@@ -75,7 +75,8 @@ const CATEGORY_RULES: [RegExp, string][] = [
   [/\bcater(ing|er|ers)?\b/i, "catering"],
   [/\btiffin\b/i, "tiffin"],
   [/\b(sweets?|mithai|bakery)\b/i, "sweets-bakery"],
-  [/\b(restaurant|biryani|dosa|food)\b/i, "food"],
+  [/\b(restaurants?|eater(y|ies)|biryani|dosas?|karahi|nihari|dhaba|places? to eat)\b/i, "restaurants"],
+  [/\bfood\b/i, "food"],
   // home services
   [/\b(hvac|a\/?c repair|ac (is )?(not|broken)|air condition\w*|furnace|heating)\b/i, "hvac"],
   [/\bplumb\w*\b/i, "plumbing"],
@@ -124,7 +125,7 @@ const TOP_LEVEL: Record<string, string> = {
   "visitor-insurance": "insurance", "home-insurance": "insurance", "auto-insurance": "insurance", "life-insurance": "insurance", "health-insurance": "insurance",
   "green-cards": "immigration", "work-visas": "immigration", citizenship: "immigration", students: "immigration",
   "family-law": "lawyers", mortgage: "finance-taxes", cpa: "finance-taxes", "tax-preparation": "finance-taxes", "financial-planning": "finance-taxes",
-  catering: "food", tiffin: "food", "sweets-bakery": "food", hvac: "home-services", plumbing: "home-services", electrical: "home-services",
+  catering: "food", tiffin: "food", "sweets-bakery": "food", restaurants: "food", hvac: "home-services", plumbing: "home-services", electrical: "home-services",
   cleaning: "home-services", handyman: "home-services", dentists: "healthcare", pediatrics: "healthcare", "mental-health": "healthcare", ayurveda: "healthcare",
   roommates: "real-estate", "for-sale": "real-estate", rentals: "real-estate", concerts: "events", networking: "events",
   tutoring: "education", "music-dance": "education", "it-training": "education", grocery: "shopping", clothing: "shopping", jewelry: "shopping",
@@ -147,6 +148,8 @@ export function detectCategory(message: string): string | null {
 const STOP_WORDS = new Set(
   "a an and are any at best can cheap find for from get good help i in is it looking me my near need nearby of on or please search show some speaking that the there this to top want what where who with within you near me local usa us america united states anywhere nationwide remote jobs job job openings roles role position positions hiring miles mile around".split(" "),
 );
+
+const CUISINE_RE = /\b(south indian|north indian|pakistani|hyderabadi|punjabi|nepali|indo[- ]chinese|vegetarian|vegan|halal|biryani|dosa|chaat|street food|indian)\b/i;
 
 const NEW_ARRIVAL_RE = /\b(mov(ed|ing) to (the )?(usa|us|u\.s\.|america|united states)|new (to|in) (the )?(usa|us|america|country)|just (arrived|moved)|new arrival|after moving)\b/i;
 const NATIONWIDE_RE = /\b(in|across|anywhere in) (the )?(usa|us|u\.s\.|america|united states|country)\b|\bnationwide\b|\bremote\b/i;
@@ -232,6 +235,11 @@ export function parseIntent(message: string, ctx: ParseContext): ParsedIntent {
 
   // ---- free-text keywords (jobs use skills/titles; other categories rely on the category filter)
   let query: string | null = null;
+  // Food searches keep the cuisine or dish ("Pakistani", "South Indian", "biryani") so results match it.
+  if (top === "food") {
+    const cuisine = message.match(CUISINE_RE);
+    if (cuisine) query = cuisine[0].replace(/\s+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  }
   if (top === "jobs" || !categorySlug) {
     const removable = new Set<string>([
       ...(city ? city.toLowerCase().split(" ") : []),

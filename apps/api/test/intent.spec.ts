@@ -32,6 +32,10 @@ describe("Desi AI intent parsing", () => {
     ["dentist within 10 miles of Frisco who speaks Gujarati", { categorySlug: "dentists", radiusMiles: 10, language: "Gujarati" }],
     ["sarees shop in Irving", { categorySlug: "clothing", city: "Irving" }],
     ["unicorn grooming services in Plano", { categorySlug: null, query: "unicorn grooming services" }],
+    ["Pakistani restaurants near Plano", { categorySlug: "restaurants", query: "Pakistani", city: "Plano" }],
+    ["South Indian restaurant in Frisco", { categorySlug: "restaurants", query: "South Indian", city: "Frisco" }],
+    ["best biryani place in Irving", { categorySlug: "restaurants", query: "Biryani", city: "Irving" }],
+    ["halal karahi in Dallas", { categorySlug: "restaurants", query: "Halal", city: "Dallas" }],
   ];
 
   it.each(cases)("parses %s", (message, expected) => {
