@@ -125,6 +125,28 @@
   .prose-measure {
     max-width: 68ch;
   }
+  /* Wide screens: page content and the partner panel share the header's width, so edges line up. */
+  @media (min-width: 1280px) {
+    .page-with-rail {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+      max-width: 76rem;
+      margin-inline: auto;
+      padding-inline: 2rem;
+    }
+    .page-with-rail > main .container-page {
+      max-width: none;
+    }
+    /* Top-level page content aligns with the header; full-width bands (like the home hero) keep their padding. */
+    .page-with-rail > main > .container-page {
+      padding-inline: 0;
+    }
+    .page-with-rail > main > section:has(> .container-page) {
+      border-radius: 1.5rem;
+      margin-top: 1.5rem;
+    }
+  }
 }
 
 /* The one orchestrated motion moment: the hero sentence settles in once on load. */

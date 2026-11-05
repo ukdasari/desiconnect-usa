@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SiteFooter } from "@/components/site-footer";
+import { PartnerRail } from "@/components/partner-rail";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme";
 import "./globals.css";
@@ -23,7 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh">
         <ThemeProvider>
           <SiteHeader />
-          <main id="main">{children}</main>
+          <div className="page-with-rail">
+            <main id="main" className="min-w-0 xl:flex-1">{children}</main>
+            <PartnerRail variant="rail" />
+          </div>
+          <PartnerRail variant="strip" />
           <SiteFooter />
         </ThemeProvider>
       </body>
