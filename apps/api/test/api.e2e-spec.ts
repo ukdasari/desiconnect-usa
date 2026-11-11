@@ -514,3 +514,15 @@ describe("listing claims", () => {
     await ctx.http.post(`${V}/me/claims/${claim.body.data.id}/withdraw`).set(auth(a.token)).expect(409);
   });
 });
+
+describe("search across several categories", () => {
+  it("returns listings from any of the given categories, and rejects malformed lists", async () => {
+    const both = await ctx.http.get(`${V}/search`).query({ category: "lawyers,immigration", anywhere: "1", pageSize: 50 }).expect(200);
+    const imm = await ctx.http.get(`${V}/search`).query({ category: "immigration", anywhere: "1", pageSize: 50 }).expect(200);
+    const law = await ctx.http.get(`${V}/search`).query({ category: "lawyers", anywhere: "1", pageSize: 50 }).expect(200);
+    expect(imm.body.meta.total + law.body.meta.total).toBeGreaterThan(0);
+    expect(both.body.meta.total).toBe(imm.body.meta.total + law.body.meta.total);
+    await ctx.http.get(`${V}/search`).query({ category: "lawyers,,immigration" }).expect(400);
+    await ctx.http.get(`${V}/search`).query({ category: "a,b,c,d,e,f" }).expect(400);
+  });
+});

@@ -29,11 +29,13 @@ interface Props {
   fixed?: { kind?: ListingKind; category?: string };
   /** "cards" shows restaurant cards in a grid instead of rows. */
   layout?: "rows" | "cards";
+  /** Page-level query values the filter form must keep (for example the practice area on /attorneys). */
+  keep?: Record<string, string>;
 }
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
-export async function SearchView({ path, searchParams, fixed = {}, layout = "rows" }: Props) {
+export async function SearchView({ path, searchParams, fixed = {}, layout = "rows", keep = {} }: Props) {
   const [me, savedLoc] = await Promise.all([getMe(), getLocation()]);
   const p = (k: string) => one(searchParams[k]);
   const hasLocationParam = ["city", "state", "zip"].some((k) => p(k));
@@ -95,6 +97,7 @@ export async function SearchView({ path, searchParams, fixed = {}, layout = "row
             {cards ? <span className="text-sm font-normal text-ink-2">: keyword, location, distance, sort</span> : null}
           </summary>
           <form action={path} method="get" className={cards ? "grid items-start gap-4 px-5 pb-5 sm:grid-cols-2 lg:grid-cols-4 [&>*]:min-w-0" : "space-y-4 px-5 pb-5 lg:pt-5"}>
+            {Object.entries(keep).map(([k, v]) => (v ? <input key={k} type="hidden" name={k} value={v} /> : null))}
             <FilterField label="Keywords" id="f-q">
               <Input id="f-q" name="q" defaultValue={p("q")} placeholder={kind === "JOB" ? "Java, SDET, nurse" : "Name or keyword"} />
             </FilterField>

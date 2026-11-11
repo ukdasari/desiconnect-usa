@@ -10,6 +10,7 @@ import { buttonClass } from "./ui";
 const NAV = [
   { href: "/search", label: "Explore" },
   { href: "/restaurants", label: "Restaurants" },
+  { href: "/attorneys", label: "Attorneys" },
   { href: "/events", label: "Events" },
   { href: "/jobs", label: "Jobs" },
   { href: "/real-estate", label: "Real estate" },
@@ -27,13 +28,13 @@ export async function SiteHeader() {
       </a>
       <div className="container-page flex h-16 items-center gap-2 sm:gap-3">
         <Logo />
-        <nav aria-label="Main" className="ml-4 hidden items-center gap-0.5 xl:flex">
+        <nav aria-label="Main" className="ml-2 hidden items-center gap-0.5 xl:flex">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-full px-3 py-2 text-[0.95rem] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
+            <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
               {n.label}
             </Link>
           ))}
-          <Link href="/ai" className="ml-1 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-[0.95rem] font-semibold text-peacock-2 hover:bg-peacock-soft dark:text-marigold">
+          <Link href="/ai" className="ml-0.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-semibold text-peacock-2 hover:bg-peacock-soft dark:text-marigold">
             <Sparkles className="size-4" aria-hidden />
             Desi AI
           </Link>
@@ -43,7 +44,7 @@ export async function SiteHeader() {
           <details className="group relative">
             <summary className="flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 text-sm font-medium sm:px-3 [&::-webkit-details-marker]:hidden">
               <MapPin className="size-4 text-marigold-strong" aria-hidden />
-              <span className="hidden max-w-32 truncate sm:inline">{loc.label}</span>
+              <span className="hidden max-w-32 truncate sm:inline xl:hidden 2xl:inline">{loc.label}</span>
               <ChevronDown className="size-3.5 text-ink-2 transition-transform group-open:rotate-180" aria-hidden />
               <span className="sr-only">Change location</span>
             </summary>

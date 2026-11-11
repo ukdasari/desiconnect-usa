@@ -31,8 +31,10 @@ export class SearchService {
     // ---- category (a top-level slug includes all of its subcategories)
     let kind = query.kind ?? null;
     if (query.category) {
-      where.push(Prisma.sql`(c.slug = ${query.category} OR pc.slug = ${query.category})`);
-      kind ??= getCategory(query.category)?.kind ?? null;
+      const slugs = query.category.split(",");
+      where.push(Prisma.sql`(c.slug IN (${Prisma.join(slugs)}) OR pc.slug IN (${Prisma.join(slugs)}))`);
+      const kinds = new Set(slugs.map((s) => getCategory(s)?.kind ?? null));
+      if (kinds.size === 1) kind ??= [...kinds][0] ?? null;
     }
     if (kind) where.push(Prisma.sql`l.kind = ${kind}::"ListingKind"`);
 

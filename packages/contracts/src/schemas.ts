@@ -90,7 +90,8 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export const searchQuerySchema = z.object({
   q: optionalText(120),
-  category: slugSchema.optional(),
+  /** One category slug, or up to five separated by commas (for example "lawyers,immigration"). */
+  category: z.string().trim().regex(/^[a-z0-9-]{2,60}(,[a-z0-9-]{2,60}){0,4}$/, "Invalid category").optional(),
   kind: z.enum(LISTING_KINDS).optional(),
   city: optionalText(80),
   state: stateCodeSchema.optional(),
