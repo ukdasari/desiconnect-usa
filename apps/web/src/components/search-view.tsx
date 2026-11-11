@@ -1,3 +1,4 @@
+import { cn } from "@/lib/cn";
 import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
 import {
@@ -78,6 +79,7 @@ export async function SearchView({ path, searchParams, fixed = {}, layout = "row
 
   const qs = new URLSearchParams(Object.entries(searchParams).flatMap(([k, v]) => (v === undefined ? [] : [[k, one(v)]])));
   const back = `${path}${qs.toString() ? `?${qs}` : ""}`;
+  const cards = layout === "cards";
   const pageHref = (n: number) => {
     const next = new URLSearchParams(qs);
     next.set("page", String(n));
@@ -85,13 +87,14 @@ export async function SearchView({ path, searchParams, fixed = {}, layout = "row
   };
 
   return (
-    <div className="mt-8 grid gap-8 lg:grid-cols-[17rem_1fr]">
+    <div className={cards ? "mt-8 grid gap-6" : "mt-8 grid gap-8 lg:grid-cols-[17rem_1fr]"}>
       <aside aria-label="Filters">
-        <details className="group rounded-3xl border border-line bg-surface lg:open:block" open>
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-4 font-semibold lg:hidden [&::-webkit-details-marker]:hidden">
+        <details className="group rounded-3xl border border-line bg-surface lg:open:block" open={!cards}>
+          <summary className={cn("flex cursor-pointer list-none items-center gap-2 px-5 py-4 font-semibold [&::-webkit-details-marker]:hidden", !cards && "lg:hidden")}>
             <SlidersHorizontal className="size-4" aria-hidden /> Filters
+            {cards ? <span className="text-sm font-normal text-ink-2">: keyword, location, distance, sort</span> : null}
           </summary>
-          <form action={path} method="get" className="space-y-4 px-5 pb-5 lg:pt-5">
+          <form action={path} method="get" className={cards ? "grid items-start gap-4 px-5 pb-5 sm:grid-cols-2 lg:grid-cols-4 [&>*]:min-w-0" : "space-y-4 px-5 pb-5 lg:pt-5"}>
             <FilterField label="Keywords" id="f-q">
               <Input id="f-q" name="q" defaultValue={p("q")} placeholder={kind === "JOB" ? "Java, SDET, nurse" : "Name or keyword"} />
             </FilterField>
@@ -177,7 +180,7 @@ export async function SearchView({ path, searchParams, fixed = {}, layout = "row
                 ) : null}
               </Select>
             </FilterField>
-            <div className="flex gap-2 pt-1">
+            <div className={cn("flex gap-2 pt-1", cards && "self-end")}>
               <Button type="submit" className="flex-1">Show results</Button>
               <Link href={path} className="inline-flex h-11 items-center rounded-full px-3 text-sm font-semibold text-ink-2 hover:text-ink">Reset</Link>
             </div>
@@ -196,7 +199,7 @@ export async function SearchView({ path, searchParams, fixed = {}, layout = "row
             </p>
             {results.length ? (
               layout === "cards" ? (
-                <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {results.map((l) => <RestaurantCard key={l.id} listing={l} back={back} signedIn={!!me} />)}
                 </div>
               ) : (
