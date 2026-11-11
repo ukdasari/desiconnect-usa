@@ -23,7 +23,7 @@ export function RestaurantCard({ listing: l, back, signedIn }: { listing: Listin
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-surface transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(14,59,67,0.45)]">
       {/* band */}
-      <div className={cn("relative h-24 bg-gradient-to-br", style.band)}>
+      <div className={cn("relative h-14 bg-gradient-to-br", style.band)}>
         <svg className="absolute inset-0 h-full w-full text-white/15" aria-hidden focusable="false">
           <defs>
             <pattern id={`dots-${l.id}`} width="18" height="18" patternUnits="userSpaceOnUse">
@@ -32,9 +32,9 @@ export function RestaurantCard({ listing: l, back, signedIn }: { listing: Listin
           </defs>
           <rect width="100%" height="100%" fill={`url(#dots-${l.id})`} />
         </svg>
-        <span className="absolute -bottom-7 left-5 inline-flex size-14 items-center justify-center rounded-2xl border-4 border-surface bg-surface shadow-md" aria-hidden>
-          <span className={cn("inline-flex size-full items-center justify-center rounded-xl", style.tone)}>
-            <Icon className="size-6" />
+        <span className="absolute -bottom-5 left-5 inline-flex size-10 items-center justify-center rounded-xl border-[3px] border-surface bg-surface shadow-md" aria-hidden>
+          <span className={cn("inline-flex size-full items-center justify-center rounded-lg", style.tone)}>
+            <Icon className="size-[18px]" />
           </span>
         </span>
         <div className="absolute right-2 top-2 z-10 rounded-full bg-surface/90 backdrop-blur">
@@ -43,7 +43,7 @@ export function RestaurantCard({ listing: l, back, signedIn }: { listing: Listin
       </div>
 
       {/* body */}
-      <div className="flex flex-1 flex-col px-5 pb-5 pt-9">
+      <div className="flex flex-1 flex-col px-5 pb-5 pt-7">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-ink-2">{label}</span>
           {l.provider ? <VerificationBadge status={l.provider.verification} /> : null}

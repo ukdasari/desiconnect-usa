@@ -104,8 +104,8 @@ export default async function RestaurantsPage({ searchParams }: { searchParams: 
                 <MapPin className="size-4" aria-hidden /> Dallas–Fort Worth
               </p>
               <h1 id="restaurants-heading" className="mt-4 flex items-start gap-4 text-[2.1rem] font-bold leading-[1.05] sm:text-5xl">
-                <span className="mt-1 inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-marigold text-[#1b1206] shadow-lg sm:size-14" aria-hidden>
-                  <UtensilsCrossed className="size-6 sm:size-7" />
+                <span className="mt-1 inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-marigold text-[#1b1206] shadow-lg sm:size-11" aria-hidden>
+                  <UtensilsCrossed className="size-5" />
                 </span>
                 <span>Indian &amp; Pakistani restaurants</span>
               </h1>
@@ -161,8 +161,8 @@ export default async function RestaurantsPage({ searchParams }: { searchParams: 
                       : "border-line bg-surface hover:-translate-y-0.5 hover:border-ink-2 hover:shadow-sm",
                   )}
                 >
-                  <span className={cn("inline-flex size-10 shrink-0 sm:size-11 items-center justify-center rounded-xl", active ? "bg-white/15 text-white" : c.tone)} aria-hidden>
-                    <Icon className="size-5" />
+                  <span className={cn("inline-flex size-8 shrink-0 items-center justify-center rounded-lg", active ? "bg-white/15 text-white" : c.tone)} aria-hidden>
+                    <Icon className="size-4" />
                   </span>
                   <span className="min-w-0">
                     <span className="flex flex-wrap items-baseline gap-x-2 leading-tight">
