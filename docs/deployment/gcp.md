@@ -65,6 +65,13 @@ Set at least:
     printf '%s' 'YOUR_CLIENT_SECRET' | gcloud secrets create oidc-client-secret --data-file=-
     ```
 
+- **Email:**
+  - `EMAIL_PROVIDER=log` (the default) sends nothing.
+  - To send alerts and account emails:
+    1. Create a free account at <https://resend.com>.
+    2. Add and verify your domain, which takes about 10 minutes of DNS records.
+    3. Set `EMAIL_PROVIDER=resend` and `EMAIL_FROM="DesiConnect <updates@yourdomain.com>"`.
+    4. Store the key: `printf '%s' 're_…' | gcloud secrets create resend-api-key --data-file=-`
 - `AI_PROVIDER` is optional. To have Desi AI use Claude, set it to `anthropic` and store the key:
   `printf '%s' 'sk-ant-…' | gcloud secrets create anthropic-api-key --data-file=-`
 
@@ -93,7 +100,9 @@ The script:
 2. Runs the `prod-migrate` job: applies database migrations, then loads categories, places and the 145 DFW restaurants.
    No demo data is loaded in production. Restaurants that owners have claimed are never overwritten.
 3. Deploys `prod-api`, then `prod-web`, both public.
-4. Smoke-tests the API health endpoint and `/restaurants`.
+4. Creates or updates the `prod-alert-digest` Cloud Scheduler job. It calls the API every Sunday at 9:00 Central so the
+   API can send weekly alert digests.
+5. Smoke-tests the API health endpoint and `/restaurants`.
 
 At the end it prints the website and API addresses (`https://prod-web-<number>.us-central1.run.app`). Open the website,
 then register with the address you put in `BOOTSTRAP_ADMIN_EMAILS` (or sign in, with OIDC). **Moderation** appears in
@@ -135,6 +144,7 @@ EXPO_PUBLIC_WEBSITE_URL=https://desiconnect.com
 |---|---|
 | Release the current commit | `infrastructure/gcp/deploy.sh` |
 | Roll back | `SKIP_BUILD=1 TAG=<previous tag> infrastructure/gcp/deploy.sh` (tags: `gcloud artifacts docker images list us-central1-docker.pkg.dev/$PROJECT_ID/desiconnect/api --include-tags`). Migrations are forward-only, so they must stay compatible with the previous release. |
+| Send the weekly digest now (testing) | `gcloud scheduler jobs run prod-alert-digest --location us-central1` (only alerts that are due get a digest) |
 | API logs | `gcloud run services logs read prod-api --region us-central1 --limit 100` |
 | Migration job logs | Console → Cloud Run → Jobs → `prod-migrate` → latest execution |
 | Rotate the JWT secret (signs everyone out) | `openssl rand -hex 32 \| gcloud secrets versions add jwt-secret --data-file=-`, then redeploy with `SKIP_BUILD=1` |

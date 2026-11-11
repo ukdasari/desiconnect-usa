@@ -45,6 +45,13 @@ export const envSchema = z
     /** "expo" sends mobile push notifications through Expo's push service; "none" stores in-app notifications only. */
     PUSH_PROVIDER: z.enum(["none", "expo"]).default("none"),
     EXPO_ACCESS_TOKEN: z.string().optional().default(""),
+    /** "resend" sends email through Resend (https://resend.com); "log" only writes emails to the log. */
+    EMAIL_PROVIDER: z.enum(["log", "resend"]).default("log"),
+    RESEND_API_KEY: z.string().optional().default(""),
+    /** Sender, e.g. "DesiConnect <updates@desiconnect.com>". The domain must be verified with the provider. */
+    EMAIL_FROM: z.string().default("DesiConnect <updates@desiconnect.example>"),
+    /** Public website address, used for links in emails (alerts, unsubscribe). */
+    WEB_URL: z.string().url().default("http://localhost:3000"),
     /** Process notifications synchronously instead of via BullMQ (tests, or when Redis is absent). */
     NOTIFICATIONS_INLINE: bool,
     /** Requests per minute per visitor. */
@@ -76,6 +83,9 @@ export const envSchema = z
     }
     if (env.STORAGE_DRIVER === "s3" && !env.S3_BUCKET) {
       ctx.addIssue({ code: "custom", path: ["S3_BUCKET"], message: "S3_BUCKET is required when STORAGE_DRIVER=s3" });
+    }
+    if (env.EMAIL_PROVIDER === "resend" && !env.RESEND_API_KEY) {
+      ctx.addIssue({ code: "custom", path: ["RESEND_API_KEY"], message: "RESEND_API_KEY is required when EMAIL_PROVIDER=resend" });
     }
     if (env.AI_PROVIDER === "anthropic" && !env.ANTHROPIC_API_KEY) {
       ctx.addIssue({ code: "custom", path: ["ANTHROPIC_API_KEY"], message: "ANTHROPIC_API_KEY is required when AI_PROVIDER=anthropic" });

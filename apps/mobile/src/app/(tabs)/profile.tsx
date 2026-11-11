@@ -50,6 +50,7 @@ export default function Profile() {
       <View>
         <ListRow title="My requests" subtitle="Service requests, applications and RSVPs" icon="list-outline" onPress={() => router.push("/requests")} />
         <ListRow title="Updates" subtitle="Replies and status changes" icon="notifications-outline" onPress={() => router.push("/notifications")} />
+        <ListRow title="Alerts" subtitle="New events, jobs and places near you" icon="megaphone-outline" onPress={() => router.push("/alerts")} />
         <ListRow title="Edit profile" subtitle="Name, phone, city, languages" icon="person-circle-outline" onPress={() => router.push("/edit-profile")} />
         <ListRow title="Location" subtitle={location.label} icon="location-outline" onPress={() => router.push("/location")} />
         <ListRow

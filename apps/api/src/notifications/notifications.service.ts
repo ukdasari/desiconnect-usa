@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger, Optional } from "@nestjs/common";
 import type { Queue } from "bullmq";
 import { APP_CONFIG, type AppConfig } from "../config/config.module";
 import { PrismaService } from "../common/prisma.service";
+import { EmailService } from "./email.service";
 
 export const NOTIFICATIONS_QUEUE = "notifications";
 
@@ -20,11 +21,18 @@ export interface NotificationJob {
     | "provider.rejected"
     | "claim.submitted"
     | "claim.approved"
-    | "claim.rejected";
+    | "claim.rejected"
+    | "alert.match"
+    | "alert.digest";
   title: string;
   body: string;
   payload?: Record<string, string>;
+  /** Email version, when it should differ from title/body (digests). */
+  email?: { subject: string; text: string; html?: string };
 }
+
+/** Alerts follow the user's Notification settings; account notifications always go out. */
+const isAlert = (eventType: string) => eventType.startsWith("alert.");
 
 /**
  * Queues notifications through BullMQ (Redis). The worker stores an in-app notification and
@@ -38,6 +46,7 @@ export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
+    private readonly email: EmailService,
     @Optional() @InjectQueue(NOTIFICATIONS_QUEUE) private readonly queue?: Queue<NotificationJob>,
   ) {}
 
@@ -55,14 +64,24 @@ export class NotificationsService {
 
   /** Called by the worker (or inline). */
   async deliver(job: NotificationJob): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { id: job.userId }, select: { email: true } });
-    if (!user) return;
+    const user = await this.prisma.user.findUnique({ where: { id: job.userId }, select: { email: true, alertEmails: true, alertPush: true, deletedAt: true } });
+    if (!user || user.deletedAt) return;
     await this.prisma.notification.create({
       data: { userId: job.userId, channel: "IN_APP", eventType: job.eventType, title: job.title, body: job.body, payload: job.payload, status: "SENT", sentAt: new Date() },
     });
-    // Email transport placeholder: logs instead of sending until an email provider is configured.
-    this.logger.log({ to: user.email, eventType: job.eventType }, `email: ${job.title}`);
-    await this.sendPush(job);
+    const alert = isAlert(job.eventType);
+    if (!alert || user.alertEmails) {
+      const unsubscribeUrl = alert ? this.email.unsubscribeUrl(job.userId) : undefined;
+      const text = job.email?.text ?? job.body;
+      await this.email.send({
+        to: user.email,
+        subject: job.email?.subject ?? job.title,
+        text: unsubscribeUrl ? `${text}\n\n—\nStop these emails: ${unsubscribeUrl}\nManage alerts: ${this.config.WEB_URL.replace(/\/$/, "")}/account/alerts` : text,
+        html: job.email?.html,
+        unsubscribeUrl,
+      });
+    }
+    if (!alert || user.alertPush) await this.sendPush(job);
   }
 
   /** Mobile push through Expo's push service. Invalid tokens are removed. */

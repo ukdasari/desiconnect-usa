@@ -113,10 +113,13 @@ STORAGE_LOCAL_DIR=/mnt/uploads
 NOTIFICATIONS_INLINE=true
 AI_PROVIDER=${AI_PROVIDER:-none}
 PUSH_PROVIDER=${PUSH_PROVIDER:-none}
+EMAIL_PROVIDER=${EMAIL_PROVIDER:-log}
+EMAIL_FROM=${EMAIL_FROM:-}
+WEB_URL=${WEB_URL}
 ENV
 )
 $(secret_block DATABASE_URL=database-url JWT_SECRET=jwt-secret INTERNAL_API_KEY=internal-api-key \
-  ANTHROPIC_API_KEY=anthropic-api-key EXPO_ACCESS_TOKEN=expo-access-token)
+  ANTHROPIC_API_KEY=anthropic-api-key EXPO_ACCESS_TOKEN=expo-access-token RESEND_API_KEY=resend-api-key)
           volumeMounts:
             - name: uploads
               mountPath: /mnt/uploads
@@ -190,6 +193,20 @@ gc run services add-iam-policy-binding "$API_SERVICE" --region "$REGION" --membe
 say "Deploying website ($WEB_URL)"
 gc run services replace "$OUT/web.yaml" --region "$REGION"
 gc run services add-iam-policy-binding "$WEB_SERVICE" --region "$REGION" --member allUsers --role roles/run.invoker >/dev/null
+
+say "Weekly alert digest schedule (${DIGEST_SCHEDULE:-0 9 * * 0}, America/Chicago)"
+# Cloud Scheduler calls the API with the internal key; the API sends digests that are due (idempotent).
+if [[ "${DRY_RUN:-}" == "1" ]]; then INTERNAL_KEY="<internal-api-key>"; else
+  INTERNAL_KEY="$(gc secrets versions access latest --secret internal-api-key)"
+fi
+sched=(--location "$REGION" --schedule "${DIGEST_SCHEDULE:-0 9 * * 0}" --time-zone America/Chicago
+  --uri "${API_URL}/api/v1/internal/alerts/digest" --http-method POST --attempt-deadline 300s
+  --headers "x-internal-key=${INTERNAL_KEY},Content-Type=application/json" --message-body "{}")
+if [[ "${DRY_RUN:-}" == "1" ]] || ! gc scheduler jobs describe "${ENV_NAME}-alert-digest" --location "$REGION" >/dev/null 2>&1; then
+  gc scheduler jobs create http "${ENV_NAME}-alert-digest" "${sched[@]}" >/dev/null
+else
+  gc scheduler jobs update http "${ENV_NAME}-alert-digest" "${sched[@]/--headers/--update-headers}" >/dev/null
+fi
 
 if [[ "${DRY_RUN:-}" != "1" ]]; then
   say "Smoke test"

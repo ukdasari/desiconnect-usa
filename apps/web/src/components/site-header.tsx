@@ -78,6 +78,7 @@ export async function SiteHeader() {
                   <MenuLink href="/account">Profile</MenuLink>
                   <MenuLink href="/account/requests">My requests</MenuLink>
                   <MenuLink href="/account/saved">Saved</MenuLink>
+                  <MenuLink href="/account/alerts">Alerts</MenuLink>
                   <MenuLink href="/provider">{me.providerId || me.roles.some((r) => r !== "CONSUMER" && r !== "ADMIN") ? "Provider dashboard" : "List your business"}</MenuLink>
                   {me.roles.includes("ADMIN") ? <MenuLink href="/admin">Moderation</MenuLink> : null}
                 </ul>

@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { KolamPattern } from "@/components/kolam";
+import { GetAlertsLink } from "@/components/get-alerts";
 import { SearchView } from "@/components/search-view";
 import { buttonClass } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -136,6 +137,7 @@ export default async function RestaurantsPage({ searchParams }: { searchParams: 
               >
                 <Store className="size-4" aria-hidden /> Add your restaurant
               </Link>
+              <GetAlertsLink topic="restaurants" city={one(params.city) || undefined} state={one(params.city) ? one(params.state) || "TX" : undefined} onDark />
             </div>
           </div>
         </div>

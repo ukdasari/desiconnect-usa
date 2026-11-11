@@ -526,3 +526,92 @@ describe("search across several categories", () => {
     await ctx.http.get(`${V}/search`).query({ category: "a,b,c,d,e,f" }).expect(400);
   });
 });
+
+describe("alerts", () => {
+  const KEY = "test-internal-key-0123456789abcdef";
+
+  async function publishEvent(title: string, city = "Plano") {
+    const owner = await registerUser(ctx, "Organizer");
+    const admin = await loginDemo(ctx, "admin");
+    const created = await ctx.http.post(`${V}/listings`).set(auth(owner.token)).send(eventPayload({ title, city })).expect(201);
+    await ctx.http.post(`${V}/admin/listings/${created.body.data.id}/approve`).set(auth(admin.token)).expect(200);
+    return created.body.data as { id: string; slug: string };
+  }
+
+  it("creates, lists, updates and removes alerts, with sensible defaults and validation", async () => {
+    const u = await registerUser(ctx, "Alert Fan");
+    const ev = await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "events", city: "Plano", state: "TX", radiusMiles: 15 }).expect(201);
+    expect(ev.body.data).toMatchObject({ topic: "events", topicLabel: "Events", frequency: "INSTANT", radiusMiles: 15 });
+    expect(ev.body.data.locationLabel).toMatch(/Plano/);
+    const att = await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "attorneys" }).expect(201);
+    expect(att.body.data).toMatchObject({ frequency: "WEEKLY", locationLabel: null });
+    await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "events", city: "Plano", state: "TX", radiusMiles: 15 }).expect(409);
+    await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "pets" }).expect(400);
+    await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "jobs", zip: "123" }).expect(400);
+
+    await ctx.http.patch(`${V}/me/alerts/${att.body.data.id}`).set(auth(u.token)).send({ frequency: "INSTANT" }).expect(200);
+    const other = await registerUser(ctx, "Nosy");
+    await ctx.http.delete(`${V}/me/alerts/${att.body.data.id}`).set(auth(other.token)).expect(404);
+    await ctx.http.delete(`${V}/me/alerts/${att.body.data.id}`).set(auth(u.token)).expect(200);
+    const list = await ctx.http.get(`${V}/me/alerts`).set(auth(u.token)).expect(200);
+    expect(list.body.data.map((a: { topic: string }) => a.topic)).toEqual(["events"]);
+    await ctx.http.get(`${V}/me/alerts`).expect(401);
+  });
+
+  it("sends instant alerts to nearby followers when a listing is first published", async () => {
+    const near = await registerUser(ctx, "Near Fan");
+    const far = await registerUser(ctx, "Far Fan");
+    const weekly = await registerUser(ctx, "Weekly Fan");
+    await ctx.http.post(`${V}/me/alerts`).set(auth(near.token)).send({ topic: "events", city: "Plano", state: "TX", radiusMiles: 10 }).expect(201);
+    await ctx.http.post(`${V}/me/alerts`).set(auth(far.token)).send({ topic: "events", city: "Houston", state: "TX", radiusMiles: 25 }).expect(201);
+    await ctx.http.post(`${V}/me/alerts`).set(auth(weekly.token)).send({ topic: "events", frequency: "WEEKLY" }).expect(201);
+
+    const listing = await publishEvent("Plano Diwali Mela for alerts");
+    const got = (u: { id: string }) => ctx.prisma.notification.findMany({ where: { userId: u.id, eventType: "alert.match" } });
+    const nearN = await got(near);
+    expect(nearN).toHaveLength(1);
+    expect(nearN[0]!.title).toContain("Plano Diwali Mela for alerts");
+    expect(nearN[0]!.body).toContain(`https://desiconnect.test/listings/${listing.slug}`);
+    expect(await got(far)).toHaveLength(0);
+    expect(await got(weekly)).toHaveLength(0);
+
+    // Turning off alert emails and push keeps the in-app alert.
+    await ctx.http.patch(`${V}/me/notification-settings`).set(auth(near.token)).send({ alertEmails: false, alertPush: false }).expect(200);
+    const s = await ctx.http.get(`${V}/me/notification-settings`).set(auth(near.token)).expect(200);
+    expect(s.body.data).toMatchObject({ alertEmails: false, alertPush: false });
+    await publishEvent("Second Plano event for alerts");
+    expect(await got(near)).toHaveLength(2);
+  });
+
+  it("builds one weekly digest per user from new matching listings, then waits a week", async () => {
+    const u = await registerUser(ctx, "Digest Fan");
+    const created = await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "events", city: "Plano", state: "TX", radiusMiles: 30, frequency: "WEEKLY" }).expect(201);
+    await ctx.http.post(`${V}/me/alerts`).set(auth(u.token)).send({ topic: "everything", frequency: "WEEKLY" }).expect(201);
+    // Pretend the alerts were made a week ago so the digest is due.
+    const weekAgo = new Date(Date.now() - 8 * 86_400_000);
+    await ctx.prisma.alert.updateMany({ where: { userId: u.id }, data: { lastDigestAt: weekAgo, createdAt: weekAgo } });
+    await publishEvent("Digest garba night");
+
+    await ctx.http.post(`${V}/internal/alerts/digest`).expect(403);
+    await ctx.http.post(`${V}/internal/alerts/digest`).set("x-internal-key", "wrong-key-wrong-key-wrong-key-wrong").expect(403);
+    const res = await ctx.http.post(`${V}/internal/alerts/digest`).set("x-internal-key", KEY).expect(200);
+    expect(res.body.data.users).toBeGreaterThanOrEqual(1);
+    const digests = await ctx.prisma.notification.findMany({ where: { userId: u.id, eventType: "alert.digest" } });
+    expect(digests).toHaveLength(1);
+    expect(digests[0]!.body).toContain("Events near");
+
+    // Not due again until next week.
+    await ctx.http.post(`${V}/internal/alerts/digest`).set("x-internal-key", KEY).expect(200);
+    expect(await ctx.prisma.notification.count({ where: { userId: u.id, eventType: "alert.digest" } })).toBe(1);
+    expect((await ctx.prisma.alert.findUniqueOrThrow({ where: { id: created.body.data.id } })).lastDigestAt!.getTime()).toBeGreaterThan(weekAgo.getTime());
+  });
+
+  it("unsubscribes from alert emails with the signed link, and rejects forged tokens", async () => {
+    const u = await registerUser(ctx, "Unsub Fan");
+    const { EmailService } = await import("../src/notifications/email.service");
+    const token = ctx.app.get(EmailService).unsubscribeToken(u.id);
+    await ctx.http.post(`${V}/alerts/unsubscribe`).send({ token: `${u.id}.forgedsignature` }).expect(400);
+    await ctx.http.post(`${V}/alerts/unsubscribe`).send({ token }).expect(200);
+    expect((await ctx.prisma.user.findUniqueOrThrow({ where: { id: u.id } })).alertEmails).toBe(false);
+  });
+});

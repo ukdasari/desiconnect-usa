@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { REGULATED_DISCLAIMER } from "@desiconnect/contracts";
 import { KolamPattern } from "@/components/kolam";
+import { GetAlertsLink } from "@/components/get-alerts";
 import { SearchView } from "@/components/search-view";
 import { buttonClass } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -124,6 +125,7 @@ export default async function AttorneysPage({ searchParams }: { searchParams: Pr
               >
                 <Briefcase className="size-4" aria-hidden /> List your practice
               </Link>
+              <GetAlertsLink topic="attorneys" city={one(params.city) || undefined} state={one(params.city) ? one(params.state) || "TX" : undefined} onDark />
             </div>
           </div>
         </div>

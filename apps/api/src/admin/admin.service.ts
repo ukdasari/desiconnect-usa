@@ -13,6 +13,7 @@ import type { AuthUser } from "../auth/auth.types";
 import { badRequest, conflict, notFound } from "../common/errors";
 import { PrismaService } from "../common/prisma.service";
 import { listingSummaryInclude, providerInclude, toCredentialDto, toListingSummary, toProviderDto } from "../listings/listing.mapper";
+import { AlertsService } from "../alerts/alerts.service";
 import { ClaimsService } from "../claims/claims.service";
 import { NotificationsService } from "../notifications/notifications.service";
 
@@ -25,6 +26,7 @@ export class AdminService {
     private readonly audit: AuditService,
     private readonly notifications: NotificationsService,
     private readonly claims: ClaimsService,
+    private readonly alerts: AlertsService,
   ) {}
 
   async stats(): Promise<AdminStatsDto> {
@@ -120,6 +122,8 @@ export class AdminService {
       body: approve ? "Your listing was approved and is now visible to the community." : `Reason: ${decision.reason}`,
       payload: { listingId: id },
     });
+    // First publication only: re-approving an edited listing doesn't alert followers again.
+    if (approve && !listing.publishedAt) await this.alerts.onListingPublished(id);
     return { id, status: approve ? "PUBLISHED" : "REJECTED" };
   }
 

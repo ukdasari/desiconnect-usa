@@ -221,6 +221,9 @@ model User {
   status             UserStatus @default(ACTIVE)
   suspendedReason    String?
   isDemo             Boolean    @default(false)
+  /// Alert delivery switches (Notification settings). In-app alerts are always kept.
+  alertEmails        Boolean    @default(true)
+  alertPush          Boolean    @default(true)
   createdAt          DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt          DateTime   @updatedAt @db.Timestamptz(3)
   deletedAt          DateTime?  @db.Timestamptz(3)
@@ -247,6 +250,7 @@ model User {
   devices             DeviceToken[]
   claims              ListingClaim[]       @relation("ClaimClaimant")
   reviewedClaims      ListingClaim[]       @relation("ClaimReviewer")
+  alerts              Alert[]
 
   @@map("users")
 }
@@ -826,4 +830,34 @@ model ListingClaim {
   @@index([listingId])
   @@index([claimantId])
   @@map("listing_claims")
+}
+
+enum AlertFrequency {
+  INSTANT
+  WEEKLY
+}
+
+/// "Tell me about new <topic> near <place>". Topics are defined in @desiconnect/contracts (ALERT_TOPICS).
+model Alert {
+  id            String         @id @default(uuid()) @db.Uuid
+  userId        String         @db.Uuid
+  topic         String
+  city          String?
+  state         String?        @db.Char(2)
+  zipCode       String?
+  radiusMiles   Int            @default(25)
+  /// Resolved centre of the area (null = anywhere).
+  latitude      Float?
+  longitude     Float?
+  locationLabel String?
+  frequency     AlertFrequency
+  /// Listings published after this are included in the next weekly digest.
+  lastDigestAt  DateTime?      @db.Timestamptz(3)
+  createdAt     DateTime       @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([topic, frequency])
+  @@index([userId])
+  @@map("alerts")
 }

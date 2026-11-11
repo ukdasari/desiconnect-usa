@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/account", label: "Profile" },
   { href: "/account/requests", label: "My requests" },
   { href: "/account/saved", label: "Saved" },
+  { href: "/account/alerts", label: "Alerts" },
 ];
 
 export function AccountNav({ current }: { current: string }) {

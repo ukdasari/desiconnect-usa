@@ -16,6 +16,8 @@ Object.assign(process.env, {
   AI_DAILY_REQUEST_LIMIT: "5",
   BOOTSTRAP_ADMIN_EMAILS: "",
   CORS_ORIGINS: "http://localhost:3000",
+  INTERNAL_API_KEY: "test-internal-key-0123456789abcdef",
+  WEB_URL: "https://desiconnect.test",
 });
 
 export {};

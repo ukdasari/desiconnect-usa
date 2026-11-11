@@ -13,7 +13,7 @@ import { PrismaModule } from "./common/prisma.service";
 import { ConfigModule } from "./config/config.module";
 import { loadEnv } from "./config/env";
 import { HealthController } from "./health/health.controller";
-import { AdminModule, ClaimsModule, EngagementModule, ListingsModule, ProvidersModule, UsersModule } from "./modules";
+import { AdminModule, AlertsModule, ClaimsModule, EngagementModule, ListingsModule, ProvidersModule, UsersModule } from "./modules";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { SearchModule } from "./search/search.module";
 import { StorageModule } from "./storage/storage.service";
@@ -54,6 +54,7 @@ const env = loadEnv();
     ProvidersModule,
     AdminModule,
     ClaimsModule,
+    AlertsModule,
     AiModule,
   ],
   controllers: [HealthController],

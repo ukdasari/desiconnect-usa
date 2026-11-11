@@ -80,6 +80,29 @@ Not verified here: running on a physical phone or simulator, push delivery, stor
   Re-running the seed keeps claimed listings untouched (stable ids per name and city).
 - Not done: geocoded addresses, hours, and a periodic re-check for closures.
 
+## Alerts and notifications ✅
+
+- **Following topics:** users follow Events, Jobs, Restaurants, Attorneys, Real estate or "Everything new", optionally
+  near a city or ZIP code (5–100 miles). They set this up under Account → Alerts on the website, Profile → Alerts in the
+  app, or the "Get alerts" button on each section page. Each user can have up to 20 alerts.
+- **Instant alerts** (the default for events and jobs) go out when an admin first publishes a matching listing.
+- **Weekly digest** (the default for everything else):
+  - It's one email per user, Sundays at 9:00 Central, and only when there's something new.
+  - Cloud Scheduler triggers it by calling `POST /internal/alerts/digest` with the internal API key.
+- **Where alerts go:**
+  - Always shown under the bell (in-app).
+  - By email and phone push, each switchable under "How we reach you".
+  - Every alert email has a one-click unsubscribe link (`/unsubscribe?token=…`, a signed token) and a List-Unsubscribe
+    header, as CAN-SPAM requires.
+  - Account messages (replies, approvals) always go out.
+- **Email provider:**
+  - `EMAIL_PROVIDER=log` (default) only logs.
+  - `EMAIL_PROVIDER=resend` sends through Resend; set `RESEND_API_KEY` and `EMAIL_FROM` with a verified domain.
+- **Not done:**
+  - SMS and WhatsApp.
+  - A digest preview page.
+  - Per-alert keyword filters.
+
 ## Partly done (from later prompts)
 
 - **Prompt 4 (Desi AI):** intent + location + language + price extraction, database retrieval, structured result cards,

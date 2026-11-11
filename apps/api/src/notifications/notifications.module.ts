@@ -2,6 +2,7 @@ import { BullModule, Processor, WorkerHost } from "@nestjs/bullmq";
 import { type DynamicModule, Global, Module } from "@nestjs/common";
 import type { Job } from "bullmq";
 import { loadEnv } from "../config/env";
+import { EmailService } from "./email.service";
 import { NOTIFICATIONS_QUEUE, NotificationsService, type NotificationJob } from "./notifications.service";
 
 @Processor(NOTIFICATIONS_QUEUE)
@@ -23,7 +24,7 @@ export class NotificationsModule {
     const env = loadEnv();
     const useQueue = !!env.REDIS_URL && !env.NOTIFICATIONS_INLINE;
     if (!useQueue) {
-      return { module: NotificationsModule, providers: [NotificationsService], exports: [NotificationsService] };
+      return { module: NotificationsModule, providers: [NotificationsService, EmailService], exports: [NotificationsService, EmailService] };
     }
     const url = new URL(env.REDIS_URL);
     return {
@@ -40,8 +41,8 @@ export class NotificationsModule {
         }),
         BullModule.registerQueue({ name: NOTIFICATIONS_QUEUE }),
       ],
-      providers: [NotificationsService, NotificationsWorker],
-      exports: [NotificationsService],
+      providers: [NotificationsService, EmailService, NotificationsWorker],
+      exports: [NotificationsService, EmailService],
     };
   }
 }

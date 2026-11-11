@@ -7,7 +7,7 @@ source "$(dirname "$0")/lib.sh"
 
 say "Enabling APIs (takes a minute the first time)"
 gc services enable run.googleapis.com sqladmin.googleapis.com artifactregistry.googleapis.com \
-  cloudbuild.googleapis.com secretmanager.googleapis.com iam.googleapis.com storage.googleapis.com
+  cloudbuild.googleapis.com secretmanager.googleapis.com iam.googleapis.com storage.googleapis.com cloudscheduler.googleapis.com
 
 say "Artifact Registry repository: $REPO"
 gc artifacts repositories describe "$REPO" --location "$REGION" >/dev/null 2>&1 \
@@ -56,7 +56,7 @@ for s in database-url jwt-secret internal-api-key; do
   gc secrets add-iam-policy-binding "$s" --member "serviceAccount:${API_SA}" --role roles/secretmanager.secretAccessor >/dev/null
 done
 gc secrets add-iam-policy-binding internal-api-key --member "serviceAccount:${WEB_SA}" --role roles/secretmanager.secretAccessor >/dev/null
-for s in oidc-client-secret anthropic-api-key expo-access-token; do
+for s in oidc-client-secret anthropic-api-key expo-access-token resend-api-key; do
   if secret_exists "$s"; then
     sa="$API_SA"; [[ "$s" == oidc-client-secret ]] && sa="$WEB_SA"
     gc secrets add-iam-policy-binding "$s" --member "serviceAccount:${sa}" --role roles/secretmanager.secretAccessor >/dev/null

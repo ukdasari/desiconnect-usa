@@ -51,6 +51,7 @@ export default function RootLayout() {
             <Stack.Screen name="notifications" options={{ title: "Updates" }} />
             <Stack.Screen name="edit-profile" options={{ title: "Edit profile" }} />
             <Stack.Screen name="delete-account" options={{ title: "Delete account" }} />
+            <Stack.Screen name="alerts" options={{ title: "Alerts" }} />
             <Stack.Screen name="emergency" options={{ title: "Emergency help" }} />
             <Stack.Screen name="provider/index" options={{ title: "Provider dashboard" }} />
             <Stack.Screen name="provider/onboard" options={{ title: "List your business" }} />

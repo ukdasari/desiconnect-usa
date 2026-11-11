@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SearchView } from "@/components/search-view";
+import { GetAlertsLink } from "@/components/get-alerts";
 import { ButtonLink, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Events" };
@@ -8,6 +9,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
   return (
     <div className="container-page py-10">
       <PageHeader title="Events" description="Festivals, concerts, pujas, networking and family events, soonest first. RSVP in one step.">
+        <GetAlertsLink topic="events" />
         <ButtonLink href="/provider/listings/new?category=festivals" variant="secondary">Post an event</ButtonLink>
       </PageHeader>
       <SearchView path="/events" searchParams={await searchParams} fixed={{ kind: "EVENT" }} />

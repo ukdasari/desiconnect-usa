@@ -241,3 +241,36 @@ test.describe("listing claims", () => {
     await expect(owner.getByRole("heading", { name: "Not claimed yet" })).toHaveCount(0);
   });
 });
+
+test.describe("alerts", () => {
+  test("a member follows events near Plano, switches email off, and removes the alert", async ({ page }) => {
+    await registerNewUser(page, "Alert Tester");
+
+    await page.goto("/events");
+    await page.getByRole("link", { name: "Get alerts" }).click();
+    await expect(page.getByRole("heading", { name: "New alert" })).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Events/ })).toBeChecked();
+    const form = page.locator("#new");
+    await form.getByLabel("City", { exact: true }).fill("Plano");
+    await form.getByLabel("State", { exact: true }).selectOption("TX");
+    await form.getByLabel("Distance").selectOption("10");
+    await expect(page.getByLabel("How often?")).toHaveValue("INSTANT");
+    await page.getByRole("button", { name: "Create alert" }).click();
+    await expect(page.getByText("Alert created.")).toBeVisible();
+
+    const mine = page.getByRole("region", { name: "Your alerts" }).or(page.locator("section[aria-labelledby=mine-h]"));
+    await expect(mine.getByText("Within 10 miles of Plano")).toBeVisible();
+    await mine.getByRole("button", { name: "Switch to weekly" }).click();
+    await expect(mine.getByText("Weekly digest")).toBeVisible();
+
+    const email = page.getByRole("switch", { name: "Email alerts" });
+    await expect(email).toHaveAttribute("aria-checked", "true");
+    await email.click();
+    await expect(page.getByRole("switch", { name: "Email alerts" })).toHaveAttribute("aria-checked", "false");
+    await page.getByRole("switch", { name: "Email alerts" }).click();
+    await expect(page.getByRole("switch", { name: "Email alerts" })).toHaveAttribute("aria-checked", "true");
+
+    await mine.getByRole("button", { name: "Remove Events alert" }).click();
+    await expect(page.getByText("No alerts yet")).toBeVisible();
+  });
+});
