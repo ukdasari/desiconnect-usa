@@ -1,18 +1,20 @@
-import { Body, Controller, Get, Headers, HttpCode, Inject, Post } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, Inject, Ip, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
-import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from "@desiconnect/contracts";
+import { loginSchema, registerSchema, socialSignInSchema, type AuthConfigDto, type LoginInput, type RegisterInput, type SocialSignInInput } from "@desiconnect/contracts";
 import { unauthenticated } from "../common/errors";
 import { ApiZodBody, ZodBody } from "../common/zod";
 import { APP_CONFIG, type AppConfig } from "../config/config.module";
 import { AuthService } from "./auth.service";
 import { Public } from "./decorators";
+import { SocialAuthService } from "./social.service";
 
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(
     private readonly auth: AuthService,
+    private readonly social_: SocialAuthService,
     @Inject(APP_CONFIG) private readonly env: AppConfig,
   ) {}
 
@@ -47,6 +49,16 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post("social")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Finish a Google, Facebook or X sign-in: exchange the provider's code for a session" })
+  @ApiZodBody(socialSignInSchema)
+  social(@ZodBody(socialSignInSchema) body: SocialSignInInput, @Ip() ip: string) {
+    return this.social_.signIn(body, ip);
+  }
+
+  @Public()
   @Get("config")
   @ApiOperation({ summary: "Which sign-in method this deployment uses (for clients)" })
   config() {
@@ -54,6 +66,7 @@ export class AuthController {
       mode: this.env.AUTH_MODE,
       issuer: this.env.AUTH_MODE === "oidc" ? this.env.OIDC_ISSUER : null,
       audience: this.env.AUTH_MODE === "oidc" ? this.env.OIDC_AUDIENCE || null : null,
-    };
+      social: this.social_.enabled(),
+    } satisfies AuthConfigDto;
   }
 }

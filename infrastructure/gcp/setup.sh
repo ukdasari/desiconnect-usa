@@ -56,7 +56,7 @@ for s in database-url jwt-secret internal-api-key; do
   gc secrets add-iam-policy-binding "$s" --member "serviceAccount:${API_SA}" --role roles/secretmanager.secretAccessor >/dev/null
 done
 gc secrets add-iam-policy-binding internal-api-key --member "serviceAccount:${WEB_SA}" --role roles/secretmanager.secretAccessor >/dev/null
-for s in oidc-client-secret anthropic-api-key expo-access-token resend-api-key; do
+for s in oidc-client-secret anthropic-api-key expo-access-token resend-api-key google-client-secret facebook-app-secret x-client-secret; do
   if secret_exists "$s"; then
     sa="$API_SA"; [[ "$s" == oidc-client-secret ]] && sa="$WEB_SA"
     gc secrets add-iam-policy-binding "$s" --member "serviceAccount:${sa}" --role roles/secretmanager.secretAccessor >/dev/null

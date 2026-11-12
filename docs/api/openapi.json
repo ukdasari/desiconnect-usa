@@ -143,6 +143,62 @@
         ]
       }
     },
+    "/api/v1/auth/social": {
+      "post": {
+        "operationId": "AuthController_social",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "google",
+                      "facebook",
+                      "x"
+                    ]
+                  },
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "codeVerifier": {
+                    "type": "string",
+                    "minLength": 43,
+                    "maxLength": 128
+                  },
+                  "redirectUri": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "provider",
+                  "code",
+                  "redirectUri"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Finish a Google, Facebook or X sign-in: exchange the provider's code for a session",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/auth/config": {
       "get": {
         "operationId": "AuthController_config",

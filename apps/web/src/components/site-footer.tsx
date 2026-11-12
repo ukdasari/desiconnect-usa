@@ -30,6 +30,11 @@ export function SiteFooter() {
         <p className="container-page py-5 text-xs text-ink-2">
           DesiConnect USA is a directory. It does not provide legal, insurance, medical or tax advice, and it does not guarantee any provider.
           Listings marked Demo are sample data.
+          <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/privacy" className="hover:text-ink hover:underline">Privacy policy</Link>
+            <Link href="/terms" className="hover:text-ink hover:underline">Terms of service</Link>
+            <Link href="/data-deletion" className="hover:text-ink hover:underline">Delete your data</Link>
+          </span>
         </p>
       </div>
     </footer>

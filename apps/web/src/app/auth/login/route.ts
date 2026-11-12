@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_MODE, client, COOKIES, cookieOptions, oidcConfig, redirectUri, settings } from "@/lib/oidc";
+import { oidcConnections } from "@/lib/social";
 
 function safeNext(value: string | null) {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : "/account";
@@ -31,6 +32,9 @@ export async function GET(req: NextRequest) {
   if (s.audience) params.audience = s.audience; // Auth0 issues a JWT access token for this API
   if (process.env.OIDC_PROMPT) params.prompt = process.env.OIDC_PROMPT; // e.g. "consent" where refresh tokens require it
   if (req.nextUrl.searchParams.get("signup") === "1") params.screen_hint = "signup"; // Auth0/Clerk hint; ignored elsewhere
+  // "Continue with Google/Facebook/X": go straight to that Auth0 social connection (OIDC_SOCIAL_CONNECTIONS).
+  const connection = req.nextUrl.searchParams.get("connection");
+  if (connection && Object.values(oidcConnections()).includes(connection)) params.connection = connection;
 
   const res = NextResponse.redirect(client.buildAuthorizationUrl(config, params));
   res.cookies.set(COOKIES.flow, JSON.stringify({ verifier, state, nonce, next }), cookieOptions(600));

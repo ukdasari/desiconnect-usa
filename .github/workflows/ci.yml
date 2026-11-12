@@ -56,6 +56,15 @@ jobs:
         env:
           E2E_START_SERVERS: "1"
           DISABLE_RATE_LIMIT: "true"
+          APP_URL: http://localhost:3000
+          WEB_URL: http://localhost:3000
+          # Placeholder IDs so the social sign-in buttons appear; the test never contacts the providers.
+          GOOGLE_CLIENT_ID: e2e-google
+          GOOGLE_CLIENT_SECRET: e2e-secret
+          FACEBOOK_APP_ID: e2e-facebook
+          FACEBOOK_APP_SECRET: e2e-secret
+          X_CLIENT_ID: e2e-x
+          X_CLIENT_SECRET: e2e-secret
         run: pnpm test:e2e
       - name: End-to-end tests in OIDC mode (local dev provider)
         env:

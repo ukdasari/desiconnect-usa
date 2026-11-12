@@ -116,10 +116,14 @@ PUSH_PROVIDER=${PUSH_PROVIDER:-none}
 EMAIL_PROVIDER=${EMAIL_PROVIDER:-log}
 EMAIL_FROM=${EMAIL_FROM:-}
 WEB_URL=${WEB_URL}
+GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+FACEBOOK_APP_ID=${FACEBOOK_APP_ID:-}
+X_CLIENT_ID=${X_CLIENT_ID:-}
 ENV
 )
 $(secret_block DATABASE_URL=database-url JWT_SECRET=jwt-secret INTERNAL_API_KEY=internal-api-key \
-  ANTHROPIC_API_KEY=anthropic-api-key EXPO_ACCESS_TOKEN=expo-access-token RESEND_API_KEY=resend-api-key)
+  ANTHROPIC_API_KEY=anthropic-api-key EXPO_ACCESS_TOKEN=expo-access-token RESEND_API_KEY=resend-api-key \
+  GOOGLE_CLIENT_SECRET=google-client-secret FACEBOOK_APP_SECRET=facebook-app-secret X_CLIENT_SECRET=x-client-secret)
           volumeMounts:
             - name: uploads
               mountPath: /mnt/uploads
@@ -176,6 +180,8 @@ OIDC_ISSUER=${OIDC_ISSUER:-}
 OIDC_AUDIENCE=${OIDC_AUDIENCE:-}
 OIDC_CLIENT_ID=${OIDC_CLIENT_ID:-}
 OIDC_SCOPES=$([[ "$AUTH_MODE" == oidc ]] && echo "openid profile email offline_access")
+OIDC_SOCIAL_CONNECTIONS=${OIDC_SOCIAL_CONNECTIONS:-}
+SUPPORT_EMAIL=${SUPPORT_EMAIL:-}
 ENV
 )
 $(secret_block INTERNAL_API_KEY=internal-api-key OIDC_CLIENT_SECRET=oidc-client-secret)

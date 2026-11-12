@@ -615,3 +615,87 @@ describe("alerts", () => {
     expect((await ctx.prisma.user.findUniqueOrThrow({ where: { id: u.id } })).alertEmails).toBe(false);
   });
 });
+
+describe("social sign-in", () => {
+  const redirectUri = (p: string) => `https://desiconnect.test/auth/social/${p}/callback`;
+  const verifier = "v".repeat(43);
+  let profiles: Record<string, Record<string, unknown>>;
+  let fetchSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    profiles = {};
+    const realFetch = global.fetch;
+    fetchSpy = jest.spyOn(global, "fetch").mockImplementation(async (input: string | URL | Request, init?: RequestInit) => {
+      const url = String(input instanceof Request ? input.url : input);
+      const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+      if (url.startsWith("https://oauth2.googleapis.com/token") || url.startsWith("https://api.x.com/2/oauth2/token")) {
+        const code = new URLSearchParams(String(init?.body)).get("code")!;
+        return code === "bad" ? reply({ error: "invalid_grant" }, 400) : reply({ access_token: `tok:${code}` });
+      }
+      if (url.includes("graph.facebook.com") && url.includes("/oauth/access_token")) {
+        return reply({ access_token: `tok:${new URL(url).searchParams.get("code")}` });
+      }
+      const tokenOf = () => {
+        const h = new Headers(init?.headers).get("authorization");
+        return h ? h.replace("Bearer ", "") : `tok:${(new URL(url).searchParams.get("access_token") ?? "").slice(4)}`;
+      };
+      if (url.startsWith("https://openidconnect.googleapis.com/v1/userinfo") || url.includes("graph.facebook.com") || url.startsWith("https://api.x.com/2/users/me")) {
+        const p = profiles[tokenOf().slice(4)];
+        return p ? reply(p) : reply({ error: "no such profile" }, 401);
+      }
+      return realFetch(input, init);
+    });
+  });
+  afterEach(() => fetchSpy.mockRestore());
+
+  const signIn = (provider: string, code: string) =>
+    ctx.http.post(`${V}/auth/social`).send({ provider, code, codeVerifier: verifier, redirectUri: redirectUri(provider) });
+
+  it("advertises configured providers", async () => {
+    const res = await ctx.http.get(`${V}/auth/config`).expect(200);
+    expect(res.body.data.social).toEqual([
+      { provider: "google", clientId: "google-client-id" },
+      { provider: "facebook", clientId: "fb-app-id" },
+      { provider: "x", clientId: "x-client-id" },
+    ]);
+  });
+
+  it("creates an account on first Google sign-in and signs the same person in again later", async () => {
+    profiles["g1"] = { sub: "google-sub-1", email: "Priya.Social@gmail.com", email_verified: true, name: "Priya Social" };
+    const first = await signIn("google", "g1").expect(200);
+    expect(first.body.data.user).toMatchObject({ email: "priya.social@gmail.com", name: "Priya Social" });
+    const me = await ctx.http.get(`${V}/me`).set(auth(first.body.data.token)).expect(200);
+    expect(me.body.data.email).toBe("priya.social@gmail.com");
+    const again = await signIn("google", "g1").expect(200);
+    expect(again.body.data.user.id).toBe(first.body.data.user.id);
+    expect(await ctx.prisma.socialIdentity.count({ where: { userId: first.body.data.user.id } })).toBe(1);
+    // No password exists for this account.
+    await ctx.http.post(`${V}/auth/login`).send({ email: "priya.social@gmail.com", password: "anything-at-all" }).expect(401);
+  });
+
+  it("links to an existing account only when the provider confirms the email", async () => {
+    const existing = await registerUser(ctx, "Has Password");
+    profiles["fb1"] = { id: "fb-1", email: existing.email, name: "Has Password" };
+    const refused = await signIn("facebook", "fb1").expect(403);
+    expect(refused.body.error.message).toMatch(/already exists/);
+    profiles["x1"] = { data: { id: "x-1", name: "Has Password", confirmed_email: existing.email } };
+    const linked = await signIn("x", "x1").expect(200);
+    expect(linked.body.data.user.id).toBe(existing.id);
+    expect(await ctx.prisma.auditLog.count({ where: { action: "user.link_identity", resourceId: existing.id } })).toBe(1);
+  });
+
+  it("creates accounts from Facebook, and explains when X shares no email", async () => {
+    profiles["fb2"] = { id: "fb-2", email: "new.fb.user@example.com", name: "New FB" };
+    const fb = await signIn("facebook", "fb2").expect(200);
+    expect(fb.body.data.user.email).toBe("new.fb.user@example.com");
+    profiles["x2"] = { data: { id: "x-2", name: "No Email" } };
+    const x = await signIn("x", "x2").expect(403);
+    expect(x.body.error.message).toMatch(/didn't share an email/);
+  });
+
+  it("rejects bad codes, foreign redirect addresses and unknown providers", async () => {
+    await signIn("google", "bad").expect(401);
+    await ctx.http.post(`${V}/auth/social`).send({ provider: "google", code: "g9", codeVerifier: verifier, redirectUri: "https://evil.example/auth/social/google/callback" }).expect(400);
+    await ctx.http.post(`${V}/auth/social`).send({ provider: "myspace", code: "g9", redirectUri: redirectUri("google") }).expect(400);
+  });
+});

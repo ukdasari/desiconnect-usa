@@ -45,6 +45,13 @@ export const envSchema = z
     /** "expo" sends mobile push notifications through Expo's push service; "none" stores in-app notifications only. */
     PUSH_PROVIDER: z.enum(["none", "expo"]).default("none"),
     EXPO_ACCESS_TOKEN: z.string().optional().default(""),
+    /** Social sign-in for AUTH_MODE=local. A provider is offered once its ID and secret are both set. */
+    GOOGLE_CLIENT_ID: z.string().optional().default(""),
+    GOOGLE_CLIENT_SECRET: z.string().optional().default(""),
+    FACEBOOK_APP_ID: z.string().optional().default(""),
+    FACEBOOK_APP_SECRET: z.string().optional().default(""),
+    X_CLIENT_ID: z.string().optional().default(""),
+    X_CLIENT_SECRET: z.string().optional().default(""),
     /** "resend" sends email through Resend (https://resend.com); "log" only writes emails to the log. */
     EMAIL_PROVIDER: z.enum(["log", "resend"]).default("log"),
     RESEND_API_KEY: z.string().optional().default(""),

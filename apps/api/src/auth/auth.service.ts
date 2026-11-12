@@ -157,6 +157,28 @@ export class AuthService {
     };
   }
 
+  /** Session for an existing user (social sign-in). */
+  async sessionFor(userId: string): Promise<SessionDto> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    return this.session(user);
+  }
+
+  /** New account from a social sign-in: no password; the linked identity is how they sign in. */
+  async createSocialUser(input: { email: string; name: string | null; provider: string; providerUserId: string }) {
+    const id = randomUUID();
+    return this.prisma.user.create({
+      data: {
+        id,
+        authSubject: `local:${id}`,
+        email: input.email,
+        name: input.name,
+        roles: { create: this.initialRoles(input.email).map((role) => ({ role })) },
+        consents: { create: [{ type: "TERMS", granted: true }, { type: "PRIVACY", granted: true }] },
+        socialIdentities: { create: { provider: input.provider, providerUserId: input.providerUserId, email: input.email } },
+      },
+    });
+  }
+
   private async session(user: { id: string; email: string }): Promise<SessionDto> {
     const { token, expiresAt } = await this.tokens.signLocal(user.id, user.email);
     return { token, expiresAt: expiresAt.toISOString(), user: await this.me(user.id) };

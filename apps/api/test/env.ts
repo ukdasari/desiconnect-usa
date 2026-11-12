@@ -18,6 +18,12 @@ Object.assign(process.env, {
   CORS_ORIGINS: "http://localhost:3000",
   INTERNAL_API_KEY: "test-internal-key-0123456789abcdef",
   WEB_URL: "https://desiconnect.test",
+  GOOGLE_CLIENT_ID: "google-client-id",
+  GOOGLE_CLIENT_SECRET: "google-secret",
+  FACEBOOK_APP_ID: "fb-app-id",
+  FACEBOOK_APP_SECRET: "fb-secret",
+  X_CLIENT_ID: "x-client-id",
+  X_CLIENT_SECRET: "x-secret",
 });
 
 export {};

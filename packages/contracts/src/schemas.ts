@@ -321,6 +321,18 @@ export const paginationSchema = z.object({
 
 // ---------- devices (push notifications) ----------
 
+export const SOCIAL_PROVIDERS = ["google", "facebook", "x"] as const;
+export type SocialProvider = (typeof SOCIAL_PROVIDERS)[number];
+
+/** Finish a social sign-in: the authorization code (and PKCE verifier) from the provider's redirect. */
+export const socialSignInSchema = z.object({
+  provider: z.enum(SOCIAL_PROVIDERS),
+  code: z.string().min(1).max(2048),
+  codeVerifier: z.string().min(43).max(128).optional(),
+  redirectUri: z.string().url().max(500),
+});
+export type SocialSignInInput = z.infer<typeof socialSignInSchema>;
+
 /** A business owner asks to take over an unclaimed directory listing. */
 export const createClaimSchema = z.object({
   role: z.string().trim().min(2, "Tell us your role at the business").max(80),

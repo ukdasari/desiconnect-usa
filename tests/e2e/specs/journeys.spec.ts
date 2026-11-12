@@ -274,3 +274,34 @@ test.describe("alerts", () => {
     await expect(page.getByText("No alerts yet")).toBeVisible();
   });
 });
+
+test.describe("social sign-in", () => {
+  test("shows the configured providers and starts each sign-in safely", async ({ page }) => {
+    await page.goto("/login?next=/account/alerts");
+    for (const name of ["Google", "Facebook", "X"]) await expect(page.getByRole("link", { name: `Continue with ${name}` })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Continue with Google" })).toHaveAttribute("href", "/auth/social/google?next=%2Faccount%2Falerts");
+
+    // Start the flow without leaving the site: inspect the redirect to the provider.
+    const start = async (provider: string) => {
+      const res = await page.request.get(`/auth/social/${provider}?next=/account/alerts`, { maxRedirects: 0 });
+      expect(res.status()).toBe(307);
+      return new URL(res.headers()["location"]!);
+    };
+    const google = await start("google");
+    expect(google.host).toBe("accounts.google.com");
+    expect(google.searchParams.get("redirect_uri")).toMatch(/\/auth\/social\/google\/callback$/);
+    expect(google.searchParams.get("code_challenge_method")).toBe("S256");
+    expect(google.searchParams.get("scope")).toContain("email");
+    expect(google.searchParams.get("state")!.length).toBeGreaterThan(20);
+    expect((await start("facebook")).host).toBe("www.facebook.com");
+    expect((await start("x")).searchParams.get("scope")).toBe("tweet.read users.read users.email");
+
+    // The provider's reply must carry the state we issued.
+    await page.goto(`/auth/social/x/callback?code=abc&state=forged`);
+    await expect(page).toHaveURL(/\/login\?/);
+    await expect(page.getByText("That sign-in took too long or was opened in another browser.")).toBeVisible();
+
+    await page.goto("/register");
+    await expect(page.getByRole("link", { name: "Continue with Facebook" })).toBeVisible();
+  });
+});

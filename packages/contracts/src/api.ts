@@ -329,3 +329,12 @@ export interface AiChatResponseDto {
   suggestions: string[];
   usage: { remainingToday: number };
 }
+
+/** GET /auth/config: how this deployment signs people in. */
+export interface AuthConfigDto {
+  mode: "local" | "oidc";
+  issuer: string | null;
+  audience: string | null;
+  /** Social sign-in buttons to show in local mode, with the public client IDs needed to start the flow. */
+  social: { provider: "google" | "facebook" | "x"; clientId: string }[];
+}

@@ -251,6 +251,7 @@ model User {
   claims              ListingClaim[]       @relation("ClaimClaimant")
   reviewedClaims      ListingClaim[]       @relation("ClaimReviewer")
   alerts              Alert[]
+  socialIdentities    SocialIdentity[]
 
   @@map("users")
 }
@@ -860,4 +861,22 @@ model Alert {
   @@index([topic, frequency])
   @@index([userId])
   @@map("alerts")
+}
+
+/// A Google, Facebook or X account linked to a user (built-in auth mode; with OIDC the provider handles this).
+model SocialIdentity {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @db.Uuid
+  /// google | facebook | x
+  provider       String
+  providerUserId String
+  email          String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  lastUsedAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+  @@map("social_identities")
 }
