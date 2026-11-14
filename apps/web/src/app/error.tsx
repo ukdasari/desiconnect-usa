@@ -8,7 +8,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
     <div className="container-page max-w-2xl py-24 text-center">
       <h1 className="text-4xl font-bold">This page didn&rsquo;t load</h1>
       <p className="mt-3 text-ink-2">
-        DesiConnect couldn&rsquo;t complete the request. Try again; if it keeps happening, the service may be down for a moment.
+        1StopDesi couldn&rsquo;t complete the request. Try again; if it keeps happening, the service may be down for a moment.
       </p>
       {error.digest ? <p className="mt-2 text-xs text-ink-2">Reference: {error.digest}</p> : null}
       <div className="mt-8 flex justify-center gap-3">

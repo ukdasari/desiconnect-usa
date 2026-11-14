@@ -72,7 +72,7 @@ export function DesiAi({ variant = "panel", initialQuestion }: { variant?: "pane
         </span>
         <div>
           <p className="font-display text-lg font-semibold leading-tight">Desi AI</p>
-          <p className="text-sm text-ink-2">Answers come only from listings on DesiConnect.</p>
+          <p className="text-sm text-ink-2">Answers come only from listings on 1StopDesi.</p>
         </div>
       </div>
 

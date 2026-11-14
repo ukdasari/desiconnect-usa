@@ -12,7 +12,7 @@ export default async function AiPage({ searchParams }: { searchParams: Promise<{
       <div>
         <h1 className="text-3xl font-bold md:text-4xl">Ask Desi AI</h1>
         <p className="prose-measure mt-2 text-ink-2">
-          Describe what you&rsquo;re looking for, including language and neighborhood. Desi AI searches DesiConnect listings and shows you the matches.
+          Describe what you&rsquo;re looking for, including language and neighborhood. Desi AI searches 1StopDesi listings and shows you the matches.
         </p>
         <div className="mt-6"><DesiAi variant="page" initialQuestion={typeof q === "string" ? q.slice(0, 500) : undefined} /></div>
       </div>

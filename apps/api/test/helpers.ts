@@ -36,7 +36,7 @@ export async function registerUser(ctx: TestContext, name = "Test User") {
 }
 
 export async function loginDemo(ctx: TestContext, who: "admin" | "provider" | "user") {
-  const res = await ctx.http.post("/api/v1/auth/login").send({ email: `${who}@desiconnect.example`, password: "DemoPass123!" });
+  const res = await ctx.http.post("/api/v1/auth/login").send({ email: `${who}@1stopdesi.example`, password: "DemoPass123!" });
   if (res.status !== 200) throw new Error(`demo login failed: ${res.status} ${JSON.stringify(res.body)}`);
   return { token: res.body.data.token as string, id: res.body.data.user.id as string };
 }

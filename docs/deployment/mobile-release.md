@@ -9,7 +9,7 @@ submitted to a store yet.** This page lists what to set up, in order.
 |---|---|---|
 | Expo account + EAS CLI | `npm i -g eas-cli && eas login` | Free plan is enough for internal builds |
 | Link the project | `cd apps/mobile && eas init` | Writes `extra.eas.projectId` into `app.json`. Push needs this |
-| Bundle IDs | `app.json` → `ios.bundleIdentifier`, `android.package` | Currently `com.desiconnect.usa`; change before the first store build, it can't be changed later |
+| Bundle IDs | `app.json` → `ios.bundleIdentifier`, `android.package` | Currently `com.onestopdesi.app`; change before the first store build, it can't be changed later |
 | Apple Developer Program | developer.apple.com ($99/yr) | Needed for TestFlight and the App Store |
 | Google Play Console | play.google.com/console ($25 once) | Needed for internal testing and release |
 | Icons and splash | `apps/mobile/assets/` | Replace the placeholders: 1024×1024 icon, Android adaptive foreground, splash |
@@ -21,14 +21,14 @@ submitted to a store yet.** This page lists what to set up, in order.
 
 | Variable | Example |
 |---|---|
-| `EXPO_PUBLIC_API_URL` | `https://api.desiconnect.example/api/v1` (HTTPS only for store builds) |
+| `EXPO_PUBLIC_API_URL` | `https://api.1stopdesi.example/api/v1` (HTTPS only for store builds) |
 | `EXPO_PUBLIC_OIDC_CLIENT_ID` | the native client ID from your provider |
-| `EXPO_PUBLIC_WEBSITE_URL` | `https://desiconnect.example` |
+| `EXPO_PUBLIC_WEBSITE_URL` | `https://1stopdesi.example` |
 
 ## 3. Sign-in (OIDC)
 
 1. Register a **native / public** client with your provider: authorization code + PKCE, no client secret,
-   redirect URI `desiconnect://auth/callback`, scopes `openid profile email offline_access`.
+   redirect URI `onestopdesi://auth/callback`, scopes `openid profile email offline_access`.
 2. Add its client ID to the API's `OIDC_CLIENT_IDS` (comma-separated, alongside the web client).
 3. If the provider issues access tokens for an API audience, the API's `OIDC_AUDIENCE` is sent automatically.
 

@@ -21,7 +21,7 @@ jest.mock("expo-notifications", () => ({
 
 jest.mock("expo-web-browser", () => ({ maybeCompleteAuthSession: jest.fn(), openAuthSessionAsync: jest.fn() }));
 jest.mock("expo-auth-session", () => ({
-  makeRedirectUri: jest.fn(() => "desiconnect://auth/callback"),
+  makeRedirectUri: jest.fn(() => "onestopdesi://auth/callback"),
   fetchDiscoveryAsync: jest.fn(),
   AuthRequest: jest.fn(),
   ResponseType: { Code: "code" },

@@ -2,7 +2,7 @@
   "name": "@desiconnect/api",
   "version": "0.1.0",
   "private": true,
-  "description": "DesiConnect USA REST API (NestJS modular monolith)",
+  "description": "1StopDesi REST API (NestJS modular monolith)",
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",

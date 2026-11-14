@@ -8,15 +8,15 @@ export default function TermsPage() {
   const email = supportEmail();
   return (
     <LegalPage title="Terms of service">
-      <p>By creating an account or using DesiConnect USA, you agree to these terms. If you don&apos;t agree, please don&apos;t use DesiConnect.</p>
+      <p>By creating an account or using 1StopDesi, you agree to these terms. If you don&apos;t agree, please don&apos;t use 1StopDesi.</p>
 
-      <h2>What DesiConnect is</h2>
+      <h2>What 1StopDesi is</h2>
       <p>
-        DesiConnect is a directory and marketplace that connects people with businesses, events, jobs and housing. We aren&apos;t a party to
+        1StopDesi is a directory and marketplace that connects people with businesses, events, jobs and housing. We aren&apos;t a party to
         anything you arrange with a provider, employer or landlord, and we don&apos;t guarantee them. &ldquo;Verified&rdquo; means we reviewed the
         documents a business gave us. It isn&apos;t an endorsement.
       </p>
-      <p>DesiConnect doesn&apos;t give legal, immigration, tax, insurance or medical advice. Desi AI answers are general information and can be wrong, so check anything important with a qualified professional.</p>
+      <p>1StopDesi doesn&apos;t give legal, immigration, tax, insurance or medical advice. Desi AI answers are general information and can be wrong, so check anything important with a qualified professional.</p>
 
       <h2>Your account</h2>
       <ul>
@@ -31,7 +31,7 @@ export default function TermsPage() {
         <li>No false, misleading, discriminatory, hateful, sexual, illegal or spam content, and no listings for businesses you don&apos;t run.</li>
         <li>Housing and job listings must follow fair housing and equal employment laws.</li>
         <li>
-          You let us display, store and moderate what you post so DesiConnect can work. We may remove content or suspend accounts that break these
+          You let us display, store and moderate what you post so 1StopDesi can work. We may remove content or suspend accounts that break these
           terms.
         </li>
       </ul>
@@ -44,7 +44,7 @@ export default function TermsPage() {
 
       <h2>Limits on liability</h2>
       <p>
-        DesiConnect is provided &ldquo;as is&rdquo;. To the extent the law allows, we aren&apos;t liable for indirect or consequential losses, or for
+        1StopDesi is provided &ldquo;as is&rdquo;. To the extent the law allows, we aren&apos;t liable for indirect or consequential losses, or for
         what providers, employers, landlords or other members do.
       </p>
 

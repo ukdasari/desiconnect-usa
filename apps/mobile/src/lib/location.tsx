@@ -62,7 +62,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
       const [place] = await Location.reverseGeocodeAsync(pos.coords);
       const state = toStateCode(place?.region);
-      if (!place || place.isoCountryCode !== "US" || !state) return "DesiConnect currently covers the United States. Enter a US ZIP code instead.";
+      if (!place || place.isoCountryCode !== "US" || !state) return "1StopDesi currently covers the United States. Enter a US ZIP code instead.";
       const city = place.city ?? place.subregion ?? undefined;
       await setLocation(city ? { city, state, label: `${city}, ${state}` } : fromZip(place.postalCode ?? "") ?? DEFAULT_LOCATION);
       return null;

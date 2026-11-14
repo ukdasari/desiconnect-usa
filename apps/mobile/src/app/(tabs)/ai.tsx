@@ -61,7 +61,7 @@ export default function AiScreen() {
           <View style={{ gap: space.sm }}>
             <Body>Ask the way you'd ask a friend, like “a pediatrician near Little Elm who speaks Tamil.”</Body>
             <Body muted size={14}>
-              Answers come only from DesiConnect listings, and Desi AI never contacts anyone for you.
+              Answers come only from 1StopDesi listings, and Desi AI never contacts anyone for you.
               {status === "signedIn" ? " Conversations are saved to your account; delete them from Profile." : " You're not signed in, so nothing is saved."}
             </Body>
           </View>

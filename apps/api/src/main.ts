@@ -14,7 +14,7 @@ async function bootstrap() {
   configureApp(app, env);
   SwaggerModule.setup("api/docs", app, buildOpenApi(app), { jsonDocumentUrl: "api/docs/openapi.json" });
   await app.listen(env.API_PORT, "0.0.0.0");
-  app.get(Logger).log(`DesiConnect API listening on :${env.API_PORT} (docs at /api/docs)`);
+  app.get(Logger).log(`1StopDesi API listening on :${env.API_PORT} (docs at /api/docs)`);
 }
 
 void bootstrap();

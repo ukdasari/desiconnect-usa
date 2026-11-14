@@ -59,5 +59,5 @@ export const SOCIAL_ERRORS: Record<string, string> = {
   expired: "That sign-in took too long or was opened in another browser. Start again.",
   provider_error: "The sign-in service returned an error. Try again.",
   social_unavailable: "That sign-in option isn't available right now. Use your email instead.",
-  api_unavailable: "DesiConnect is temporarily unavailable. Try again in a minute.",
+  api_unavailable: "1StopDesi is temporarily unavailable. Try again in a minute.",
 };

@@ -72,7 +72,7 @@ describe("OIDC sign-in", () => {
   it("advertises OIDC mode and disables local passwords", async () => {
     const cfg = await ctx.http.get(`${V}/auth/config`).expect(200);
     expect(cfg.body.data).toMatchObject({ mode: "oidc", issuer, audience: AUDIENCE });
-    await ctx.http.post(`${V}/auth/login`).send({ email: "user@desiconnect.example", password: "DemoPass123!" }).expect(403);
+    await ctx.http.post(`${V}/auth/login`).send({ email: "user@1stopdesi.example", password: "DemoPass123!" }).expect(403);
     await ctx.http.post(`${V}/auth/register`).send({ name: "New", email: "n@oidc.test", password: "long-enough-1" }).expect(403);
   });
 
@@ -90,9 +90,9 @@ describe("OIDC sign-in", () => {
   });
 
   it("links a pre-existing account by verified email", async () => {
-    const t = await signInTokens("google-oauth2|demo-user", { email: "user@desiconnect.example", email_verified: true });
+    const t = await signInTokens("google-oauth2|demo-user", { email: "user@1stopdesi.example", email_verified: true });
     const session = await ctx.http.post(`${V}/auth/session`).set(bearer(t.access)).send({ idToken: t.id }).expect(200);
-    const demo = await ctx.prisma.user.findUniqueOrThrow({ where: { email: "user@desiconnect.example" } });
+    const demo = await ctx.prisma.user.findUniqueOrThrow({ where: { email: "user@1stopdesi.example" } });
     expect(session.body.data.id).toBe(demo.id);
     expect(demo.authSubject).toBe("google-oauth2|demo-user");
   });
@@ -108,9 +108,9 @@ describe("OIDC sign-in", () => {
     const fresh = await signInTokens("auth0|unverified", { email: "new-unverified@oidc.test", email_verified: false });
     const res = await ctx.http.post(`${V}/auth/session`).set(bearer(fresh.access)).send({ idToken: fresh.id }).expect(403);
     expect(res.body.error.code).toBe("FORBIDDEN");
-    const takeover = await signInTokens("auth0|attacker", { email: "admin@desiconnect.example", email_verified: false });
+    const takeover = await signInTokens("auth0|attacker", { email: "admin@1stopdesi.example", email_verified: false });
     await ctx.http.post(`${V}/auth/session`).set(bearer(takeover.access)).send({ idToken: takeover.id }).expect(403);
-    const admin = await ctx.prisma.user.findUniqueOrThrow({ where: { email: "admin@desiconnect.example" } });
+    const admin = await ctx.prisma.user.findUniqueOrThrow({ where: { email: "admin@1stopdesi.example" } });
     expect(admin.authSubject).not.toBe("auth0|attacker");
   });
 

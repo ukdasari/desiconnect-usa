@@ -18,7 +18,7 @@ export default function Emergency() {
     <Screen>
       <View style={{ backgroundColor: c.danger, borderRadius: 20, padding: space.xl, gap: space.md }}>
         <Text accessibilityRole="header" style={{ color: "#fff", fontSize: 26, fontWeight: "800" }}>If anyone is in danger, call 911 now.</Text>
-        <Text style={{ color: "rgba(255,255,255,0.9)", lineHeight: 21 }}>DesiConnect can't contact emergency services for you. 911 can connect an interpreter for many languages.</Text>
+        <Text style={{ color: "rgba(255,255,255,0.9)", lineHeight: 21 }}>1StopDesi can't contact emergency services for you. 911 can connect an interpreter for many languages.</Text>
       </View>
       {LINES.map((l) => (
         <Pressable

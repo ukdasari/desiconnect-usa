@@ -1,11 +1,11 @@
 # Authentication
 
-DesiConnect supports two sign-in modes, chosen with `AUTH_MODE` (read by both the API and the website).
+1StopDesi supports two sign-in modes, chosen with `AUTH_MODE` (read by both the API and the website).
 
 | | `oidc` | `local` |
 |---|---|---|
 | Use for | **Production** and staging | Development, tests, demos |
-| Passwords | Held by your identity provider; DesiConnect never sees them | bcrypt hashes in `local_credentials` |
+| Passwords | Held by your identity provider; 1StopDesi never sees them | bcrypt hashes in `local_credentials` |
 | Email verification, password reset, MFA, social sign-in | Provided by the identity provider | Not available |
 | Allowed in production | Yes | Only with `ALLOW_LOCAL_AUTH_IN_PRODUCTION=true` (the API refuses to start otherwise) |
 
@@ -99,12 +99,12 @@ provider's current documentation for exact menu names; the points that differ ar
   so the API verifies the ID token instead.
 - **Amazon Cognito.** ID tokens are addressed to the app client; access tokens typically carry `client_id` rather than
   `aud`, so use `OIDC_API_TOKEN=id`. Cognito's discovery document has no standard end-session endpoint, so sign-out ends
-  the DesiConnect session but not the Cognito session.
+  the 1StopDesi session but not the Cognito session.
 - **Microsoft Entra ID.** Use the v2.0 issuer and an exposed API scope. Entra doesn't send `email_verified`, so new sign-ups
   are refused while `OIDC_REQUIRE_VERIFIED_EMAIL=true`; only relax it if your tenant guarantees verified emails.
 - **Okta, Keycloak, Ping, ZITADEL.** Standard; create an authorization server or API audience and use the default settings.
 
 ## Mobile
 
-The mobile app will use the same provider with a native client (`desiconnect-mobile`, redirect `desiconnect://auth/callback`)
+The mobile app will use the same provider with a native client (`desiconnect-mobile`, redirect `onestopdesi://auth/callback`)
 via `expo-auth-session`, then call `POST /auth/session` exactly like the website. Add that client ID to `OIDC_CLIENT_IDS`.

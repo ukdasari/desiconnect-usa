@@ -1,4 +1,4 @@
-# DesiConnect USA
+# 1StopDesi
 
 A community marketplace for Indians and South Asians in the United States: services, events, jobs, real estate and
 help lines in one place, with an AI assistant that only answers from real listings. Built nationwide-ready, piloting in
@@ -58,9 +58,9 @@ Demo sign-ins created by the seed (development only, password `DemoPass123!`):
 
 | Email | Can do |
 |---|---|
-| `user@desiconnect.example` | Browse, send requests, RSVP, apply, save |
-| `provider@desiconnect.example` | Owns the demo HVAC business, demo events, jobs and properties; has a demo inquiry |
-| `admin@desiconnect.example` | Moderation dashboard, reports, users, audit log |
+| `user@1stopdesi.example` | Browse, send requests, RSVP, apply, save |
+| `provider@1stopdesi.example` | Owns the demo HVAC business, demo events, jobs and properties; has a demo inquiry |
+| `admin@1stopdesi.example` | Moderation dashboard, reports, users, audit log |
 
 Every seeded business, person and listing is fictional, flagged `isDemo`, labeled "(Demo)" in the UI, and uses
 `example.com`-style contact details and `DEMO-` license numbers. Disable demo data with `SEED_DEMO=false pnpm db:seed`;

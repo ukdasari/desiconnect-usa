@@ -36,7 +36,7 @@ function HeaderActions({ listing }: { listing: ListingDetailDto }) {
         accessibilityLabel="Share"
         hitSlop={10}
         style={{ padding: 8 }}
-        onPress={() => Share.share({ message: `${listing.title} on DesiConnect: ${WEBSITE_URL}/listings/${listing.slug}` })}
+        onPress={() => Share.share({ message: `${listing.title} on 1StopDesi: ${WEBSITE_URL}/listings/${listing.slug}` })}
       >
         <Ionicons name="share-outline" size={22} color={c.text} />
       </Pressable>
@@ -198,7 +198,7 @@ function PrimaryAction({ l, onSignInNeeded }: { l: ListingDetailDto; onSignInNee
       <Card>
         <Text style={{ color: c.text, fontWeight: "800", fontSize: 17 }}>Not claimed yet</Text>
         <Body muted>
-          We listed this business from public information. It hasn't claimed its listing, so requests can't be sent through DesiConnect yet.
+          We listed this business from public information. It hasn't claimed its listing, so requests can't be sent through 1StopDesi yet.
           {l.contactPhone ? " Call them directly instead." : " Contact them directly."}
         </Body>
         {l.contactPhone ? <Button title={`Call ${l.contactPhone}`} icon="call-outline" onPress={() => Linking.openURL(`tel:${l.contactPhone!.replace(/[^\d+]/g, "")}`)} /> : null}

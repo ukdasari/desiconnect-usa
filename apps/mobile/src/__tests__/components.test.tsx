@@ -65,7 +65,7 @@ function Probe() {
       <Text testID="status">{auth.status}</Text>
       <Text testID="mode">{auth.mode ?? "none"}</Text>
       <Text testID="name">{auth.me?.name ?? ""}</Text>
-      <Text testID="signin" onPress={() => auth.signInWithPassword("user@desiconnect.example", "DemoPass123!")}>go</Text>
+      <Text testID="signin" onPress={() => auth.signInWithPassword("user@1stopdesi.example", "DemoPass123!")}>go</Text>
     </>
   );
 }

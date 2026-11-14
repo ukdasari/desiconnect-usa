@@ -1,7 +1,7 @@
 # Social sign-in: Google, Facebook and X
 
 The website's sign-in and register pages show **Continue with Google**, **Continue with Facebook** and **Continue with X**.
-A button appears once that provider is set up. Each provider takes about 15 minutes to set up. Below, `desiconnect.com`
+A button appears once that provider is set up. Each provider takes about 15 minutes to set up. Below, `1stopdesi.com`
 stands for your website's address. Use the `*.run.app` address until you have a domain, and update it afterwards.
 
 ## How it works
@@ -42,14 +42,14 @@ and terms before launch.** They are a starting point that matches what the app a
    client ID**. Use the same project as the deployment.
 2. **Consent screen.** If asked, set up the consent screen first:
    - User type **External**.
-   - App name **DesiConnect**, support email, and logo (optional).
-   - Authorized domain `desiconnect.com`.
-   - Privacy policy `https://desiconnect.com/privacy`, terms of service `https://desiconnect.com/terms`.
+   - App name **1StopDesi**, support email, and logo (optional).
+   - Authorized domain `1stopdesi.com`.
+   - Privacy policy `https://1stopdesi.com/privacy`, terms of service `https://1stopdesi.com/terms`.
    - Scopes `openid`, `email` and `profile`. These are basic scopes and need no Google review.
    - **Publish** the app. While it's in "Testing", only listed test users can sign in.
 3. **Client settings:**
    - Application type **Web application**.
-   - Authorized redirect URI `https://desiconnect.com/auth/social/google/callback`.
+   - Authorized redirect URI `https://1stopdesi.com/auth/social/google/callback`.
 4. **Store the keys.** Put the **Client ID** in `config.env` as `GOOGLE_CLIENT_ID`, then store the secret:
    `printf '%s' 'GOCSPX-…' | gcloud secrets create google-client-secret --data-file=-`
 
@@ -58,11 +58,11 @@ and terms before launch.** They are a starting point that matches what the app a
 1. **Create the app.** At <https://developers.facebook.com/apps>, choose **Create app → Authenticate and request data
    from users with Facebook Login**.
 2. **Login settings.** Under **Facebook Login → Settings**, set **Valid OAuth Redirect URIs** to
-   `https://desiconnect.com/auth/social/facebook/callback`.
+   `https://1stopdesi.com/auth/social/facebook/callback`.
 3. **Basic settings.** Under **App settings → Basic**:
-   - App domain `desiconnect.com`.
-   - Privacy policy URL `https://desiconnect.com/privacy`, terms of service URL `https://desiconnect.com/terms`.
-   - **User data deletion → Data deletion instructions URL** `https://desiconnect.com/data-deletion`.
+   - App domain `1stopdesi.com`.
+   - Privacy policy URL `https://1stopdesi.com/privacy`, terms of service URL `https://1stopdesi.com/terms`.
+   - **User data deletion → Data deletion instructions URL** `https://1stopdesi.com/data-deletion`.
    - Category and app icon.
 4. **Go live.** Switch the app to **Live**. While it's in development mode, only people with a role on the app can sign
    in.
@@ -77,15 +77,15 @@ and terms before launch.** They are a starting point that matches what the app a
    - App permissions **Read**.
    - Turn on **Request email from users**. Without it, X doesn't share the email and sign-in can't complete.
    - Type of app **Web App, Automated App or Bot**. This makes it a confidential client.
-   - Callback URI `https://desiconnect.com/auth/social/x/callback`.
-   - Website URL `https://desiconnect.com`.
-   - Terms of service `https://desiconnect.com/terms`, privacy policy `https://desiconnect.com/privacy`.
+   - Callback URI `https://1stopdesi.com/auth/social/x/callback`.
+   - Website URL `https://1stopdesi.com`.
+   - Terms of service `https://1stopdesi.com/terms`, privacy policy `https://1stopdesi.com/privacy`.
 3. **Keys.** Under **Keys and tokens → OAuth 2.0 Client ID and Client Secret**, put the **Client ID** in `config.env` as
    `X_CLIENT_ID`, then store the secret:
    `printf '%s' '…' | gcloud secrets create x-client-secret --data-file=-`
 
 The website asks X for the `tweet.read users.read users.email` scopes. X requires `tweet.read` to read the profile.
-DesiConnect never reads or posts tweets.
+1StopDesi never reads or posts tweets.
 
 ## Turn it on
 

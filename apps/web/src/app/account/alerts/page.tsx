@@ -26,7 +26,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="container-page py-10">
-      <PageHeader title="Alerts" description="Hear about new events, jobs, restaurants and more near you, by email, phone and here on DesiConnect." />
+      <PageHeader title="Alerts" description="Hear about new events, jobs, restaurants and more near you, by email, phone and here on 1StopDesi." />
       <AccountNav current="/account/alerts" />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]">
@@ -82,7 +82,7 @@ export default async function AlertsPage({ searchParams }: { searchParams: Promi
           <ul className="mt-4 space-y-3">
             {[
               { field: "alertEmails", on: settings.alertEmails, icon: Mail, label: "Email", hint: settings.email },
-              { field: "alertPush", on: settings.alertPush, icon: Smartphone, label: "Phone notifications", hint: "From the DesiConnect app" },
+              { field: "alertPush", on: settings.alertPush, icon: Smartphone, label: "Phone notifications", hint: "From the 1StopDesi app" },
             ].map((c) => (
               <li key={c.field}>
                 <form action={setNotificationChannel} className="flex items-center gap-3">

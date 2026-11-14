@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         {process.env.NODE_ENV !== "production" && AUTH_MODE === "local" ? (
           <div className="mt-6 rounded-2xl border border-dashed border-line p-4 text-sm text-ink-2">
             <p className="font-semibold text-ink">Demo accounts (development only)</p>
-            <p className="mt-1">user@, provider@ or admin@desiconnect.example with password DemoPass123!</p>
+            <p className="mt-1">user@, provider@ or admin@1stopdesi.example with password DemoPass123!</p>
           </div>
         ) : null}
       </div>

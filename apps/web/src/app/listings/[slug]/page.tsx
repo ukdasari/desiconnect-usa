@@ -61,7 +61,7 @@ export default async function ListingPage({ params }: Props) {
       ) : null}
       {l.isDemo ? (
         <Alert className="mt-4" tone="info" title="This is demonstration content">
-          It shows how listings work on DesiConnect. The business, contact details and any license number are not real.
+          It shows how listings work on 1StopDesi. The business, contact details and any license number are not real.
         </Alert>
       ) : null}
 
@@ -231,7 +231,7 @@ export default async function ListingPage({ params }: Props) {
             <div className="rounded-3xl border border-line bg-surface p-6">
               <h2 className="text-lg font-bold">Not claimed yet</h2>
               <p className="mt-1 text-sm text-ink-2">
-                We listed this business from public information. It hasn&apos;t claimed its listing, so requests can&apos;t be sent through DesiConnect yet.
+                We listed this business from public information. It hasn&apos;t claimed its listing, so requests can&apos;t be sent through 1StopDesi yet.
                 {l.contactPhone ? " Call them directly using the number below." : " Contact them directly."}
               </p>
               <p className="mt-3 text-sm">

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /** Contact address on the legal pages. Set SUPPORT_EMAIL in production. */
-export const supportEmail = () => process.env.SUPPORT_EMAIL || "support@desiconnect.example";
+export const supportEmail = () => process.env.SUPPORT_EMAIL || "support@1stopdesi.example";
 export const LEGAL_UPDATED = "November 11, 2026";
 
 export function LegalPage({ title, children }: { title: string; children: ReactNode }) {

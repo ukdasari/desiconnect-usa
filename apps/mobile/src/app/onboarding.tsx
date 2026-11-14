@@ -26,7 +26,7 @@ export default function Onboarding() {
     <Screen>
       <View style={{ backgroundColor: c.peacock, borderRadius: 24, padding: space.xl, gap: space.md, marginTop: space.xxl }}>
         <Text accessibilityRole="header" style={{ color: "#fff", fontSize: 30, fontWeight: "800", letterSpacing: -0.4 }}>
-          {step === "welcome" ? "Welcome to DesiConnect" : "Where should we look?"}
+          {step === "welcome" ? "Welcome to 1StopDesi" : "Where should we look?"}
         </Text>
         <Text style={{ color: "rgba(255,255,255,0.85)", fontSize: 16, lineHeight: 23 }}>
           {step === "welcome"

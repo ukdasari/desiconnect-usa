@@ -222,7 +222,7 @@ export class AlertsService {
         eventType: "alert.digest",
         title: `${count} new ${count === 1 ? "listing" : "listings"} this week`,
         body: sections.map((s) => `${heading(s.alert)}: ${s.items.length}`).join(" · "),
-        email: { subject: `This week on DesiConnect: ${count} new ${count === 1 ? "listing" : "listings"} for you`, text, html },
+        email: { subject: `This week on 1StopDesi: ${count} new ${count === 1 ? "listing" : "listings"} for you`, text, html },
       });
       sentUsers += 1;
       sentListings += count;

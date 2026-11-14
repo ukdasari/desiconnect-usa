@@ -7,7 +7,7 @@ export const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:400
 export const OIDC_CLIENT_ID = process.env.EXPO_PUBLIC_OIDC_CLIENT_ID ?? "desiconnect-mobile";
 export const OIDC_SCOPES = (process.env.EXPO_PUBLIC_OIDC_SCOPES ?? "openid profile email offline_access").split(/\s+/).filter(Boolean);
 /** Must match a redirect URI registered with the provider. */
-export const APP_SCHEME = "desiconnect";
+export const APP_SCHEME = "onestopdesi";
 export const OIDC_REDIRECT_PATH = "auth/callback";
 
 export const WEBSITE_URL = (process.env.EXPO_PUBLIC_WEBSITE_URL ?? "http://localhost:3000").replace(/\/$/, "");

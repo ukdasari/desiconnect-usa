@@ -1,6 +1,6 @@
 # Deploying to Google Cloud (Cloud Run + Cloud SQL)
 
-This runbook takes DesiConnect from an empty Google Cloud account to a live website and API. You run the commands
+This runbook takes 1StopDesi from an empty Google Cloud account to a live website and API. You run the commands
 yourself because they need your Google account. Total time is about 45 minutes, mostly waiting for the database.
 
 ```
@@ -70,7 +70,7 @@ Set at least:
   - To send alerts and account emails:
     1. Create a free account at <https://resend.com>.
     2. Add and verify your domain, which takes about 10 minutes of DNS records.
-    3. Set `EMAIL_PROVIDER=resend` and `EMAIL_FROM="DesiConnect <updates@yourdomain.com>"`.
+    3. Set `EMAIL_PROVIDER=resend` and `EMAIL_FROM="1StopDesi <updates@yourdomain.com>"`.
     4. Store the key: `printf '%s' 're_…' | gcloud secrets create resend-api-key --data-file=-`
 - `AI_PROVIDER` is optional. To have Desi AI use Claude, set it to `anthropic` and store the key:
   `printf '%s' 'sk-ant-…' | gcloud secrets create anthropic-api-key --data-file=-`
@@ -112,17 +112,17 @@ To preview the commands without running them: `DRY_RUN=1 infrastructure/gcp/depl
 
 ## Step 5 — Your domain (optional, 15 minutes + DNS time)
 
-Example below: `desiconnect.com` for the website and `api.desiconnect.com` for the API.
+Example below: `1stopdesi.com` for the website and `api.1stopdesi.com` for the API.
 
 ```bash
-gcloud beta run domain-mappings create --service prod-web --domain desiconnect.com --region us-central1
-gcloud beta run domain-mappings create --service prod-api --domain api.desiconnect.com --region us-central1
-gcloud beta run domain-mappings describe --domain desiconnect.com --region us-central1   # shows the DNS records to add
+gcloud beta run domain-mappings create --service prod-web --domain 1stopdesi.com --region us-central1
+gcloud beta run domain-mappings create --service prod-api --domain api.1stopdesi.com --region us-central1
+gcloud beta run domain-mappings describe --domain 1stopdesi.com --region us-central1   # shows the DNS records to add
 ```
 
 1. Add the DNS records it shows at your registrar. Google issues the HTTPS certificate on its own, which can take up
    to an hour.
-2. Set `WEB_URL=https://desiconnect.com` and `API_URL=https://api.desiconnect.com` in `config.env`.
+2. Set `WEB_URL=https://1stopdesi.com` and `API_URL=https://api.1stopdesi.com` in `config.env`.
 3. Redeploy without rebuilding: `SKIP_BUILD=1 TAG=<last tag> infrastructure/gcp/deploy.sh`.
 4. With OIDC, update Auth0's callback and logout URLs to the new domain.
 
@@ -134,8 +134,8 @@ load balancer in front, or use Firebase Hosting rewrites to the `prod-web` servi
 Set these values for the EAS `production` profile (see `docs/deployment/mobile-release.md`), then build:
 
 ```
-EXPO_PUBLIC_API_URL=https://api.desiconnect.com/api/v1     # or the run.app API address
-EXPO_PUBLIC_WEBSITE_URL=https://desiconnect.com
+EXPO_PUBLIC_API_URL=https://api.1stopdesi.com/api/v1     # or the run.app API address
+EXPO_PUBLIC_WEBSITE_URL=https://1stopdesi.com
 ```
 
 ## Day-to-day

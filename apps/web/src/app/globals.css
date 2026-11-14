@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* DesiConnect tokens. Peacock + marigold, cool paper background, kumkum reserved for urgency. */
+/* 1StopDesi tokens. Peacock + marigold, cool paper background, kumkum reserved for urgency. */
 :root {
   --paper: #f2f5f4;
   --surface: #ffffff;

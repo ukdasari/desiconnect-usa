@@ -1,20 +1,20 @@
 {
   "expo": {
-    "name": "DesiConnect",
-    "slug": "desiconnect-usa",
-    "scheme": "desiconnect",
+    "name": "1StopDesi",
+    "slug": "onestopdesi",
+    "scheme": "onestopdesi",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.desiconnect.usa",
+      "bundleIdentifier": "com.onestopdesi.app",
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.desiconnect.usa",
+      "package": "com.onestopdesi.app",
       "permissions": ["ACCESS_COARSE_LOCATION"],
       "blockedPermissions": ["ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]
     },
@@ -29,7 +29,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "DesiConnect uses your location once to find your city and show nearby providers, events and homes. Only your city is saved."
+          "locationWhenInUsePermission": "1StopDesi uses your location once to find your city and show nearby providers, events and homes. Only your city is saved."
         }
       ],
       [

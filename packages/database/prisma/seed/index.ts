@@ -17,9 +17,9 @@ const prisma = new PrismaClient();
 
 const DEMO_PASSWORD = process.env.SEED_DEMO_PASSWORD ?? "DemoPass123!";
 const DEMO_ACCOUNTS = {
-  admin: { email: "admin@desiconnect.example", name: "Demo Admin" },
-  provider: { email: "provider@desiconnect.example", name: "Demo Provider" },
-  user: { email: "user@desiconnect.example", name: "Demo User" },
+  admin: { email: "admin@1stopdesi.example", name: "Demo Admin" },
+  provider: { email: "provider@1stopdesi.example", name: "Demo Provider" },
+  user: { email: "user@1stopdesi.example", name: "Demo User" },
 } as const;
 
 function slugify(value: string): string {
@@ -96,6 +96,8 @@ async function clearDemoData() {
     prisma.appointment.deleteMany({ where: { listingId: { in: ids } } }),
     prisma.report.deleteMany({ where: { targetId: { in: ids } } }),
     prisma.jobApplication.deleteMany({ where: { job: { listingId: { in: ids } } } }),
+    // Claims on these listings, and any claim a demo account made (e.g. on a directory restaurant).
+    prisma.listingClaim.deleteMany({ where: { OR: [{ listingId: { in: ids } }, { claimant: { isDemo: true } }, { provider: { isDemo: true } }] } }),
     prisma.listing.deleteMany({ where: { id: { in: ids } } }),
     prisma.provider.deleteMany({ where: { isDemo: true } }),
     prisma.attachment.deleteMany({ where: { owner: { isDemo: true } } }),
@@ -157,7 +159,7 @@ async function seedDemo() {
     const owner =
       s.category === "home-services" && s.sub === "hvac"
         ? providerUser
-        : await createDemoUser(`demo-provider-${index + 1}@desiconnect.example`, `${s.businessName} owner`, [{ role: "CONSUMER" }, { role: "PROVIDER" }], false);
+        : await createDemoUser(`demo-provider-${index + 1}@1stopdesi.example`, `${s.businessName} owner`, [{ role: "CONSUMER" }, { role: "PROVIDER" }], false);
     const location = await createLocation(s.city, s.businessName);
     const parent = cat(s.category);
     const listingCategory = s.sub ? cat(s.sub) : parent;
@@ -166,7 +168,7 @@ async function seedDemo() {
         ownerId: owner.id,
         businessName: s.businessName,
         description: s.description,
-        email: `contact+${index + 1}@desiconnect.example`,
+        email: `contact+${index + 1}@1stopdesi.example`,
         phone: `(214) 555-01${String(index).padStart(2, "0")}`,
         languages: s.languages,
         verification: s.verification,
@@ -325,8 +327,8 @@ export function restaurantDescription(r: RestaurantSeed): string {
   const styles = (r.styles ?? []).filter((s) => !["Indian", "Pakistani"].includes(s));
   return [
     `${r.name} serves ${kind} food in ${r.city}, Texas.${styles.length ? ` Known for: ${styles.join(", ").toLowerCase()}.` : ""}`,
-    "DesiConnect listed this restaurant from public information. The restaurant hasn't claimed or confirmed this listing yet, so check the address and hours before you go.",
-    "Own this restaurant? Contact DesiConnect to claim the listing and keep it up to date.",
+    "1StopDesi listed this restaurant from public information. The restaurant hasn't claimed or confirmed this listing yet, so check the address and hours before you go.",
+    "Own this restaurant? Contact 1StopDesi to claim the listing and keep it up to date.",
   ].join("\n\n");
 }
 
@@ -342,7 +344,7 @@ async function seedRestaurants() {
   const owner =
     (await prisma.user.findUnique({ where: { email: DIRECTORY_EMAIL } })) ??
     (await prisma.user.create({
-      data: { id: randomUUID(), authSubject: `system:directory`, email: DIRECTORY_EMAIL, name: "DesiConnect directory", isDemo: false, roles: { create: [{ role: "CONSUMER" }] } },
+      data: { id: randomUUID(), authSubject: `system:directory`, email: DIRECTORY_EMAIL, name: "1StopDesi directory", isDemo: false, roles: { create: [{ role: "CONSUMER" }] } },
     }));
 
   const wanted = new Set(RESTAURANTS.map(restaurantId));

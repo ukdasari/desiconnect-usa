@@ -2,7 +2,7 @@
   "name": "desiconnect-usa",
   "private": true,
   "version": "0.1.0",
-  "description": "DesiConnect USA — community marketplace for Indians and South Asians in the United States",
+  "description": "1StopDesi — community marketplace for Indians and South Asians in the United States",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22"

@@ -1,4 +1,4 @@
-// DesiConnect USA — PostgreSQL 16 + PostGIS schema.
+// 1StopDesi — PostgreSQL 16 + PostGIS schema.
 // Conventions: UUID primary keys, UTC timestamps, soft deletion (deletedAt) on user-owned content.
 // Location search uses a PostGIS geography column on `locations` (generated from latitude/longitude),
 // and listing keyword search uses a generated tsvector column. Both are created in migration SQL.

@@ -1,4 +1,4 @@
-# DesiConnect website image (Next.js standalone output). Build from the repository root:
+# 1StopDesi website image (Next.js standalone output). Build from the repository root:
 #   docker build -f infrastructure/docker/web.Dockerfile -t desiconnect-web .
 FROM node:22-bookworm-slim AS base
 RUN corepack enable

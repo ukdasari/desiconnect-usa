@@ -1,4 +1,4 @@
-// DesiConnect design tokens. The web app consumes the same values through tokens.css (CSS variables);
+// 1StopDesi design tokens. The web app consumes the same values through tokens.css (CSS variables);
 // the mobile app imports these objects directly. Keep both in sync.
 
 export const palette = {

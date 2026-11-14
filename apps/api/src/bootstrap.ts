@@ -19,9 +19,9 @@ export function configureApp(app: INestApplication, env: Env): void {
 
 export function buildOpenApi(app: INestApplication): OpenAPIObject {
   const config = new DocumentBuilder()
-    .setTitle("DesiConnect USA API")
+    .setTitle("1StopDesi API")
     .setDescription(
-      "REST API for the DesiConnect USA marketplace. All responses use the envelope `{ data, meta?, traceId }`; " +
+      "REST API for the 1StopDesi marketplace. All responses use the envelope `{ data, meta?, traceId }`; " +
         "errors use `{ error: { code, message, details? }, traceId }`.",
     )
     .setVersion("1.0.0")

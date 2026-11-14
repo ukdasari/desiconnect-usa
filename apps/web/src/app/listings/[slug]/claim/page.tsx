@@ -27,7 +27,7 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
       <Link href={`/listings/${listing.slug}`} className="text-sm text-ink-2 hover:underline">Back to the listing</Link>
       <h1 className="mt-3 text-3xl font-bold">Claim {listing.title}</h1>
       <p className="mt-2 text-ink-2">
-        Once confirmed, the listing moves to your business profile. You can update its details, and customers can send you requests through DesiConnect.
+        Once confirmed, the listing moves to your business profile. You can update its details, and customers can send you requests through 1StopDesi.
       </p>
 
       {!unclaimed ? (
@@ -45,7 +45,7 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
       ) : (
         <div className="mt-8 rounded-3xl border border-line bg-surface p-6 md:p-8">
           <p className="mb-6 text-sm text-ink-2">
-            Claiming as <span className="font-semibold text-ink">{me.name ?? me.email}</span>. A DesiConnect admin checks every claim, usually by calling the business on its public number.
+            Claiming as <span className="font-semibold text-ink">{me.name ?? me.email}</span>. A 1StopDesi admin checks every claim, usually by calling the business on its public number.
           </p>
           <ClaimForm listingId={listing.id} back={path} defaultPhone={me.phone} />
         </div>

@@ -5426,8 +5426,8 @@
     }
   },
   "info": {
-    "title": "DesiConnect USA API",
-    "description": "REST API for the DesiConnect USA marketplace. All responses use the envelope `{ data, meta?, traceId }`; errors use `{ error: { code, message, details? }, traceId }`.",
+    "title": "1StopDesi API",
+    "description": "REST API for the 1StopDesi marketplace. All responses use the envelope `{ data, meta?, traceId }`; errors use `{ error: { code, message, details? }, traceId }`.",
     "version": "1.0.0",
     "contact": {}
   },

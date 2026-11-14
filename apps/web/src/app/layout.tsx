@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "DesiConnect USA — services, events, jobs and homes for the Desi community", template: "%s | DesiConnect USA" },
+  title: { default: "1StopDesi — services, events, jobs and homes for the Desi community", template: "%s | 1StopDesi" },
   description:
     "Find trusted South Asian service providers, events, jobs and rentals across the USA, starting in Dallas–Fort Worth. Contact providers, apply and RSVP in one place.",
 };

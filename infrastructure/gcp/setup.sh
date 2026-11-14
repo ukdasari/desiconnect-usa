@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time setup of a DesiConnect environment on Google Cloud. Safe to re-run: existing resources are kept.
+# One-time setup of a 1StopDesi environment on Google Cloud. Safe to re-run: existing resources are kept.
 #   infrastructure/gcp/setup.sh
 # Creates: APIs, Artifact Registry, Cloud SQL (Postgres 16) + database + user, uploads bucket, service accounts,
 # Secret Manager secrets (DATABASE_URL, JWT_SECRET, INTERNAL_API_KEY) and the IAM bindings between them.
@@ -11,12 +11,12 @@ gc services enable run.googleapis.com sqladmin.googleapis.com artifactregistry.g
 
 say "Artifact Registry repository: $REPO"
 gc artifacts repositories describe "$REPO" --location "$REGION" >/dev/null 2>&1 \
-  || gc artifacts repositories create "$REPO" --location "$REGION" --repository-format docker --description "DesiConnect images"
+  || gc artifacts repositories create "$REPO" --location "$REGION" --repository-format docker --description "1StopDesi images"
 
 say "Service accounts"
 for sa in "${ENV_NAME}-api" "${ENV_NAME}-web"; do
   gc iam service-accounts describe "${sa}@${PROJECT_ID}.iam.gserviceaccount.com" >/dev/null 2>&1 \
-    || gc iam service-accounts create "$sa" --display-name "DesiConnect ${sa}"
+    || gc iam service-accounts create "$sa" --display-name "1StopDesi ${sa}"
 done
 gc projects add-iam-policy-binding "$PROJECT_ID" --member "serviceAccount:${API_SA}" --role roles/cloudsql.client --condition=None >/dev/null
 # Cloud Build runs as the Compute Engine default service account in new projects. It only builds and pushes

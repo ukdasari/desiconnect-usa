@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and deploy DesiConnect to Cloud Run. Run setup.sh once first.
+# Build and deploy 1StopDesi to Cloud Run. Run setup.sh once first.
 #   infrastructure/gcp/deploy.sh            # build images, migrate + seed, deploy API and website
 #   SKIP_BUILD=1 TAG=<tag> infrastructure/gcp/deploy.sh   # redeploy (or roll back to) an existing image tag
 #   DRY_RUN=1 infrastructure/gcp/deploy.sh  # print what would happen

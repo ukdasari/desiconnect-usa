@@ -9,7 +9,7 @@ export default function DataDeletionPage() {
   const email = supportEmail();
   return (
     <LegalPage title="How to delete your data">
-      <p>You can delete your DesiConnect account and personal data yourself at any time, including if you signed up with Google, Facebook or X.</p>
+      <p>You can delete your 1StopDesi account and personal data yourself at any time, including if you signed up with Google, Facebook or X.</p>
 
       <h2>On the website</h2>
       <ul>
@@ -35,7 +35,7 @@ export default function DataDeletionPage() {
       <h2>Can&apos;t sign in?</h2>
       <p>
         Email <a href={`mailto:${email}`}>{email}</a> from the address on your account and we&apos;ll delete it for you, usually within 7 days.
-        To also remove DesiConnect from your Google, Facebook or X account, remove it in that service&apos;s connected apps settings.
+        To also remove 1StopDesi from your Google, Facebook or X account, remove it in that service&apos;s connected apps settings.
       </p>
     </LegalPage>
   );

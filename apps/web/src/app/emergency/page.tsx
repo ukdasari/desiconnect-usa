@@ -22,7 +22,7 @@ export default function EmergencyPage() {
     <div className="container-page py-10">
       <div className="rounded-3xl bg-kumkum p-6 text-white md:p-10">
         <h1 className="text-3xl font-bold md:text-5xl">If anyone is in danger, call 911 now.</h1>
-        <p className="mt-3 max-w-2xl text-lg text-white/90">DesiConnect can&rsquo;t contact emergency services for you. 911 dispatchers can connect an interpreter for many languages.</p>
+        <p className="mt-3 max-w-2xl text-lg text-white/90">1StopDesi can&rsquo;t contact emergency services for you. 911 dispatchers can connect an interpreter for many languages.</p>
         <a href="tel:911" className="mt-6 inline-flex h-13 items-center gap-2 rounded-full bg-white px-7 text-lg font-bold text-kumkum">
           <Phone className="size-5" aria-hidden /> Call 911
         </a>
@@ -53,7 +53,7 @@ export default function EmergencyPage() {
         </section>
         <section className="rounded-3xl border border-line p-6">
           <h2 className="text-xl font-bold">Not an emergency?</h2>
-          <p className="mt-2 text-ink-2">For urgent but non-life-threatening problems, find local help on DesiConnect.</p>
+          <p className="mt-2 text-ink-2">For urgent but non-life-threatening problems, find local help on 1StopDesi.</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link href="/c/healthcare" className="rounded-full border border-line px-4 py-2 text-sm font-semibold hover:border-ink-2">Doctors and clinics</Link>
             <Link href="/search?category=hvac" className="rounded-full border border-line px-4 py-2 text-sm font-semibold hover:border-ink-2">AC and heating repair</Link>

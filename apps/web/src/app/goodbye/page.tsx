@@ -14,7 +14,7 @@ export default function GoodbyePage() {
         through another provider (like Google or Microsoft), that account is separate and you can delete it there.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <ButtonLink href="/">Back to DesiConnect</ButtonLink>
+        <ButtonLink href="/">Back to 1StopDesi</ButtonLink>
         <ButtonLink href="/register" variant="secondary">Create a new account</ButtonLink>
       </div>
     </div>

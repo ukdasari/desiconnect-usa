@@ -37,7 +37,7 @@ const NEW_ARRIVAL_GUIDE =
   "4. Arrange health insurance; many employers offer enrollment within 30 days of joining.\n" +
   "5. Keep immigration documents safe and check your status details at uscis.gov.\n" +
   "6. Connect with community organizations, temples and groceries near you.\n" +
-  "I can search DesiConnect for any of these — try the suggestions below.";
+  "I can search 1StopDesi for any of these — try the suggestions below.";
 
 @Injectable()
 export class AiService {

@@ -84,7 +84,7 @@ test.describe("accounts and actions", () => {
   test("private pages redirect to sign-in and come back afterwards", async ({ page }) => {
     await page.goto("/account/requests");
     await expect(page).toHaveURL(/\/login\?next=%2Faccount%2Frequests/);
-    await page.getByLabel("Email").fill("user@desiconnect.example");
+    await page.getByLabel("Email").fill("user@1stopdesi.example");
     await page.getByLabel("Password").fill("DemoPass123!");
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/account\/requests$/);
@@ -168,7 +168,7 @@ test.describe("organizer → moderation → publish", () => {
     await expect(anon.getByText("Nothing matches these filters yet")).toBeVisible();
 
     const admin = await browser.newPage();
-    await signIn(admin, "admin@desiconnect.example");
+    await signIn(admin, "admin@1stopdesi.example");
     await admin.goto("/admin");
     const item = admin.getByRole("listitem").filter({ hasText: title });
     await item.getByRole("button", { name: "Approve" }).click();
@@ -180,7 +180,7 @@ test.describe("organizer → moderation → publish", () => {
   });
 
   test("members cannot open the moderation dashboard", async ({ page }) => {
-    await signIn(page, "user@desiconnect.example");
+    await signIn(page, "user@1stopdesi.example");
     // Next streams the page, so the status is 200, but the user sees the not-found page and no admin data.
     // The API independently rejects every /admin request from non-admins (covered by API e2e tests).
     await page.goto("/admin");
@@ -218,7 +218,7 @@ test.describe("listing claims", () => {
     const listing = open[Math.floor(Math.random() * open.length)];
 
     const owner = await browser.newPage();
-    await signIn(owner, "provider@desiconnect.example");
+    await signIn(owner, "provider@1stopdesi.example");
     await owner.goto(`/listings/${listing.slug}`);
     await owner.getByRole("link", { name: "Claim this listing" }).click();
     await expect(owner.getByRole("heading", { name: `Claim ${listing.title}` })).toBeVisible();
@@ -230,7 +230,7 @@ test.describe("listing claims", () => {
     await expect(owner.getByRole("region", { name: "Listing claims" }).getByText(listing.title)).toBeVisible();
 
     const admin = await browser.newPage();
-    await signIn(admin, "admin@desiconnect.example");
+    await signIn(admin, "admin@1stopdesi.example");
     await admin.goto("/admin");
     const item = admin.getByRole("listitem").filter({ hasText: listing.title }).filter({ hasText: "Owner at" });
     await item.getByRole("button", { name: "Approve" }).click();

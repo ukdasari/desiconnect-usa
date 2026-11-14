@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         if (!cancelled) setState((st) => ({ ...st, status: "signedOut" }));
       } catch {
-        if (!cancelled) setState({ status: "signedOut", mode: null, me: null, configError: "Can't reach DesiConnect right now." });
+        if (!cancelled) setState({ status: "signedOut", mode: null, me: null, configError: "Can't reach 1StopDesi right now." });
       }
     })();
     return () => {

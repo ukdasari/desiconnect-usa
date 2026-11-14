@@ -7,7 +7,7 @@
 //   - "priya"                   → email priya@dev.desiconnect.test (verified)
 //   - "unverified-..."          → email marked as NOT verified (to test the API's rejection)
 //
-// Issues JWT access tokens for the DesiConnect API (audience OIDC_DEV_AUDIENCE) plus ID and refresh tokens,
+// Issues JWT access tokens for the 1StopDesi API (audience OIDC_DEV_AUDIENCE) plus ID and refresh tokens,
 // exactly like Auth0/Clerk/Cognito would. Supports PKCE, refresh tokens and RP-initiated logout.
 import Provider from "oidc-provider";
 
@@ -41,7 +41,7 @@ const configuration = {
       client_id: "desiconnect-mobile",
       token_endpoint_auth_method: "none",
       application_type: "native",
-      redirect_uris: ["desiconnect://auth/callback"],
+      redirect_uris: ["onestopdesi://auth/callback"],
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
     },
@@ -94,5 +94,5 @@ const configuration = {
 
 const provider = new Provider(ISSUER, configuration);
 provider.listen(PORT, () => {
-  console.log(`DesiConnect dev OIDC provider: ${ISSUER} (any username/password; audience ${AUDIENCE}; access token TTL ${ACCESS_TTL}s)`);
+  console.log(`1StopDesi dev OIDC provider: ${ISSUER} (any username/password; audience ${AUDIENCE}; access token TTL ${ACCESS_TTL}s)`);
 });

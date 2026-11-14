@@ -47,7 +47,7 @@ export default function HomeScreen() {
             returnKeyType="search"
             placeholder="Tax preparer, tiffin, garba…"
             placeholderTextColor={c.textMuted}
-            accessibilityLabel="Search DesiConnect"
+            accessibilityLabel="Search 1StopDesi"
             style={{ flex: 1, color: c.text, fontSize: 16, minHeight: 48 }}
           />
         </View>

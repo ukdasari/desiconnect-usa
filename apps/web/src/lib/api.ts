@@ -72,7 +72,7 @@ export async function api<T>(path: string, opts: Options = {}): Promise<ApiResul
       ...(cacheable ? { next: { revalidate: opts.revalidate } } : { cache: "no-store" as const }),
     });
   } catch {
-    throw new ApiError(503, "API_UNREACHABLE", "We couldn't reach DesiConnect right now. Check your connection and try again.");
+    throw new ApiError(503, "API_UNREACHABLE", "We couldn't reach 1StopDesi right now. Check your connection and try again.");
   }
   const json = (await res.json().catch(() => null)) as (ApiResult<T> & Partial<ApiErrorBody>) | null;
   if (!res.ok || !json || json.error) {

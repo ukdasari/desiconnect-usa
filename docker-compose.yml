@@ -45,7 +45,7 @@ services:
       OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
       OIDC_CLIENT_IDS: ${OIDC_CLIENT_IDS:-}
       JWT_SECRET: ${JWT_SECRET:-local-docker-secret-change-me-0123456789abcdef}
-      BOOTSTRAP_ADMIN_EMAILS: ${BOOTSTRAP_ADMIN_EMAILS:-admin@desiconnect.example}
+      BOOTSTRAP_ADMIN_EMAILS: ${BOOTSTRAP_ADMIN_EMAILS:-admin@1stopdesi.example}
       STORAGE_DRIVER: local
       STORAGE_LOCAL_DIR: /app/storage
       AI_PROVIDER: ${AI_PROVIDER:-none}

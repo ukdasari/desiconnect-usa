@@ -55,8 +55,8 @@ export const envSchema = z
     /** "resend" sends email through Resend (https://resend.com); "log" only writes emails to the log. */
     EMAIL_PROVIDER: z.enum(["log", "resend"]).default("log"),
     RESEND_API_KEY: z.string().optional().default(""),
-    /** Sender, e.g. "DesiConnect <updates@desiconnect.com>". The domain must be verified with the provider. */
-    EMAIL_FROM: z.string().default("DesiConnect <updates@desiconnect.example>"),
+    /** Sender, e.g. "1StopDesi <updates@1stopdesi.com>". The domain must be verified with the provider. */
+    EMAIL_FROM: z.string().default("1StopDesi <updates@1stopdesi.example>"),
     /** Public website address, used for links in emails (alerts, unsubscribe). */
     WEB_URL: z.string().url().default("http://localhost:3000"),
     /** Process notifications synchronously instead of via BullMQ (tests, or when Redis is absent). */

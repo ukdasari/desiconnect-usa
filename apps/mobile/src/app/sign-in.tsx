@@ -20,7 +20,7 @@ export default function SignIn() {
   if (auth.configError) {
     return (
       <Screen>
-        <Notice tone="danger" title="Can't reach DesiConnect">{auth.configError}</Notice>
+        <Notice tone="danger" title="Can't reach 1StopDesi">{auth.configError}</Notice>
         <Button title="Try again" onPress={auth.retryConfig} />
       </Screen>
     );
@@ -60,7 +60,7 @@ export default function SignIn() {
               setBusy(false);
             }
           }} />
-          <Body muted size={14}>You'll continue on our secure sign-in page. DesiConnect never sees your password.</Body>
+          <Body muted size={14}>You'll continue on our secure sign-in page. 1StopDesi never sees your password.</Body>
         </View>
       ) : (
         <View style={{ gap: space.md }}>
@@ -85,7 +85,7 @@ export default function SignIn() {
           <Link href="/register" replace style={{ alignSelf: "center", padding: 8 }}>
             <Body>New here? Create an account</Body>
           </Link>
-          {__DEV__ ? <Body muted size={13}>Development demo accounts: user@, provider@ or admin@desiconnect.example, password DemoPass123!</Body> : null}
+          {__DEV__ ? <Body muted size={13}>Development demo accounts: user@, provider@ or admin@1stopdesi.example, password DemoPass123!</Body> : null}
         </View>
       )}
     </Screen>

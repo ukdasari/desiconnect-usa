@@ -8,7 +8,7 @@ const ERRORS: Record<string, string> = {
   provider_unavailable: "The sign-in service isn't reachable right now. Try again in a minute.",
   provider_error: "The sign-in service returned an error. Try again.",
   sign_in_failed: "We couldn't complete sign-in. Try again.",
-  api_unavailable: "DesiConnect is temporarily unavailable. Try again in a minute.",
+  api_unavailable: "1StopDesi is temporarily unavailable. Try again in a minute.",
   account_error: "We couldn't set up your account. Contact support if this keeps happening.",
 };
 
@@ -26,7 +26,7 @@ export function OidcSignIn({ next, signup = false, error }: { next?: string; sig
       <p className="flex items-start gap-2 text-sm text-ink-2">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-leaf" aria-hidden />
         You&rsquo;ll continue on our secure sign-in page, where you can use your email or a connected account.
-        DesiConnect never sees your password.
+        1StopDesi never sees your password.
       </p>
       <p className="text-center text-sm text-ink-2">
         {signup ? "Already have an account? " : "New here? "}

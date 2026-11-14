@@ -59,7 +59,7 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<{
   try {
     res = await fetch(url, { method: opts.method ?? "GET", headers, body });
   } catch {
-    throw new ApiError(0, "NETWORK", "Can't reach DesiConnect. Check your connection and try again.");
+    throw new ApiError(0, "NETWORK", "Can't reach 1StopDesi. Check your connection and try again.");
   }
   const json = (await res.json().catch(() => null)) as ({ data: T; meta?: PaginationMeta & Record<string, unknown> } & Partial<ApiErrorBody>) | null;
   if (!res.ok || !json || json.error) {
