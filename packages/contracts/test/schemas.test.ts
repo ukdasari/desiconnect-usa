@@ -10,15 +10,15 @@ import {
 } from "../src";
 
 describe("category taxonomy", () => {
-  it("defines exactly the 15 primary categories with unique slugs", () => {
-    expect(CATEGORIES).toHaveLength(15);
+  it("defines exactly the 16 primary categories with unique slugs", () => {
+    expect(CATEGORIES).toHaveLength(16);
     const slugs = CATEGORIES.flatMap((c) => [c.slug, ...c.subcategories.map((s) => s.slug)]);
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  it("marks legal, immigration, insurance, healthcare and tax categories as regulated", () => {
+  it("marks legal, immigration, insurance, healthcare, tax and realtor categories as regulated", () => {
     const regulated = CATEGORIES.filter((c) => c.regulated).map((c) => c.slug).sort();
-    expect(regulated).toEqual(["finance-taxes", "healthcare", "immigration", "insurance", "lawyers"]);
+    expect(regulated).toEqual(["finance-taxes", "healthcare", "immigration", "insurance", "lawyers", "realtors"]);
   });
 });
 
