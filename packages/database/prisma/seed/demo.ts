@@ -96,6 +96,33 @@ export const DEMO_SERVICES: DemoService[] = [
     description: "Demonstration listing for a family dental office offering cleanings, fillings, crowns and Invisalign consultations.",
     city: "Allen", languages: ["English", "Gujarati", "Hindi"], verification: "VERIFIED", credential: "MEDICAL_LICENSE",
   },
+  {
+    category: "healthcare", sub: "womens-health", businessName: "Example Women's Health Center (Demo)",
+    title: "OB-GYN and prenatal care (Demo)",
+    description: "Demonstration listing for an OB-GYN practice offering annual exams, prenatal care and delivery at nearby hospitals.",
+    city: "Irving", languages: ["English", "Hindi", "Urdu"], verification: "VERIFIED", credential: "MEDICAL_LICENSE",
+  },
+  // Realtors
+  {
+    category: "realtors", sub: "home-buying", businessName: "Sample Homes Realty (Demo)",
+    title: "First-time home buyers in Frisco, Prosper and Celina (Demo)",
+    description: "Demonstration listing for a buyer's agent: school district guidance, new-build incentives and help with H-1B and green card financing questions.",
+    city: "Frisco", languages: ["English", "Telugu", "Hindi"], verification: "VERIFIED", credential: "REAL_ESTATE_LICENSE",
+    tags: ["first-time buyers", "new builds"],
+  },
+  {
+    category: "realtors", sub: "home-selling", businessName: "Example Listing Group (Demo)",
+    title: "Sell your home with pricing, staging and photography (Demo)",
+    description: "Demonstration listing for a listing agent: market pricing report, staging consultation, professional photos and open houses.",
+    city: "Plano", languages: ["English", "Gujarati"], verification: "VERIFIED", credential: "REAL_ESTATE_LICENSE",
+  },
+  {
+    category: "realtors", sub: "investment-properties", businessName: "Demo Investor Realty (Demo)",
+    title: "Rental and investment properties across DFW (Demo)",
+    description: "Demonstration listing for an investor-focused agent: rental yield analysis, duplexes and fourplexes, and property management referrals.",
+    city: "Irving", languages: ["English", "Tamil", "Malayalam"], verification: "PENDING", credential: "REAL_ESTATE_LICENSE",
+    pending: true,
+  },
   // Food
   {
     category: "food", sub: "catering", businessName: "Sample Celebration Caterers (Demo)",

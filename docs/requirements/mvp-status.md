@@ -9,7 +9,7 @@ foundation needed them; the rest is listed as remaining work.
 |---|---|
 | pnpm + Turborepo monorepo with `apps/web`, `apps/mobile`, `apps/api`, `packages/*`, `tests`, `infrastructure`, `docs` | Done |
 | Prisma models: users, roles, categories, providers, listings, events, jobs, properties, inquiries, verification, favorites, audit logs (+ registrations, applications, appointments, reviews, reports, notifications, consent, attachments, AI usage, markets, gazetteer) | Done |
-| Migrations + seed with all 15 categories | Done (`20261102001629_init`, 15 categories / 64 subcategories) |
+| Migrations + seed with all 16 categories | Done (16 categories / 77 subcategories; Realtors added Nov 2026) |
 | Auth integration points, server-side RBAC, validation, standard errors, OpenAPI | Done (local JWT + OIDC/JWKS) |
 | Shared design system | Done (`packages/ui` tokens; web components; mobile theme) |
 | Health checks, env validation, structured logging, Docker Compose | Done (Docker files not built here: no daemon) |
@@ -79,6 +79,20 @@ Not verified here: running on a physical phone or simulator, push delivery, stor
   requests), closes competing claims, and notifies everyone. Claimants follow and withdraw claims on the business dashboard.
   Re-running the seed keeps claimed listings untouched (stable ids per name and city).
 - Not done: geocoded addresses, hours, and a periodic re-check for closures.
+
+## Professional sections ✅
+
+- **Professionals** in the main menu opens three sections built from one template (`components/pro-section.tsx`):
+  - **Attorneys** (`/attorneys`)
+  - **Realtors** (`/realtors`): a new regulated category, with real estate license checks.
+  - **Medical** (`/medical`): the Healthcare category, with Women's Health, Eye Care, Physical Therapy and Pharmacies
+    added.
+- **Each section has:**
+  - Specialty tiles with counts.
+  - A license-check note linking to the State Bar, TREC or the Texas Medical Board. Medical also has a 911 line.
+  - "Get alerts" (new alert topics: realtors, medical).
+  - Search results.
+- **Home page tiles** for Lawyers, Healthcare and Realtors open these sections.
 
 ## Alerts and notifications ✅
 

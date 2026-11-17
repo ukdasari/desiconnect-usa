@@ -1,4 +1,4 @@
-import {
+import { KeyRound,
   Briefcase,
   CalendarHeart,
   Circle,
@@ -31,6 +31,7 @@ const ICONS: Record<string, LucideIcon> = {
   "shopping-bag": ShoppingBag,
   siren: Siren,
   stethoscope: Stethoscope,
+  "key-round": KeyRound,
   utensils: Utensils,
   plane: Plane,
   "graduation-cap": GraduationCap,

@@ -20,6 +20,7 @@ export const CATEGORY_ICONS: Record<string, IconName> = {
   "shopping-bag": "bag-handle-outline",
   siren: "alert-circle-outline",
   stethoscope: "medkit-outline",
+  "key-round": "key-outline",
   utensils: "restaurant-outline",
   plane: "airplane-outline",
   "graduation-cap": "school-outline",

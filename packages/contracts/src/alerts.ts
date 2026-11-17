@@ -21,6 +21,8 @@ export const ALERT_TOPICS: AlertTopic[] = [
   { key: "jobs", label: "Jobs", categories: ["jobs"], defaultFrequency: "INSTANT", hint: "New job postings" },
   { key: "restaurants", label: "Restaurants", categories: ["restaurants"], defaultFrequency: "WEEKLY", hint: "New Indian and Pakistani restaurants" },
   { key: "attorneys", label: "Attorneys", categories: ["lawyers", "immigration"], defaultFrequency: "WEEKLY", hint: "Immigration, family and business lawyers" },
+  { key: "realtors", label: "Realtors", categories: ["realtors"], defaultFrequency: "WEEKLY", hint: "Agents for buying, selling and leasing" },
+  { key: "medical", label: "Medical", categories: ["healthcare"], defaultFrequency: "WEEKLY", hint: "Doctors, dentists and clinics" },
   { key: "real-estate", label: "Real estate", categories: ["real-estate"], defaultFrequency: "WEEKLY", hint: "Rentals, homes for sale, roommates" },
   { key: "everything", label: "Everything new", categories: [], defaultFrequency: "WEEKLY", hint: "All new listings in your area" },
 ];

@@ -4,18 +4,28 @@ import { PILOT_MARKET } from "@desiconnect/contracts";
 import { logout, setLocation } from "@/app/actions/auth";
 import { getLocation, getMe } from "@/lib/session";
 import { Logo } from "./logo";
+import { NavMenu } from "./nav-menu";
 import { ThemeToggle } from "./theme";
 import { buttonClass } from "./ui";
 
-const NAV = [
+const PROFESSIONALS = [
+  { href: "/attorneys", label: "Attorneys", hint: "Immigration, family, business law" },
+  { href: "/realtors", label: "Realtors", hint: "Buy, sell, lease, invest" },
+  { href: "/medical", label: "Medical", hint: "Doctors, dentists, therapists" },
+];
+
+/** Desktop menu; Professionals sits after Restaurants as a dropdown. The mobile menu lists everything. */
+const NAV_BEFORE = [
   { href: "/search", label: "Explore" },
   { href: "/restaurants", label: "Restaurants" },
-  { href: "/attorneys", label: "Attorneys" },
+];
+const NAV_AFTER = [
   { href: "/events", label: "Events" },
   { href: "/jobs", label: "Jobs" },
   { href: "/real-estate", label: "Real estate" },
   { href: "/emergency", label: "Emergency" },
 ];
+const NAV = [...NAV_BEFORE, ...PROFESSIONALS, ...NAV_AFTER];
 
 const popover = "fixed inset-x-4 top-16 z-40 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 mt-2 sm:w-72 rounded-2xl border border-line bg-surface p-4 shadow-[0_12px_40px_-12px_rgba(14,59,67,0.35)]";
 
@@ -29,11 +39,9 @@ export async function SiteHeader() {
       <div className="container-page flex h-16 items-center gap-2 sm:gap-3">
         <Logo />
         <nav aria-label="Main" className="ml-2 hidden items-center gap-0.5 xl:flex">
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
-              {n.label}
-            </Link>
-          ))}
+          {NAV_BEFORE.map((n) => <TopLink key={n.href} {...n} />)}
+          <NavMenu label="Professionals" items={PROFESSIONALS} />
+          {NAV_AFTER.map((n) => <TopLink key={n.href} {...n} />)}
           <Link href="/ai" className="ml-0.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-semibold text-peacock-2 hover:bg-peacock-soft dark:text-marigold">
             <Sparkles className="size-4" aria-hidden />
             Desi AI
@@ -117,5 +125,13 @@ function MenuLink({ href, children }: { href: string; children: React.ReactNode 
     <li>
       <Link href={href} className="block rounded-lg px-2 py-1.5 hover:bg-surface-2">{children}</Link>
     </li>
+  );
+}
+
+function TopLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} className="whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
+      {label}
+    </Link>
   );
 }

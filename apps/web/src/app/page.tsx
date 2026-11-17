@@ -26,6 +26,9 @@ async function safeList(path: string, query: Record<string, string | number | un
   }
 }
 
+/** Categories that have their own section page. */
+const SECTION_PAGES: Record<string, string> = { lawyers: "/attorneys", healthcare: "/medical", realtors: "/realtors" };
+
 export default async function HomePage() {
   const loc = await getLocation();
   const near = { city: loc.city, state: loc.state, zip: loc.zip, radiusMiles: 40 };
@@ -102,10 +105,10 @@ export default async function HomePage() {
           <Link href="/search" className="text-sm font-semibold text-peacock-2 hover:underline dark:text-marigold">Search everything</Link>
         </div>
         {categories ? (
-          <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3 lg:grid-cols-5">
+          <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
             {categories.map((c) => (
               <li key={c.slug}>
-                <Link href={`/c/${c.slug}`} className="group flex items-center gap-3 rounded-2xl px-2 py-3 -mx-2 hover:bg-surface">
+                <Link href={SECTION_PAGES[c.slug] ?? `/c/${c.slug}`} className="group flex items-center gap-3 rounded-2xl px-2 py-3 -mx-2 hover:bg-surface">
                   <CategoryIcon icon={c.icon} slug={c.slug} />
                   <span className="min-w-0">
                     <span className="block font-semibold leading-tight group-hover:underline">{c.name}</span>
