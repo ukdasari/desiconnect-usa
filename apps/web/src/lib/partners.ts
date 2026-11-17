@@ -2,6 +2,7 @@
 // To add a logo: put the file in src/assets/partners/, import it here and set `logo`. Without a logo the
 // panel shows the business name. Leave `href` out until the website address is confirmed.
 import insuguru from "@/assets/partners/insuguru.png";
+import vinessaEvents from "@/assets/partners/vinessa-events.png";
 import visitorsGuru from "@/assets/partners/visitors-guru.png";
 
 type ImageSource = string | { src: string };
@@ -14,12 +15,14 @@ export interface Partner {
   logo?: ImageSource;
   /** Logos drawn for dark backgrounds get a dark tile. */
   dark?: boolean;
+  /** Taller, less wide logos (about 2:1) get more height so they read at the same size as wide ones. */
+  tall?: boolean;
 }
 
 export const PARTNERS_HEADING = "Our partners";
 
 export const PARTNERS: Partner[] = [
-  { name: "Vinessa Events", kind: "Weddings, events & catering, Plano", href: "https://vinessaevents.com/" },
+  { name: "Vinessa Events", kind: "Weddings, events & catering, Plano", href: "https://vinessaevents.com/", logo: vinessaEvents, tall: true },
   { name: "Basera", kind: "Indian restaurant, Plano", href: "https://basera-plano.com" },
   { name: "Visitors Guru", kind: "Visitor insurance", logo: visitorsGuru, dark: true },
   { name: "Insuguru Insurance Services", kind: "Insurance", logo: insuguru },
