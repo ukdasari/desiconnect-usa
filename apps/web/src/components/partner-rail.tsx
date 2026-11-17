@@ -9,7 +9,7 @@ const HIDDEN = [/^\/account(\/|$)/, /^\/provider(\/|$)/, /^\/admin(\/|$)/, /^\/l
 
 function Tile({ p, compact }: { p: Partner; compact?: boolean }) {
   const body = p.logo ? (
-    <img src={imageSrc(p.logo)} alt={p.name} className={cn("mx-auto w-full object-contain", compact ? "h-10" : p.tall ? "h-[4.25rem]" : "h-12")} loading="lazy" />
+    <img src={imageSrc(p.logo)} alt={p.name} className={cn("mx-auto w-full object-contain", compact ? "h-10" : p.tall ? "h-20" : "h-12")} loading="lazy" />
   ) : (
     <span className="block text-center">
       <span className="block font-display text-[0.95rem] font-bold leading-tight text-ink">{p.name}</span>
@@ -22,12 +22,13 @@ function Tile({ p, compact }: { p: Partner; compact?: boolean }) {
     p.logo && p.dark ? "bg-[#17396e]" : p.logo ? "bg-white" : "bg-surface",
     p.href ? "hover:border-ink-2" : null,
   );
+  const tileStyle = p.logo && p.tile ? { backgroundColor: p.tile, borderColor: p.tile } : undefined;
   return p.href ? (
-    <a href={p.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={`${p.name} (opens their website)`}>
+    <a href={p.href} target="_blank" rel="noopener noreferrer" className={cls} style={tileStyle} aria-label={`${p.name} (opens their website)`}>
       {body}
     </a>
   ) : (
-    <div className={cls}>{body}</div>
+    <div className={cls} style={tileStyle}>{body}</div>
   );
 }
 
