@@ -1,23 +1,25 @@
 import Link from "next/link";
+import mark from "@/assets/brand/1stopdesi-mark.png";
+import wordmark from "@/assets/brand/1stopdesi-wordmark.png";
 import { cn } from "@/lib/cn";
 
-/** Wordmark with a kolam-dot mark: four dots around a center, joined by one loop. */
+type ImageSource = string | { src: string };
+const src = (img: ImageSource) => (typeof img === "string" ? img : img.src);
+
+/**
+ * 1StopDesi logo: the bag-and-community symbol with the "1stopdesi" lettering. The lettering's navy
+ * doesn't read on dark backgrounds, so dark mode shows the same word set in type instead.
+ * The full circular badge lives in src/assets/brand/ for large uses (share image, print).
+ */
 export function Logo({ className, inverse = false }: { className?: string; inverse?: boolean }) {
   return (
-    <Link href="/" className={cn("inline-flex items-center gap-2.5 rounded-lg", className)} aria-label="1StopDesi home">
-      <svg viewBox="0 0 32 32" className="size-8 shrink-0" aria-hidden>
-        <rect width="32" height="32" rx="9" fill="var(--marigold)" />
-        <path d="M16 5.5c5.8 0 10.5 4.7 10.5 10.5S21.8 26.5 16 26.5 5.5 21.8 5.5 16 10.2 5.5 16 5.5Z" fill="none" stroke="#1b1206" strokeWidth="1.6" opacity=".55" />
-        <g fill="#1b1206">
-          <circle cx="16" cy="9.5" r="2" />
-          <circle cx="22.5" cy="16" r="2" />
-          <circle cx="16" cy="22.5" r="2" />
-          <circle cx="9.5" cy="16" r="2" />
-          <circle cx="16" cy="16" r="2.4" />
-        </g>
-      </svg>
-      <span className={cn("font-display text-[1.3rem] font-bold tracking-tight", inverse ? "text-white" : "text-ink")}>
-        1StopDesi
+    <Link href="/" className={cn("inline-flex items-center gap-2 rounded-lg", className)} aria-label="1StopDesi home">
+      <img src={src(mark)} alt="" className={cn("h-9 w-auto shrink-0", inverse ? "rounded-lg bg-white p-1" : "dark:rounded-lg dark:bg-white dark:p-1")} width={48} height={36} />
+      <img src={src(wordmark)} alt="" className={cn("h-7 w-auto", inverse ? "hidden" : "dark:hidden")} width={116} height={28} />
+      <span className={cn("font-display text-[1.35rem] font-extrabold italic tracking-tight", inverse ? "inline" : "hidden dark:inline")}>
+        <span className="text-[#f47a1f]">1</span>
+        <span className="text-white">stop</span>
+        <span className="text-[#f47a1f]">desi</span>
       </span>
     </Link>
   );

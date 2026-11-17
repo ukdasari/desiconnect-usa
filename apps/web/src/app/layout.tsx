@@ -6,6 +6,9 @@ import { ThemeProvider } from "@/components/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // Absolute links for the share image (app/opengraph-image.png) when the site is shared.
+  metadataBase: new URL(process.env.APP_URL || "http://localhost:3000"),
+  openGraph: { siteName: "1StopDesi", type: "website" },
   title: { default: "1StopDesi — services, events, jobs and homes for the Desi community", template: "%s | 1StopDesi" },
   description:
     "Find trusted South Asian service providers, events, jobs and rentals across the USA, starting in Dallas–Fort Worth. Contact providers, apply and RSVP in one place.",
