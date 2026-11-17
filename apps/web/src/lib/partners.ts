@@ -19,7 +19,7 @@ export interface Partner {
 export const PARTNERS_HEADING = "Our partners";
 
 export const PARTNERS: Partner[] = [
-  { name: "Venesa Events", kind: "Events & decor" },
+  { name: "Vinessa Events", kind: "Weddings, events & catering, Plano", href: "https://vinessaevents.com/" },
   { name: "Basera", kind: "Indian restaurant, Plano", href: "https://basera-plano.com" },
   { name: "Visitors Guru", kind: "Visitor insurance", logo: visitorsGuru, dark: true },
   { name: "Insuguru Insurance Services", kind: "Insurance", logo: insuguru },
