@@ -42,48 +42,48 @@ export default async function HomePage() {
       <section className="relative isolate overflow-hidden bg-peacock text-white">
         <KolamPattern className="absolute inset-0 -z-10 h-full w-full text-[#7fb7b4]" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_20%_40%,transparent_0%,var(--peacock)_70%)]" aria-hidden />
-        <div className="container-page py-16 md:py-24">
+        <div className="container-page py-7 md:py-9">
           <div className="animate-settle max-w-4xl">
-            <h1 className="text-[2.1rem] font-bold leading-[1.05] sm:text-5xl md:text-[3.9rem]">
+            <h1 className="text-[1.6rem] font-bold leading-[1.1] sm:text-[2rem] md:text-[2.4rem]">
               Find the people who get it, from your next tax preparer to tonight&rsquo;s garba.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg text-white/80">
+            <p className="mt-2.5 max-w-3xl text-base text-white/80">
               Services, events, jobs and homes from the Desi community, with verified professionals and a way to reach them in one step.
             </p>
 
-            <form action={smartSearch} className="mt-9 rounded-[1.6rem] bg-white p-2 text-ink shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)] dark:bg-surface">
+            <form action={smartSearch} className="mt-5 rounded-[1.4rem] bg-white p-1.5 text-ink shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)] dark:bg-surface">
               <div className="flex flex-col gap-1 md:flex-row md:items-center">
-                <label className="flex flex-1 items-center gap-3 px-4 py-2">
-                  <span className="shrink-0 font-display text-lg font-semibold text-ink-2">I need</span>
+                <label className="flex flex-1 items-center gap-3 px-4 py-1">
+                  <span className="shrink-0 font-display text-base font-semibold text-ink-2">I need</span>
                   <input
                     name="q"
                     required
                     maxLength={160}
                     placeholder="a Telugu-speaking immigration lawyer"
-                    className="h-12 w-full bg-transparent text-lg font-medium placeholder:text-ink-2/60 focus:outline-none"
+                    className="h-10 w-full bg-transparent text-base font-medium placeholder:text-ink-2/60 focus:outline-none"
                     aria-label="What do you need?"
                   />
                 </label>
                 <span className="hidden h-8 w-px bg-line md:block" aria-hidden />
-                <label className="flex items-center gap-3 px-4 py-2 md:w-72">
-                  <span className="shrink-0 font-display text-lg font-semibold text-ink-2">near</span>
+                <label className="flex items-center gap-3 px-4 py-1 md:w-72">
+                  <span className="shrink-0 font-display text-base font-semibold text-ink-2">near</span>
                   <input
                     name="where"
                     maxLength={80}
                     defaultValue={loc.zip ?? loc.city ?? ""}
                     placeholder="Frisco or 75034"
-                    className="h-12 w-full bg-transparent text-lg font-medium placeholder:text-ink-2/60 focus:outline-none"
+                    className="h-10 w-full bg-transparent text-base font-medium placeholder:text-ink-2/60 focus:outline-none"
                     aria-label="Near which city or ZIP code?"
                   />
                 </label>
-                <button className="inline-flex h-13 items-center justify-center gap-2 rounded-[1.2rem] bg-marigold px-7 text-base font-bold text-[#1b1206] hover:bg-marigold-strong hover:text-white">
+                <button className="inline-flex h-11 items-center justify-center gap-2 rounded-[1.1rem] bg-marigold px-6 text-base font-bold text-[#1b1206] hover:bg-marigold-strong hover:text-white">
                   <Search className="size-5" aria-hidden />
                   Search
                 </button>
               </div>
             </form>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
               <span className="text-white/70">Popular:</span>
               {POPULAR.map((p) => (
                 <Link key={p.href} href={p.href} className="rounded-full border border-white/25 px-3 py-1 text-white/90 hover:border-white hover:text-white">
