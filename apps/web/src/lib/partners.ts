@@ -1,8 +1,11 @@
 // Businesses shown in the partner panel beside the page content (strip at the bottom on smaller screens).
 // To add a logo: put the file in src/assets/partners/, import it here and set `logo`. Without a logo the
 // panel shows the business name. Leave `href` out until the website address is confirmed.
+import agFintax from "@/assets/partners/agfintax.png";
 import baseraGrand from "@/assets/partners/basera-grand.png";
 import insuguru from "@/assets/partners/insuguru.png";
+import jatara from "@/assets/partners/jatara.png";
+import rotateSocial from "@/assets/partners/rotate-social.png";
 import vinessaEvents from "@/assets/partners/vinessa-events.png";
 import visitorsGuru from "@/assets/partners/visitors-guru.png";
 
@@ -29,9 +32,9 @@ export const PARTNERS: Partner[] = [
   { name: "Basera Grand Kitchen + Bar", kind: "Indian kitchen + bar", href: "https://baseragrand.com/", logo: baseraGrand, tile: "#0d0d0d", tall: true },
   { name: "Visitors Guru", kind: "Visitor insurance", logo: visitorsGuru, dark: true },
   { name: "Insuguru Insurance Services", kind: "Insurance", logo: insuguru },
-  { name: "Rotate Bar & Kitchen", kind: "Restaurant & bar, Frisco", href: "https://www.rotatebarkitchen.com" },
-  { name: "AG FinTax", kind: "Tax & CFO services", href: "https://agfintax.com" },
-  { name: "Jatara Restaurant", kind: "Telangana cuisine" },
+  { name: "Rotate Social", kind: "Indian culinary lounge", href: "https://rotatesocial.com/", logo: rotateSocial, tile: "#4a1d0b", tall: true },
+  { name: "AG FinTax", kind: "Financial & tax services", href: "https://www.agfintax.com/", logo: agFintax, tall: true },
+  { name: "Jatara Indian Kitchen", kind: "Indian kitchen", href: "https://jataratx.com/", logo: jatara, tile: "#0a0a0a", tall: true },
 ];
 
 export const imageSrc = (img: ImageSource) => (typeof img === "string" ? img : img.src);
