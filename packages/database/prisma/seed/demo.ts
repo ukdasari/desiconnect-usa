@@ -102,6 +102,27 @@ export const DEMO_SERVICES: DemoService[] = [
     description: "Demonstration listing for an OB-GYN practice offering annual exams, prenatal care and delivery at nearby hospitals.",
     city: "Irving", languages: ["English", "Hindi", "Urdu"], verification: "VERIFIED", credential: "MEDICAL_LICENSE",
   },
+  // Event management
+  {
+    category: "event-services", sub: "event-planners", businessName: "Sample Shaadi Planners (Demo)",
+    title: "Wedding and sangeet planning, full service or day-of (Demo)",
+    description: "Demonstration listing for an event planner: vendor booking, timelines, baraat coordination and day-of management for weddings of 100 to 800 guests.",
+    city: "Frisco", languages: ["English", "Hindi", "Punjabi"], verification: "VERIFIED", credential: "BUSINESS_LICENSE",
+    tags: ["weddings", "sangeet"],
+  },
+  {
+    category: "event-services", sub: "decor", businessName: "Example Mandap Decor (Demo)",
+    title: "Mandap, stage and floral decor with rentals (Demo)",
+    description: "Demonstration listing for a decorator: mandaps, sangeet stages, haldi and mehndi setups, centerpieces and chair, linen and lighting rentals.",
+    city: "Irving", languages: ["English", "Telugu", "Hindi"], verification: "VERIFIED", credential: "BUSINESS_LICENSE",
+  },
+  {
+    category: "event-services", sub: "photo-video", businessName: "Demo Moments Studio (Demo)",
+    title: "Wedding photography and cinematic films (Demo)",
+    description: "Demonstration listing for a photo and video team covering pre-wedding shoots, ceremonies, receptions and same-week highlight films.",
+    city: "Plano", languages: ["English", "Tamil", "Gujarati"], verification: "PENDING", credential: "BUSINESS_LICENSE",
+    pending: true,
+  },
   // Realtors
   {
     category: "realtors", sub: "home-buying", businessName: "Sample Homes Realty (Demo)",

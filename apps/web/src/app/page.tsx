@@ -27,7 +27,7 @@ async function safeList(path: string, query: Record<string, string | number | un
 }
 
 /** Categories that have their own section page. */
-const SECTION_PAGES: Record<string, string> = { lawyers: "/attorneys", healthcare: "/medical", realtors: "/realtors" };
+const SECTION_PAGES: Record<string, string> = { lawyers: "/attorneys", healthcare: "/medical", realtors: "/realtors", "event-services": "/event-management" };
 
 export default async function HomePage() {
   const loc = await getLocation();
@@ -106,7 +106,8 @@ export default async function HomePage() {
         </div>
         {categories ? (
           <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
-            {categories.map((c) => (
+            {/* Emergency has its own place in the main menu, which keeps this grid an even 4 x 4. */}
+            {categories.filter((c) => c.slug !== "emergency").map((c) => (
               <li key={c.slug}>
                 <Link href={SECTION_PAGES[c.slug] ?? `/c/${c.slug}`} className="group flex items-center gap-3 rounded-2xl px-2 py-3 -mx-2 hover:bg-surface">
                   <CategoryIcon icon={c.icon} slug={c.slug} />

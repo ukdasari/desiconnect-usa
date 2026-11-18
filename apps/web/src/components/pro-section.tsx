@@ -165,7 +165,7 @@ export async function ProSection({ config: c, searchParams }: { config: ProSecti
             <ShieldCheck className="mt-0.5 size-4 shrink-0 text-leaf" aria-hidden />
             <span>
               <span className="font-semibold text-ink">{c.license.lead}</span> {c.license.body}{" "}
-              <a href={c.license.href} target="_blank" rel="noopener noreferrer" className="font-semibold text-ink underline">
+              <a href={c.license.href} {...(c.license.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} className="font-semibold text-ink underline">
                 {c.license.linkLabel}
               </a>
               .

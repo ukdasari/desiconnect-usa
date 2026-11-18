@@ -9,7 +9,7 @@ foundation needed them; the rest is listed as remaining work.
 |---|---|
 | pnpm + Turborepo monorepo with `apps/web`, `apps/mobile`, `apps/api`, `packages/*`, `tests`, `infrastructure`, `docs` | Done |
 | Prisma models: users, roles, categories, providers, listings, events, jobs, properties, inquiries, verification, favorites, audit logs (+ registrations, applications, appointments, reviews, reports, notifications, consent, attachments, AI usage, markets, gazetteer) | Done |
-| Migrations + seed with all 16 categories | Done (16 categories / 77 subcategories; Realtors added Nov 2026) |
+| Migrations + seed with all 17 categories | Done (17 categories / 85 subcategories; Realtors and Event Management added Nov 2026) |
 | Auth integration points, server-side RBAC, validation, standard errors, OpenAPI | Done (local JWT + OIDC/JWKS) |
 | Shared design system | Done (`packages/ui` tokens; web components; mobile theme) |
 | Health checks, env validation, structured logging, Docker Compose | Done (Docker files not built here: no daemon) |
@@ -87,6 +87,8 @@ Not verified here: running on a physical phone or simulator, push delivery, stor
   - **Realtors** (`/realtors`): a new regulated category, with real estate license checks.
   - **Medical** (`/medical`): the Healthcare category, with Women's Health, Eye Care, Physical Therapy and Pharmacies
     added.
+  - **Event management** (`/event-management`): a new Event Management category, plus catering from Food.
+    Specialties: planners, decor, photo & video, DJs, mehndi, bridal makeup, venues, priests.
 - **Each section has:**
   - Specialty tiles with counts.
   - A license-check note linking to the State Bar, TREC or the Texas Medical Board. Medical also has a 911 line.

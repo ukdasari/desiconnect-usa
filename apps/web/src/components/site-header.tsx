@@ -12,6 +12,7 @@ const PROFESSIONALS = [
   { href: "/attorneys", label: "Attorneys", hint: "Immigration, family, business law" },
   { href: "/realtors", label: "Realtors", hint: "Buy, sell, lease, invest" },
   { href: "/medical", label: "Medical", hint: "Doctors, dentists, therapists" },
+  { href: "/event-management", label: "Event management", hint: "Planners, decor, catering, DJs" },
 ];
 
 /** Desktop menu; Professionals sits after Restaurants as a dropdown. The mobile menu lists everything. */

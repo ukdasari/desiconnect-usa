@@ -21,6 +21,7 @@ export const CATEGORY_ICONS: Record<string, IconName> = {
   siren: "alert-circle-outline",
   stethoscope: "medkit-outline",
   "key-round": "key-outline",
+  "party-popper": "balloon-outline",
   utensils: "restaurant-outline",
   plane: "airplane-outline",
   "graduation-cap": "school-outline",
