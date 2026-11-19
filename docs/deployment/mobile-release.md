@@ -12,11 +12,12 @@ submitted to a store yet.** This page lists what to set up, in order.
 | Bundle IDs | `app.json` → `ios.bundleIdentifier`, `android.package` | Currently `com.onestopdesi.app`; change before the first store build, it can't be changed later |
 | Apple Developer Program | developer.apple.com ($99/yr) | Needed for TestFlight and the App Store |
 | Google Play Console | play.google.com/console ($25 once) | Needed for internal testing and release |
-| Icons and splash | `apps/mobile/assets/` | Replace the placeholders: 1024×1024 icon, Android adaptive foreground, splash |
+| Icons | `apps/mobile/assets/` | Done: 1024×1024 icon and Android adaptive icon from the 1StopDesi logo |
 
 ## 2. Environment per build profile
 
-`EXPO_PUBLIC_*` values are compiled into the app. Set them per profile with EAS environment variables
+`EXPO_PUBLIC_*` values are compiled into the app. `eas.json` already sets the API and website URLs (1stopdesi.com) for the
+`preview` and `production` profiles. Override them per profile with EAS environment variables
 (`eas env:create --environment preview|production`) or in `eas.json` → `build.<profile>.env`:
 
 | Variable | Example |
