@@ -10,8 +10,8 @@ import {
 } from "../src";
 
 describe("category taxonomy", () => {
-  it("defines exactly the 17 primary categories with unique slugs", () => {
-    expect(CATEGORIES).toHaveLength(17);
+  it("defines exactly the 18 primary categories with unique slugs", () => {
+    expect(CATEGORIES).toHaveLength(18);
     const slugs = CATEGORIES.flatMap((c) => [c.slug, ...c.subcategories.map((s) => s.slug)]);
     expect(new Set(slugs).size).toBe(slugs.length);
   });

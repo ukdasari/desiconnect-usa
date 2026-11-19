@@ -18,9 +18,9 @@ describe("platform", () => {
     expect(res.body.traceId).toBeTruthy();
   });
 
-  it("serves all 17 primary categories", async () => {
+  it("serves all 18 primary categories", async () => {
     const res = await ctx.http.get(`${V}/categories`).expect(200);
-    expect(res.body.data).toHaveLength(17);
+    expect(res.body.data).toHaveLength(18);
     expect(res.body.data.find((c: { slug: string }) => c.slug === "immigration").regulated).toBe(true);
   });
 

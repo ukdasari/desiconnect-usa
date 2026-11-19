@@ -255,6 +255,23 @@ export const CATEGORIES: CategoryDefinition[] = [
     ],
   },
   {
+    slug: "kids",
+    name: "Kids & Family",
+    tagline: "Sports, classes, camps and childcare for children",
+    icon: "baby",
+    kind: "SERVICE",
+    regulated: false,
+    expectedCredentials: ["BUSINESS_LICENSE"],
+    subcategories: [
+      { slug: "cricket-academies", name: "Cricket Academies" },
+      { slug: "kids-sports", name: "Sports & Swimming" },
+      { slug: "chess-stem", name: "Chess, Coding & Robotics" },
+      { slug: "bal-vihar", name: "Culture & Bal Vihar" },
+      { slug: "camps", name: "Camps" },
+      { slug: "childcare", name: "Daycare & Nannies" },
+    ],
+  },
+  {
     slug: "home-services",
     name: "Home Services",
     tagline: "HVAC, plumbing, cleaning and repairs",

@@ -8,14 +8,15 @@ import { NavMenu } from "./nav-menu";
 import { ThemeToggle } from "./theme";
 import { buttonClass } from "./ui";
 
-const PROFESSIONALS = [
+const SERVICES = [
   { href: "/attorneys", label: "Attorneys", hint: "Immigration, family, business law" },
   { href: "/realtors", label: "Realtors", hint: "Buy, sell, lease, invest" },
   { href: "/medical", label: "Medical", hint: "Doctors, dentists, therapists" },
   { href: "/event-management", label: "Event management", hint: "Planners, decor, catering, DJs" },
+  { href: "/kids", label: "Kids & family", hint: "Sports, classes, camps, childcare" },
 ];
 
-/** Desktop menu; Professionals sits after Restaurants as a dropdown. The mobile menu lists everything. */
+/** Desktop menu; Services sits after Restaurants as a dropdown. The mobile menu lists everything. */
 const NAV_BEFORE = [
   { href: "/search", label: "Explore" },
   { href: "/restaurants", label: "Restaurants" },
@@ -26,7 +27,7 @@ const NAV_AFTER = [
   { href: "/real-estate", label: "Real estate" },
   { href: "/emergency", label: "Emergency" },
 ];
-const NAV = [...NAV_BEFORE, ...PROFESSIONALS, ...NAV_AFTER];
+const NAV = [...NAV_BEFORE, ...SERVICES, ...NAV_AFTER];
 
 const popover = "fixed inset-x-4 top-16 z-40 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 mt-2 sm:w-72 rounded-2xl border border-line bg-surface p-4 shadow-[0_12px_40px_-12px_rgba(14,59,67,0.35)]";
 
@@ -41,7 +42,7 @@ export async function SiteHeader() {
         <Logo />
         <nav aria-label="Main" className="ml-2 hidden items-center gap-0.5 xl:flex">
           {NAV_BEFORE.map((n) => <TopLink key={n.href} {...n} />)}
-          <NavMenu label="Professionals" items={PROFESSIONALS} />
+          <NavMenu label="Services" items={SERVICES} />
           {NAV_AFTER.map((n) => <TopLink key={n.href} {...n} />)}
           <Link href="/ai" className="ml-0.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-[0.95rem] font-semibold text-peacock-2 hover:bg-peacock-soft dark:text-marigold">
             <Sparkles className="size-4" aria-hidden />

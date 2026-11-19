@@ -102,6 +102,33 @@ export const DEMO_SERVICES: DemoService[] = [
     description: "Demonstration listing for an OB-GYN practice offering annual exams, prenatal care and delivery at nearby hospitals.",
     city: "Irving", languages: ["English", "Hindi", "Urdu"], verification: "VERIFIED", credential: "MEDICAL_LICENSE",
   },
+  // Kids & family
+  {
+    category: "kids", sub: "cricket-academies", businessName: "Sample Cricket Academy (Demo)",
+    title: "Youth cricket coaching, ages 6 to 16 (Demo)",
+    description: "Demonstration listing for a cricket academy: weekend batting and bowling sessions, indoor nets in winter, and youth league teams.",
+    city: "Frisco", languages: ["English", "Hindi", "Telugu"], verification: "VERIFIED", credential: "BUSINESS_LICENSE",
+    tags: ["ages 6-16", "weekends"],
+  },
+  {
+    category: "kids", sub: "camps", businessName: "Example Kids Camp (Demo)",
+    title: "Summer and spring break camps: STEM, chess and art (Demo)",
+    description: "Demonstration listing for a day camp with weekly themes, chess and robotics, Indian art and dance, and before and after care.",
+    city: "Plano", languages: ["English", "Gujarati"], verification: "VERIFIED", credential: "BUSINESS_LICENSE",
+  },
+  {
+    category: "kids", sub: "bal-vihar", businessName: "Demo Bal Vihar (Demo)",
+    title: "Sunday Bal Vihar: shlokas, stories and festivals (Demo)",
+    description: "Demonstration listing for a weekly culture class for ages 4 to 12 with shlokas, stories, values and festival celebrations.",
+    city: "Irving", languages: ["English", "Hindi", "Tamil"], verification: "VERIFIED", credential: "BUSINESS_LICENSE",
+  },
+  {
+    category: "kids", sub: "childcare", businessName: "Sample Little Steps Daycare (Demo)",
+    title: "Licensed daycare and after-school pickup (Demo)",
+    description: "Demonstration listing for a licensed daycare with infant to pre-K rooms, after-school pickup from nearby elementary schools and vegetarian meals.",
+    city: "Irving", languages: ["English", "Telugu", "Hindi"], verification: "PENDING", credential: "BUSINESS_LICENSE",
+    pending: true,
+  },
   // Event management
   {
     category: "event-services", sub: "event-planners", businessName: "Sample Shaadi Planners (Demo)",

@@ -20,10 +20,10 @@ test.describe("discovery", () => {
     await expect(rows.first()).toContainText("Telugu");
   });
 
-  test("every category except Emergency (in the main menu) is on the homepage", async ({ page }) => {
+  test("all 18 categories are reachable from the homepage", async ({ page }) => {
     await page.goto("/");
     const index = page.locator("section", { has: page.getByRole("heading", { name: "Browse by what you need" }) });
-    await expect(index.getByRole("listitem")).toHaveCount(16);
+    await expect(index.getByRole("listitem")).toHaveCount(18);
     await index.getByRole("link", { name: /Home Services/ }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Home Services" })).toBeVisible();
     await page.getByRole("link", { name: "HVAC", exact: true }).click();
@@ -306,8 +306,8 @@ test.describe("social sign-in", () => {
   });
 });
 
-test.describe("professional sections", () => {
-  test("Professionals menu opens Attorneys, Realtors and Medical with their specialties", async ({ page }) => {
+test.describe("service sections", () => {
+  test("Services menu opens each section with its specialties", async ({ page }) => {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main" });
     for (const [name, heading, tile] of [
@@ -315,11 +315,12 @@ test.describe("professional sections", () => {
       ["Medical", "Medical", "Pediatrics"],
       ["Attorneys", "Attorneys", "Immigration"],
       ["Event management", "Event Management", "Decor & mandap"],
+      ["Kids & family", "Kids & Family", "Cricket"],
     ] as const) {
-      await nav.getByText("Professionals", { exact: true }).click();
+      await nav.getByText("Services", { exact: true }).click();
       await nav.getByRole("link", { name: new RegExp(`^${name}`) }).click();
       await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
-      await expect(page.getByRole("navigation", { name: /specialty|Practice area|Event service/ }).getByRole("link", { name: new RegExp(tile) })).toBeVisible();
+      await expect(page.getByRole("navigation", { name: /specialty|Practice area|Event service|Kids activity/ }).getByRole("link", { name: new RegExp(tile) })).toBeVisible();
       await expect(nav.getByRole("link", { name: new RegExp(`^${name}`) })).toBeHidden(); // menu closed after choosing
     }
     await page.goto("/realtors?area=home-buying");

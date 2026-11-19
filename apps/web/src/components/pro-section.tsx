@@ -37,6 +37,9 @@ export interface ProSectionConfig {
   license: { lead: string; body: string; linkLabel: string; href: string };
   /** Shown before the general disclaimer (e.g. "For an emergency, call 911."). */
   notePrefix?: string;
+  /** Quick links to related pages elsewhere on the site, shown under the tiles. */
+  related?: { href: string; label: string }[];
+  relatedLabel?: string;
 }
 
 export const TONES = {
@@ -158,6 +161,17 @@ export async function ProSection({ config: c, searchParams }: { config: ProSecti
             })}
           </nav>
         </section>
+
+        {c.related?.length ? (
+          <p className="mt-5 flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-ink-2">{c.relatedLabel ?? "See also:"}</span>
+            {c.related.map((r) => (
+              <Link key={r.href} href={r.href} className="rounded-full border border-line bg-surface px-3 py-1 font-medium hover:border-ink-2">
+                {r.label}
+              </Link>
+            ))}
+          </p>
+        ) : null}
 
         {/* ---- notices */}
         <div className="mt-8 grid gap-3 md:grid-cols-2">

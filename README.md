@@ -46,7 +46,7 @@ docker compose up -d postgres redis  # or point DATABASE_URL / REDIS_URL at your
 
 pnpm build                           # builds packages, API and web (also generates the Prisma client)
 pnpm db:migrate                      # applies migrations (PostGIS, generated columns, constraints)
-pnpm db:seed                         # 17 categories, offline gazetteer, DFW market, labeled demo data
+pnpm db:seed                         # 18 categories, offline gazetteer, DFW market, labeled demo data
 
 pnpm dev                             # API on http://localhost:4000, website on http://localhost:3000
 ```

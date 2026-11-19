@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-/** A header dropdown (e.g. Professionals). Closes when a link is chosen, on Escape and on outside click. */
+/** A header dropdown (e.g. Services). Closes when a link is chosen, on Escape and on outside click. */
 export function NavMenu({ label, items }: { label: string; items: { href: string; label: string; hint: string }[] }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
