@@ -28,7 +28,7 @@ export interface Partner {
   tall?: boolean;
 }
 
-export const PARTNERS_HEADING = "Proud community partners";
+export const PARTNERS_HEADING = "Proudly supported by";
 
 export const PARTNERS: Partner[] = [
   { name: "Vinessa Events", kind: "Weddings, events & catering, Plano", href: "https://vinessaevents.com/", logo: vinessaEvents, tall: true },
