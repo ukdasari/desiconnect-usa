@@ -57,9 +57,10 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "d720f9f7-51d4-49b4-b1e2-831fb4d164d5"
       }
     },
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "owner": "uk.dasari"
   }
 }
