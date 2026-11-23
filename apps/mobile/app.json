@@ -3,12 +3,12 @@
     "name": "1StopDesi",
     "slug": "onestopdesi",
     "scheme": "onestopdesi",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.onestopdesi.app",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
