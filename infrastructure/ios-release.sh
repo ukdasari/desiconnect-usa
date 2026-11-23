@@ -6,6 +6,13 @@ cd "$(dirname "$0")/.."
 git pull --ff-only
 
 command -v eas >/dev/null || npm install -g eas-cli
+
+# The Expo config plugins (expo-router etc.) must be installed locally.
+if [ ! -d apps/mobile/node_modules/expo-router ]; then
+  echo ">>> Installing dependencies (a few minutes the first time)."
+  command -v pnpm >/dev/null || { corepack enable 2>/dev/null || npm install -g pnpm; }
+  pnpm install --frozen-lockfile
+fi
 cd apps/mobile
 
 eas whoami >/dev/null 2>&1 || eas login
