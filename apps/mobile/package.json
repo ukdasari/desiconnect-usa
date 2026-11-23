@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "test": "jest",
-    "export:web": "expo export --platform web --output-dir dist-web"
+    "export:web": "expo export --platform web --output-dir dist-web",
+    "eas-build-post-install": "pnpm --filter @desiconnect/contracts --filter @desiconnect/ui run build"
   },
   "dependencies": {
     "@desiconnect/contracts": "workspace:*",
