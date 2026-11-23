@@ -39,7 +39,7 @@ export const PARTNERS: Partner[] = [
   { name: "AG FinTax", kind: "Financial & tax services", href: "https://www.agfintax.com/", logo: agFintax, tall: true },
   { name: "Jatara Indian Kitchen", kind: "Indian kitchen", href: "https://jataratx.com/", logo: jatara, tile: "#0a0a0a", tall: true },
   { name: "Farm2Cook", kind: "Fresh halal meat store, Frisco & Plano", href: "https://farm2cook.com/", logo: farm2cook, tall: true },
-  { name: "Ruchira Indian Cuisine", kind: "Indian restaurant", logo: ruchira },
+  { name: "Ruchira Indian Cuisine", kind: "Indian restaurant", href: "https://www.ruchiraindiancuisine.com/", logo: ruchira },
   { name: "Yolo Entertainments", kind: "Entertainment & events", logo: yoloEntertainments, tile: "#10236f", tall: true },
 ];
 
